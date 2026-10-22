@@ -1,0 +1,11 @@
+node_modules/
+admin-tools/
+admin-secure/
+scripts/
+.git/
+.github/
+package.json
+package-lock.json
+wrangler.toml
+.env
+.env.*
