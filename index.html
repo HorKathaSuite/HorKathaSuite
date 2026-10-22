@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+    <base href="./">
+    <title>Hoṛ/हो़ड़ Katha Suite v3.7.4 Pro Ultra - BOSC Tech &amp; Edu</title>
+
+    <!-- ═══ SEO / PWA META ═══ -->
+    <meta name="description" content="Multi-script typing suite for Santali, Hindi, English with Kruti Dev, Ol Chiki, and Typing Practice.">
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f0f2f5" media="(prefers-color-scheme: light)">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- ═══ SECURITY: CSP (v3.7.4.91 — preview-safe + XSS-hardened) ═══ -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' local-asset:;
+                   script-src 'self' local-asset: 'unsafe-inline'
+                              https://cdnjs.cloudflare.com
+                              https://unpkg.com
+                              https://www.gstatic.com;
+                   style-src 'self' local-asset: 'unsafe-inline'
+                             https://fonts.googleapis.com;
+                   font-src 'self' local-asset: data:
+                            https://fonts.gstatic.com;
+                   img-src 'self' local-asset: data: blob:
+                           https://api.qrserver.com
+                           https://quickchart.io;
+                   connect-src 'self'
+                               https://*.firebaseio.com
+                               https://*.firebasedatabase.app
+                               https://formsubmit.co
+                               https://api.qrserver.com
+                               https://quickchart.io;
+                   media-src 'self' local-asset: blob:;
+                   object-src 'none';
+                   worker-src 'self' blob:;
+                   manifest-src 'self';
+                   frame-src 'self' local-asset: about: blob:;
+                   child-src 'self' local-asset: about: blob:;
+                   base-uri 'self';
+                   form-action 'self' https://formsubmit.co;">
+
+    <!-- ═══ PWA / ICONS ═══ -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/icon.ico">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- ═══ CRITICAL CONFIG (LOAD ORDER MATTERS — FIX #3) ═══       -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- 1. Load LOCAL first (real values override) -->
+    <script src="js/config-private.local.js" onerror="(function(){try{console.log('ℹ️ [index.html] config-private.local.js not present — will use fallback template');}catch(e){}})()"></script>
+
+    <!-- 2. Load TEMPLATE second (fills only missing keys with placeholders) -->
+    <script src="js/config-private.js"></script>
+
+    <!-- 3. Load config.js (reads merged __RUNTIME_CONFIG__ → builds APP_CONFIG) -->
+    <script src="js/config.js"></script>
+
+    <!-- ═══ CONFIG SANITY CHECK ═══ -->
+    <script>
+    (function() {
+        'use strict';
+        try {
+            if (window.APP_CONFIG &&
+                window.APP_CONFIG.VERSION &&
+                window.APP_CONFIG.LICENSE_PUBLIC_KEY_JWK) {
+                console.log('✅ [index.html] config.js loaded — version:', window.APP_CONFIG.VERSION);
+                return;
+            }
+            console.warn('⚠️ [index.html] config.js missing or incomplete — using inline fallback');
+            window.APP_CONFIG = window.APP_CONFIG || {};
+        } catch (e) {
+            console.error('❌ [index.html] Config check failed:', e);
+        }
+    })();
+    </script>
+
+    <!-- ═══ CONFIG MERGE VERIFICATION (FIX #3 DEBUG) ═══ -->
+    <script>
+    (function() {
+        'use strict';
+        try {
+            var cfg = window.__RUNTIME_CONFIG__ || {};
+            var jwk = cfg.LICENSE_PUBLIC_KEY_JWK || {};
+            var placeholder = /YOUR_|_HERE|REPLACE_|PASTE_/i;
+
+            var isReal = jwk.x && jwk.y &&
+                         jwk.x.length === 43 &&
+                         jwk.y.length === 43 &&
+                         !placeholder.test(jwk.x) &&
+                         !placeholder.test(jwk.y);
+
+            if (isReal) {
+                console.log('✅ [index.html] FIX #3: Real config values loaded from .local.js');
+            } else if (typeof window.__RUNTIME_CONFIG__ !== 'undefined') {
+                console.log('ℹ️ [index.html] FIX #3: Using fallback placeholders (no .local.js or unconfigured)');
+            }
+        } catch (e) {
+            console.warn('⚠️ [index.html] Config merge check failed:', e.message);
+        }
+    })();
+    </script>
+
+    <!-- ═══ PROTOCOL CHECK (browser-only mode) ═══ -->
+    <script>
+    (function() {
+        'use strict';
+        if (window.location.protocol === 'file:') {
+            console.warn(
+                '⚠️ [index.html] file:// protocol detected. ' +
+                'Some features (Service Worker, Crypto, Fetch) may not work. ' +
+                'Please use a local server (python -m http.server 8080) or install PWA.'
+            );
+        }
+    })();
+    </script>
+
+    <!-- ═══ PRECONNECT ═══ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.qrserver.com" crossorigin>
+    <link rel="dns-prefetch" href="https://quickchart.io">
+    <link rel="dns-prefetch" href="https://formsubmit.co">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://www.gstatic.com">
+
+    <!-- ═══ PRELOAD (CDN only) ═══ -->
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin>
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin>
+
+    <!-- ═══ GOOGLE FONTS ═══ -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Ol+Chiki:wght@400;700&family=Poppins:wght@700;900&family=Playfair+Display:wght@700;900&family=Dancing+Script:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- ═══ STYLESHEETS ═══ -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modals.css">
+    <link rel="stylesheet" href="css/typing-test.css">
+    <link rel="stylesheet" href="css/certificate.css">
+
+    <!-- ═══ PAGE-SPECIFIC STYLES ═══ -->
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .bmr-plan > span { display: block; }
+        .bmr-plan > .bmr-plan-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bmr-plan > .bmr-plan-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .bmr-plan > .bmr-plan-price {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .bmr-plan-info > .bmr-plan-title,
+        .bmr-plan-info > .bmr-plan-sub,
+        .bmr-plan-info > .bmr-plan-feat,
+        .bmr-plan-price > .bmr-discount,
+        .bmr-plan-price > .bmr-old-price,
+        .bmr-plan-price > .bmr-new-price {
+            display: block;
+        }
+
+        .tt-lesson-heading {
+            font-size: 0.85rem;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+            color: var(--text-primary, #1f2937);
+            letter-spacing: 0.3px;
+            line-height: 1.3;
+        }
+
+        /* ═══ HWID MANUAL RECOVERY ═══ */
+        #manualRecoverySection {
+            background: #fef3c7;
+            border: 1.5px solid #f59e0b;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-top: 4px;
+        }
+        #manualRecoverySection .mrs-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        #manualRecoverySection .mrs-title {
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: #92400e;
+        }
+        #manualRecoverySection .mrs-toggle-btn {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        #manualRecoveryBox {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #f59e0b;
+        }
+        #manualRecoveryBox .mrb-desc {
+            font-size: 0.68rem;
+            color: #78350f;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+        #oldHwidInput {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            border: 1.5px solid #f59e0b;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #0f172a;
+            outline: none;
+            text-transform: uppercase;
+            box-sizing: border-box;
+        }
+        #manualRecoveryBox .mrb-buttons {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        #manualRecoveryBox .mrb-btn {
+            flex: 1;
+            padding: 7px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        #manualRecoveryBox .mrb-cancel {
+            background: #ffffff;
+            color: #78350f;
+            border: 1.5px solid #f59e0b;
+        }
+        #manualRecoveryBox .mrb-apply {
+            background: #16a34a;
+            color: white;
+            border: none;
+        }
+        #recoveryStatusMsg {
+            display: none;
+            margin-top: 8px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        #recoveryStatusMsg.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #16a34a;
+        }
+        #recoveryStatusMsg.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #dc2626;
+        }
+
+        /* ═══ TRIAL MODAL ═══ */
+        #trialActivationModal .trm-modal {
+            width: 480px;
+            max-width: 96vw;
+            max-height: 96vh;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+            color: #1e293b;
+        }
+        #trialActivationModal .trm-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%);
+            padding: 16px 60px 16px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            color: #ffffff;
+            position: relative;
+        }
+        #trialActivationModal .trm-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.15;
+        }
+        #trialActivationModal .trm-title span { color: #fde047; }
+        #trialActivationModal .trm-subtitle {
+            font-size: 0.82rem;
+            color: #fde047;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        #trialActivationModal .trm-close {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            background: rgba(255, 255, 255, 0.18);
+            border: none;
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 900;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #trialActivationModal .trm-body {
+            padding: 18px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+        }
+        #trialActivationModal .trm-price-badge {
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: #ffffff;
+        }
+        #trialActivationModal .trm-price-amount {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+        #trialActivationModal .trm-price-sub {
+            font-size: 0.9rem;
+            font-weight: 800;
+            margin-top: 6px;
+            opacity: 0.95;
+        }
+        #trialActivationModal .trm-qr-box {
+            width: 200px;
+            height: 200px;
+            min-width: 200px;
+            min-height: 200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        #trialActivationModal .trm-qr-box img,
+        #trialActivationModal .trm-qr-box canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block !important;
+            object-fit: contain !important;
+        }
+        #trialActivationModal .trm-instruction {
+            background: #f0fdf4;
+            border: 1.5px solid #16a34a;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 0.78rem;
+            color: #14532d;
+            line-height: 1.6;
+        }
+        #trialActivationModal .trm-instruction ol {
+            margin: 6px 0 0 18px;
+            padding: 0;
+        }
+        #trialActivationModal .trm-key-input {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            font-family: monospace;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            outline: none;
+            background: #ffffff;
+            color: #0f172a;
+            box-sizing: border-box;
+        }
+        #trialActivationModal .trm-key-input:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+        #trialActivationModal .trm-status {
+            display: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-align: center;
+        }
+        #trialActivationModal .trm-status.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border: 1.5px solid #16a34a;
+        }
+        #trialActivationModal .trm-status.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1.5px solid #dc2626;
+        }
+        #trialActivationModal .trm-status.loading {
+            display: block;
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1.5px solid #3b82f6;
+        }
+        #trialActivationModal .trm-footer {
+            padding: 14px 22px;
+            background: #f8fafc;
+            border-top: 1.5px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        #trialActivationModal .trm-btn {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 900;
+            cursor: pointer;
+            border: none;
+        }
+        #trialActivationModal .trm-btn-activate {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.45);
+        }
+        #trialActivationModal .trm-btn-wa {
+            background: #25d366;
+            color: #ffffff;
+        }
+
+        /* ═══ FLASH MESSAGES ═══ */
+        #flashContainer {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            pointer-events: none;
+            max-width: 100vw;
+            padding: 0 16px;
+            box-sizing: border-box;
+        }
+
+        .flash-message {
+            width: 500px;
+            max-width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35),
+                        0 0 0 1px rgba(0, 0, 0, 0.05);
+            pointer-events: auto;
+            animation: flashSlideIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+
+        @keyframes flashSlideIn {
+            0% { opacity: 0; transform: translateY(-60px) scale(0.85); }
+            60% { opacity: 1; transform: translateY(6px) scale(1.02); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes flashSlideOut {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-60px) scale(0.9); }
+        }
+
+        .flash-message.flash-out {
+            animation: flashSlideOut 0.4s cubic-bezier(0.4, 0, 1, 1) forwards;
+        }
+
+        .flash-header {
+            padding: 20px 60px 20px 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            position: relative;
+            color: #ffffff;
+        }
+
+        .flash-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            transition: all 0.15s;
+            padding: 0;
+            line-height: 1;
+        }
+        .flash-close:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(1.1);
+        }
+
+        .flash-icon {
+            font-size: 3rem;
+            line-height: 1;
+            flex-shrink: 0;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+            animation: flashIconBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes flashIconBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-4px) scale(1.05); }
+        }
+
+        .flash-title {
+            font-size: 1.25rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 4px;
+            letter-spacing: -0.3px;
+        }
+
+        .flash-subtitle {
+            font-size: 0.82rem;
+            font-weight: 700;
+            opacity: 0.95;
+            line-height: 1.4;
+        }
+
+        .flash-body {
+            padding: 16px 22px;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+
+        .flash-body p {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin: 0 0 10px 0;
+            font-weight: 600;
+        }
+        .flash-body p:last-child { margin-bottom: 0; }
+
+        .flash-feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .flash-feature-item {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: #166534;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .flash-feature-item::before {
+            content: "✅";
+            font-size: 0.85rem;
+        }
+
+        .flash-lang-chips {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .flash-lang-chip {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 8px;
+            padding: 10px 4px;
+            text-align: center;
+            font-size: 0.68rem;
+            font-weight: 900;
+            color: #78350f;
+        }
+        .flash-lang-chip .flag {
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .flash-sec-layer {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .flash-sec-layer:last-child { margin-bottom: 0; }
+        .flash-sec-layer .check {
+            color: #16a34a;
+            font-size: 1rem;
+        }
+
+        .flash-progress {
+            height: 4px;
+            background: #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flash-progress-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .flash-message.flash-welcome .flash-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+        }
+        .flash-message.flash-welcome .flash-progress-bar {
+            background: linear-gradient(90deg, #1e3a8a, #7c3aed);
+        }
+
+        .flash-message.flash-trial .flash-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #d946ef 100%);
+        }
+        .flash-message.flash-trial .flash-progress-bar {
+            background: linear-gradient(90deg, #7c3aed, #a855f7);
+        }
+
+        .flash-message.flash-security .flash-header {
+            background: linear-gradient(135deg, #064e3b 0%, #10b981 100%);
+        }
+        .flash-message.flash-security .flash-progress-bar {
+            background: linear-gradient(90deg, #059669, #10b981);
+        }
+
+        .flash-message.flash-languages .flash-header {
+            background: linear-gradient(135deg, #ea580c 0%, #facc15 100%);
+        }
+        .flash-message.flash-languages .flash-progress-bar {
+            background: linear-gradient(90deg, #ea580c, #facc15);
+        }
+
+        .flash-message.flash-features .flash-header {
+            background: linear-gradient(135deg, #1e40af 0%, #06b6d4 100%);
+        }
+        .flash-message.flash-features .flash-progress-bar {
+            background: linear-gradient(90deg, #1e40af, #06b6d4);
+        }
+
+        .flash-message.flash-success .flash-header {
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+        }
+        .flash-message.flash-success .flash-progress-bar {
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+        }
+
+        .flash-message.flash-error .flash-header {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        }
+        .flash-message.flash-error .flash-progress-bar {
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+        }
+
+        .flash-message.flash-warning .flash-header {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+        }
+        .flash-message.flash-warning .flash-progress-bar {
+            background: linear-gradient(90deg, #d97706, #f59e0b);
+        }
+
+        .flash-message.flash-info .flash-header {
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+        }
+        .flash-message.flash-info .flash-progress-bar {
+            background: linear-gradient(90deg, #0284c7, #38bdf8);
+        }
+
+        .flash-message.flash-compact .flash-header {
+            padding: 16px 50px 16px 18px;
+        }
+        .flash-message.flash-compact .flash-icon {
+            font-size: 2rem;
+            animation: none;
+        }
+        .flash-message.flash-compact .flash-title {
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+        .flash-message.flash-compact .flash-subtitle {
+            font-size: 0.72rem;
+        }
+
+        @media (max-width: 768px) {
+            #flashContainer {
+                top: 12px;
+                left: 12px;
+                right: 12px;
+                transform: none;
+                max-width: none;
+                padding: 0;
+            }
+            .flash-message { width: 100%; border-radius: 14px; }
+            .flash-header { padding: 16px 50px 16px 16px; gap: 12px; }
+            .flash-icon { font-size: 2.2rem; }
+            .flash-title { font-size: 1.05rem; }
+            .flash-subtitle { font-size: 0.74rem; }
+            .flash-body { padding: 14px 16px; }
+            .flash-feature-grid { grid-template-columns: 1fr; }
+            .flash-lang-chips { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 480px) {
+            .flash-title { font-size: 0.95rem; }
+            .flash-icon { font-size: 1.8rem; }
+            .flash-lang-chip { padding: 8px 2px; font-size: 0.62rem; }
+        }
+
+        /* Hide version badge on very small screens */
+        @media (max-width: 400px) {
+            .version-badge { display: none !important; }
+        }
+
+        /* ═══ TERMS BUTTON — Special Style ═══ */
+        #btn-terms {
+            background: #6d28d9;
+            color: #ffffff;
+            border-color: #7c3aed;
+        }
+        #btn-terms:hover {
+            background: #7c3aed;
+            border-color: #a855f7;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ SKIP TO CONTENT (A11y) ═══ -->
+<a href="#mainApp" class="sr-only" style="position:absolute;top:-100px;left:0;background:#000;color:#fff;padding:8px;z-index:99999;" onfocus="this.style.top='0'" onblur="this.style.top='-100px'">
+    Skip to main content
+</a>
+
+<h1 class="sr-only">Hoṛ/होड़ Katha Suite — Multi-Script Typing Tool</h1>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🌟 SPLASH SCREEN                                                -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="appSplash" role="status" aria-live="polite" aria-label="Application loading">
+    <div class="splash-bg-layer"></div>
+    <svg class="splash-circuit-bg" viewBox="0 0 1000 1500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+            <pattern id="circuitPat" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
+                <path d="M 12 12 L 48 12 L 48 34 L 84 34" stroke="#4dabf7" stroke-width="1.4" fill="none" opacity="0.6"/>
+                <path d="M 100 24 L 100 70 L 128 70" stroke="#4dabf7" stroke-width="1.4" fill="none" opacity="0.6"/>
+                <path d="M 24 92 L 60 92 L 60 128" stroke="#ff922b" stroke-width="1.4" fill="none" opacity="0.55"/>
+                <path d="M 92 104 L 116 104 L 116 124" stroke="#ff922b" stroke-width="1.4" fill="none" opacity="0.55"/>
+            </pattern>
+        </defs>
+        <rect width="1000" height="1500" fill="url(#circuitPat)"/>
+    </svg>
+
+    <svg class="splash-bottom-wave" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+            <linearGradient id="waveGold" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#fbbf24"/>
+                <stop offset="50%" stop-color="#fde047"/>
+                <stop offset="100%" stop-color="#f59e0b"/>
+            </linearGradient>
+            <linearGradient id="waveBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#1e3a8a"/>
+                <stop offset="100%" stop-color="#0a1e5c"/>
+            </linearGradient>
+        </defs>
+        <path d="M 0,80 Q 250,30 500,80 T 1000,80 L 1000,200 L 0,200 Z" fill="url(#waveBlue)" opacity="0.4"/>
+        <path d="M 0,80 Q 250,30 500,80 T 1000,80" fill="none" stroke="url(#waveGold)" stroke-width="6"/>
+    </svg>
+
+    <div class="splash-top-banner">
+        <svg class="splash-top-title-svg" viewBox="0 0 900 130" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <defs>
+                <linearGradient id="tbOrangeText" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffd966"/>
+                    <stop offset="30%" stop-color="#ff9800"/>
+                    <stop offset="100%" stop-color="#b8440f"/>
+                </linearGradient>
+                <path id="tbTextTop" d="M 40,120 Q 450,10 860,120" fill="none"/>
+            </defs>
+            <text class="tb-title-text tb-shadow-1"><textPath href="#tbTextTop" startOffset="50%" text-anchor="middle">HOR KATHA SUITE</textPath></text>
+            <text class="tb-title-text tb-shadow-2"><textPath href="#tbTextTop" startOffset="50%" text-anchor="middle">HOR KATHA SUITE</textPath></text>
+            <text class="tb-title-text tb-main"><textPath href="#tbTextTop" startOffset="50%" text-anchor="middle">HOR KATHA SUITE</textPath></text>
+        </svg>
+        <div class="splash-capsule-ribbon">
+            <span class="capsule-text">MULTI-SCRIPT TYPING REVOLUTION</span>
+        </div>
+    </div>
+
+    <div class="splash-stage">
+        <svg class="splash-ring-svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <linearGradient id="r1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff8a3c"/><stop offset="100%" stop-color="#b8440f"/></linearGradient>
+                <linearGradient id="r2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ec407a"/><stop offset="100%" stop-color="#880e4f"/></linearGradient>
+                <linearGradient id="r3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2196f3"/><stop offset="100%" stop-color="#0d47a1"/></linearGradient>
+                <linearGradient id="r4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4caf50"/><stop offset="100%" stop-color="#1b5e20"/></linearGradient>
+                <linearGradient id="r5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#26c6da"/><stop offset="100%" stop-color="#006064"/></linearGradient>
+                <linearGradient id="r6" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3f51b5"/><stop offset="100%" stop-color="#1a237e"/></linearGradient>
+                <linearGradient id="r7" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8bc34a"/><stop offset="100%" stop-color="#558b2f"/></linearGradient>
+                <linearGradient id="goldRing" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde68a"/><stop offset="50%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
+                <linearGradient id="degG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="100%" stop-color="#92400e"/></linearGradient>
+                <path id="pOuter" d="M 500,500 m -445,0 a 445,445 0 1,1 890,0 a 445,445 0 1,1 -890,0"/>
+                <path id="pMid" d="M 500,500 m -382,0 a 382,382 0 1,1 764,0 a 382,382 0 1,1 -764,0"/>
+                <path id="arcR3" d="M 500,500 m -322,0 a 322,322 0 0,1 644,0"/>
+                <path id="arcR4" d="M 500,500 m -262,0 a 262,262 0 0,1 524,0"/>
+                <path id="arcR5" d="M 500,500 m -204,0 a 204,204 0 0,1 408,0"/>
+                <path id="arcR6" d="M 500,500 m -152,0 a 152,152 0 0,1 304,0"/>
+            </defs>
+            <circle cx="500" cy="500" r="442" fill="none" stroke="url(#goldRing)" stroke-width="3.5"/>
+            <circle cx="500" cy="500" r="418" fill="none" stroke="url(#r1)" stroke-width="48"/>
+            <circle cx="500" cy="500" r="442" fill="none" stroke="url(#goldRing)" stroke-width="1.5"/>
+            <circle cx="500" cy="500" r="388" fill="none" stroke="url(#goldRing)" stroke-width="3"/>
+            <circle cx="500" cy="500" r="380" fill="none" stroke="url(#r2)" stroke-width="40"/>
+            <circle cx="500" cy="500" r="352" fill="none" stroke="url(#goldRing)" stroke-width="3"/>
+            <circle cx="500" cy="500" r="322" fill="none" stroke="url(#r3)" stroke-width="34"/>
+            <circle cx="500" cy="500" r="298" fill="none" stroke="url(#goldRing)" stroke-width="3"/>
+            <circle cx="500" cy="500" r="262" fill="none" stroke="url(#r4)" stroke-width="34"/>
+            <circle cx="500" cy="500" r="238" fill="none" stroke="url(#goldRing)" stroke-width="3"/>
+            <circle cx="500" cy="500" r="204" fill="none" stroke="url(#r5)" stroke-width="32"/>
+            <circle cx="500" cy="500" r="184" fill="none" stroke="url(#goldRing)" stroke-width="3"/>
+            <circle cx="500" cy="500" r="152" fill="none" stroke="url(#r6)" stroke-width="30"/>
+            <circle cx="500" cy="500" r="133" fill="none" stroke="url(#goldRing)" stroke-width="3"/>
+            <circle cx="500" cy="500" r="122" fill="none" stroke="url(#r7)" stroke-width="22"/>
+            <circle cx="500" cy="500" r="118" fill="none" stroke="url(#goldRing)" stroke-width="8"/>
+            <circle cx="500" cy="500" r="112" fill="#ffffff"/>
+
+            <g class="ring-run-cw">
+                <text class="rtext rtext-lg">
+                    <textPath href="#pOuter" startOffset="50%" text-anchor="middle">HOR KATHA SUITE  •  MULTI-SCRIPT TYPING REVOLUTION  •  HOR KATHA SUITE  •  MULTI-SCRIPT  •  </textPath>
+                </text>
+            </g>
+            <g class="ring-run-ccw">
+                <text class="rtext rtext-md">
+                    <textPath href="#pMid" startOffset="50%" text-anchor="middle">TYPING REVOLUTION  •  HOR KATHA SUITE  •  MULTI-SCRIPT  •  TYPING REVOLUTION  •  </textPath>
+                </text>
+            </g>
+            <text class="rtext rtext-sm"><textPath href="#arcR3" startOffset="50%" text-anchor="middle">Santali (R) – Santali Roman</textPath></text>
+            <text class="rtext rtext-sm"><textPath href="#arcR4" startOffset="50%" text-anchor="middle">Santali (D) – Santali Devanagari</textPath></text>
+            <text class="rtext rtext-sm"><textPath href="#arcR5" startOffset="50%" text-anchor="middle">ओलचिकी – Ol Chiki</textPath></text>
+            <text class="rtext rtext-sm"><textPath href="#arcR6" startOffset="50%" text-anchor="middle">हिन्दी – Hindi</textPath></text>
+        </svg>
+
+        <div class="splash-photo-wrap">
+            <img src="assets/icon.ico" alt="Founder" class="splash-photo"
+                 onerror="this.style.display='none'; this.parentElement.classList.add('photo-fallback');">
+        </div>
+
+        <div class="splash-degree-badge">
+            <svg class="splash-laurel laurel-left" viewBox="0 0 40 60">
+                <path d="M 35,8 Q 15,22 12,46 Q 10,54 15,56 M 32,14 Q 20,22 18,40 M 28,22 Q 20,30 20,44" fill="none" stroke="url(#degG)" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+            <div class="splash-degree-num">
+                <span id="splashPercent">0</span><span class="splash-deg-sym">°</span>
+            </div>
+            <svg class="splash-laurel laurel-right" viewBox="0 0 40 60">
+                <path d="M 5,8 Q 25,22 28,46 Q 30,54 25,56 M 8,14 Q 20,22 22,40 M 12,22 Q 20,30 20,44" fill="none" stroke="url(#degG)" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="splash-version-banner">
+        <span class="svb-bolt">⚡</span>
+        <span class="svb-text">HOR KATHA SUITE V3.7.4 PRO ULTRA</span>
+    </div>
+
+    <div class="splash-info-bar">
+        <div class="sib-left">
+            <div class="sib-icon">⚙️</div>
+            <div class="sib-text"><small>Developed by</small><b>BOSC Tech &amp; Edu</b></div>
+        </div>
+        <div class="sib-right">
+            <div class="sib-icon">🔒</div>
+            <div class="sib-text"><b>AES-256 Encrypted</b><small>🇮🇳 Made in India</small></div>
+        </div>
+    </div>
+
+    <div class="splash-tagline">
+        <span class="tl-line"></span>
+        <span class="tl-text">Type in Your Language &nbsp;•&nbsp; Connect Your World</span>
+        <span class="tl-line"></span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🌟 SPLASH SCRIPT                                                -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+    'use strict';
+    var splash = document.getElementById('appSplash');
+    if (!splash) return;
+    var percentEl = document.getElementById('splashPercent');
+
+    var MIN_DISPLAY_MS = 2500;
+    var MAX_DISPLAY_MS = 12000;
+    var alive = true;
+    var rAFId = null;
+    var startTime = Date.now();
+    var exited = false;
+
+    function safeTimeout(fn, ms) {
+        return setTimeout(function() { if (!alive) return; fn(); }, ms);
+    }
+
+    var steps = [10, 25, 45, 62, 78, 92, 100];
+    var timeIntervals = [400, 800, 1400, 2000, 2800, 3600, 4200];
+
+    var displayedPct = 0;
+    var targetPct = 0;
+
+    function animateNumber() {
+        if (!alive) return;
+        if (displayedPct < targetPct) {
+            var diff = targetPct - displayedPct;
+            displayedPct += Math.max(0.3, diff * 0.08);
+            if (displayedPct > targetPct) displayedPct = targetPct;
+            if (percentEl) percentEl.textContent = Math.floor(displayedPct);
+        }
+        rAFId = requestAnimationFrame(animateNumber);
+    }
+
+    function scheduleSteps() {
+        timeIntervals.forEach(function(ms, i) {
+            safeTimeout(function() { targetPct = steps[i]; }, ms);
+        });
+    }
+
+    function killSplash() {
+        if (exited) return;
+        exited = true;
+        targetPct = 100;
+
+        var elapsed = Date.now() - startTime;
+        var waitMore = Math.max(0, MIN_DISPLAY_MS - elapsed);
+
+        setTimeout(function() {
+            splash.classList.add('splash-exit');
+            document.body.classList.add('app-ready');
+            setTimeout(function() {
+                if (rAFId) cancelAnimationFrame(rAFId);
+                alive = false;
+                try { if (splash.parentNode) splash.parentNode.removeChild(splash); } catch (e) {}
+            }, 500);
+        }, waitMore + 200);
+    }
+
+    rAFId = requestAnimationFrame(animateNumber);
+    scheduleSteps();
+
+    safeTimeout(function() { targetPct = 3; }, 100);
+    safeTimeout(function() { targetPct = 6; }, 250);
+
+    window.addEventListener('app-ready', killSplash);
+    safeTimeout(killSplash, MAX_DISPLAY_MS);
+    window.__killSplash = killSplash;
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🚀 MAIN APP                                                     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div id="flashContainer"></div>
+
+<div class="progress-overlay" id="progressOverlay" style="display: none;">
+    <div class="progress-box">
+        <div class="progress-title" id="progressTitle">Processing...</div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label" id="progressLabel">Please wait</div>
+    </div>
+</div>
+
+<button class="zen-floating-exit" onclick="toggleZenMode()" aria-label="Exit Zen Mode">Exit Zen Mode ✕</button>
+
+<main id="mainApp" class="app-card">
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- 📌 HEADER BAR — FULLY RESPONSIVE (priority-based)           -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="header-bar">
+        <div class="brand-title-group">
+            <img src="assets/icon.ico" alt="App Icon" class="app-brand-avatar" onerror="this.style.display='none'">
+            <div class="brand-text-col">
+                <div class="brand-row-title">
+                    <span class="app-main-title" id="licenseBadge" onclick="openLicenseModal()" title="Click to activate license" role="button" tabindex="0">Hoṛ/हो़ड़ Katha</span>
+                    <span class="version-badge free-active" id="versionBadge">v3.7.4 Free</span>
+                </div>
+                <span class="developer-credit">Developed By BOSC Tech &amp; Edu</span>
+            </div>
+        </div>
+
+        <!-- Greeting + Trial Counter -->
+        <div class="header-mid-info" id="headerMidInfo">
+            <span class="greeting-text" id="greetingText">नमस्ते!</span>
+            <span class="greeting-sep" id="greetingSep">•</span>
+            <span class="trial-info" id="trialInfo"></span>
+        </div>
+
+        <div class="top-settings-bar">
+            <!-- 🟠 P1: Tablet and up -->
+            <button class="btn-kb-mode-action priority-1" id="btn-kb-choice" onmousedown="event.preventDefault()" onclick="toggleKeyboardPreference()" title="Keyboard: App Virtual">App Virtual: ⌨️</button>
+
+            <button id="pwa-install-btn" class="btn-pwa-install priority-1" onmousedown="event.preventDefault()" onclick="installPWA()" title="Install as PWA app">📲 <span class="btn-label">Install</span></button>
+
+            <!-- 🟡 P2: Desktop and up -->
+            <button class="tool-btn priority-2" onmousedown="event.preventDefault()" onclick="openPreviewModal()" title="Live Preview">📱 <span class="btn-label">Preview</span></button>
+
+            <!-- 🔴 P0: Always visible -->
+            <button class="btn-donate-action btn-icon-only priority-0" id="btn-donate-top" onmousedown="event.preventDefault()" onclick="openDonateModal()" title="Support / Donate" aria-label="Support">💖</button>
+
+            <button class="btn-buy-action btn-icon-only priority-0" id="btn-buy-top" onmousedown="event.preventDefault()" onclick="openBuyModal()" title="Buy Pro License" aria-label="Buy Pro License">💳</button>
+
+            <button class="btn-license-action btn-icon-only priority-0" id="btn-license-trigger" onmousedown="event.preventDefault()" onclick="openLicenseModal()" title="Activate Pro License" aria-label="Activate Pro License">🔑</button>
+
+            <button class="btn-trial-action btn-trial-top btn-icon-only priority-0" id="btn-trial-top" onmousedown="event.preventDefault()" onclick="openTrialActivationModal()" aria-label="Activate ₹9 trial" title="₹9 Trial — 7 Days">🎁</button>
+
+            <!-- 🟡 P2: Desktop and up -->
+            <button class="tool-btn priority-2" id="btn-privacy" onmousedown="event.preventDefault()" onclick="window.open('privacy.html','_blank','noopener,noreferrer')" title="Privacy Policy">🔒 <span class="btn-label">Privacy</span></button>
+
+            <!-- 🆕 TERMS BUTTON (NEW) -->
+            <button class="tool-btn priority-2" id="btn-terms" onmousedown="event.preventDefault()" onclick="window.open('terms.html','_blank','noopener,noreferrer')" title="Terms of Service">📜 <span class="btn-label">Terms</span></button>
+
+            <button class="tool-btn priority-2" onmousedown="event.preventDefault()" onclick="window.open('manual.html','_blank','noopener,noreferrer')" style="background:#7c3aed;color:#fff;border-color:#a855f7;" title="User Manual">📖 <span class="btn-label">Manual</span></button>
+
+            <!-- 🔴 P0: Always visible -->
+            <button class="tool-btn btn-icon-only priority-0" id="btn-sound-toggle" onmousedown="event.preventDefault()" onclick="toggleClickSound()" title="Sound: ON" aria-label="Toggle sound">🔊</button>
+
+            <!-- 🟡 P2: Desktop and up -->
+            <button class="tool-btn btn-icon-only priority-2" id="btn-hover-voice" onmousedown="event.preventDefault()" onclick="toggleHoverVoice()" title="Hover Voice: OFF" aria-label="Toggle hover voice">🗣️</button>
+
+            <!-- 🟠 P1: Tablet and up -->
+            <button class="tool-btn btn-icon-only priority-1" id="btn-voice-toggle" onmousedown="event.preventDefault()" onclick="toggleVoiceOutput()" title="TTS: ON" aria-label="Toggle TTS">🎧</button>
+
+            <button class="tool-btn btn-icon-only priority-1" id="btn-numpad-toggle" onmousedown="event.preventDefault()" onclick="toggleNumpad()" title="Numpad: OFF" aria-label="Toggle numpad">🔢</button>
+
+            <button class="tool-btn btn-icon-only priority-1" id="btn-zen-mode" onmousedown="event.preventDefault()" onclick="toggleZenMode()" title="Zen Mode: OFF" aria-label="Toggle zen mode">🧘</button>
+
+            <!-- 🔴 P0: Always visible — THEME BUTTON -->
+            <button class="tool-btn btn-icon-only priority-0" id="btn-theme-toggle" onmousedown="event.preventDefault()" onclick="toggleTheme()" title="Theme: Dark" aria-label="Toggle theme">🌙</button>
+        </div>
+    </div>
+
+    <!-- ═══ FOCUS MODE BAR ═══ -->
+    <div class="focus-mode-bar" id="focusModeBar" role="region" aria-label="Focus mode toolbar">
+        <div class="focus-bar-left">
+            <button class="focus-back-btn" onclick="exitTypingMode()" aria-label="Exit focus mode">
+                ← Back
+            </button>
+        </div>
+        <div class="focus-bar-heading" id="focusBarHeading">
+            <span class="focus-heading-icon" id="focusHeadingIcon">🌐</span>
+            <span class="focus-heading-text" id="focusHeadingText">English</span>
+            <span class="focus-heading-badge" id="focusHeadingBadge">ENG</span>
+        </div>
+        <div class="focus-bar-right">
+            <button class="focus-bar-btn" onclick="openEmojiModal()" title="Emoji" aria-label="Emoji">😀</button>
+            <button class="focus-bar-btn" onclick="openCharMapModal()" title="Char Map" aria-label="Character Map">🔣</button>
+            <button class="focus-bar-btn btn-focus-clear" onclick="clearText()" title="Clear" aria-label="Clear text">🗑️</button>
+        </div>
+    </div>
+
+    <!-- ═══ STATUS STRIP ═══ -->
+    <div class="status-strip" id="statusStrip">
+        <div class="lang-switcher-group" role="tablist" aria-label="Language selection">
+            <button id="tab-roman" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('roman')" role="tab">Santali (R)</button>
+            <button id="tab-santali-dev" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('santali-dev')" role="tab">Santali (D)</button>
+            <button id="tab-olchiki" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('olchiki')" role="tab">ओ़लचिकी</button>
+            <button id="tab-hindi-dev" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('hindi-dev')" role="tab">हिन्दी</button>
+            <button id="tab-english" class="tab-pill active" onmousedown="event.preventDefault()" onclick="switchLanguage('english')" role="tab">Eng</button>
+        </div>
+
+        <div class="status-chip" id="statusMode"><span class="pulse-dot orange"></span><span>Free Mode</span></div>
+        <div class="status-chip" id="statusKeyboard"><span class="chip-icon">⌨️</span><span>Virtual</span></div>
+        <div class="status-chip" id="statusLanguage"><span class="chip-icon">🌐</span><span>English</span></div>
+        <div class="status-chip" id="statusFont"><span class="chip-icon">Aa</span><span>Roboto</span></div>
+        <div class="status-chip" id="statusWords"><span class="chip-icon">📊</span><span>0 words</span></div>
+        <div class="status-chip" id="statusChars"><span class="chip-icon">📝</span><span>0 chars</span></div>
+        <div class="status-chip" id="statusWPM"><span class="chip-icon">⚡</span><span>0 WPM</span></div>
+        <div class="status-chip" id="statusSave"><span class="chip-icon">💾</span><span>Saved</span></div>
+        <div class="status-chip" id="statusNetwork"><span class="pulse-dot green"></span><span>Online</span></div>
+        <div class="status-chip" id="statusTime"><span class="chip-icon">🕐</span><span>--:-- --</span></div>
+    </div>
+
+    <div class="system-kb-status-banner" id="systemKbStatusText">
+        <span>⚡ System Keyboard Mode Active</span>
+        <button class="tool-btn" style="background:#059669; color:#fff;" onclick="toggleKeyboardPreference()">Switch</button>
+    </div>
+
+    <!-- ═══ EDITOR ═══ -->
+    <div class="editor-wrapper">
+        <div class="editor-toolbar">
+            <div class="tool-subgroup">
+                <button class="tool-btn btn-toolbar-emoji" onmousedown="event.preventDefault()" onclick="openEmojiModal()">😀 Emoji</button>
+                <span style="border-left: 1.5px solid var(--border-color); height: 14px; margin: 0 2px;"></span>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="formatModern('bold')" title="Bold"><b>B</b></button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="formatModern('italic')" title="Italic"><i>I</i></button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="formatModern('underline')" title="Underline"><u>U</u></button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="formatModern('strikeThrough')" title="Strikethrough"><s>S</s></button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="formatModern('align', 'left')" title="Align left">⬅️</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="formatModern('align', 'center')" title="Align center">↔️</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="formatModern('align', 'right')" title="Align right">➡️</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="formatModern('align', 'justify')" title="Justify">📄</button>
+                <label title="Text Color" style="display:flex; align-items:center; gap:2px; font-size:0.62rem; cursor:pointer; font-weight:800;">
+                    🎨 <input type="color" class="color-picker-input" onmousedown="saveCurrentSelection()" onchange="applyColorModern('color', this.value)">
+                </label>
+                <label title="Highlight" style="display:flex; align-items:center; gap:2px; font-size:0.62rem; cursor:pointer; font-weight:800;">
+                    🖍️ <input type="color" value="#ffff00" class="color-picker-input" onmousedown="saveCurrentSelection()" onchange="applyColorModern('backgroundColor', this.value)">
+                </label>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="formatModern('removeFormat')" title="Clear formatting">🧹</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="customUndo()" title="Undo">↶</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="customRedo()" title="Redo">↷</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="adjustFontSize(2)" title="Increase font">A+</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="adjustFontSize(-2)" title="Decrease font">A-</button>
+                <select class="font-dropdown" id="fontFamilySelect" onmousedown="saveCurrentSelection()" onchange="changeFontFamily(this.value)" aria-label="Font family"></select>
+                <select class="font-dropdown" id="casingSelect" style="max-width:95px;" onmousedown="saveCurrentSelection()" onchange="convertTextCasing(this.value); this.selectedIndex=0;" aria-label="Case conversion">
+                    <option value="" disabled selected>Case</option>
+                    <option value="upper">UPPERCASE</option>
+                    <option value="lower">lowercase</option>
+                    <option value="title">Title Case</option>
+                    <option value="sentence">Sentence case</option>
+                    <option value="camel">camelCase</option>
+                    <option value="kebab">kebab-case</option>
+                    <option value="snake">snake_case</option>
+                    <option value="inverse">tOGGLE</option>
+                    <option value="num-to-dev">123 ➔ १२३</option>
+                    <option value="num-to-ol">123 ➔ ᱑᱒᱓</option>
+                    <option value="num-to-lat">१२३ ➔ 123</option>
+                </select>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="openFindReplaceModal()">🔍 Find</button>
+                <button class="tool-btn" id="btn-phonetic-toggle" onmousedown="event.preventDefault()" onclick="togglePhoneticTranslit()">✨ Translit</button>
+            </div>
+            <div class="tool-subgroup">
+                <span id="draftStatusBadge" style="font-size:0.6rem; color:#10b981; font-weight:800;">✅ Saved</span>
+                <button class="tool-btn" id="btn-mic" onmousedown="event.preventDefault()" onclick="toggleSpeechRecognition()" aria-label="Toggle microphone">🎤 Mic</button>
+                <button class="tool-btn" id="btn-read" onmousedown="event.preventDefault()" onclick="speakText()" aria-label="Read text aloud">🗣️ Read</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="openVoiceSettingsModal()" title="Voice Settings" style="background:#0284c7;color:#fff;border-color:#0284c7;font-weight:900;" aria-label="Voice settings">⚙️</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="printEditorText()" style="background:#7c3aed;color:#ffffff;border-color:#a855f7;font-weight:900;" aria-label="Print">🖨️ Print</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="downloadDocFile()" aria-label="Download Word">📄 Word</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="downloadTextFile()" aria-label="Download TXT">📁 TXT</button>
+                <button class="tool-btn" onmousedown="event.preventDefault()" onclick="openMobileQrModal()" aria-label="Send to phone">📱 Phone</button>
+            </div>
+        </div>
+
+        <div class="suggestion-bar" id="suggestionBar"></div>
+
+        <div class="editor-container" id="editorContainer">
+            <div id="editor" contenteditable="true" inputmode="none" data-placeholder="Type or click keys... (Auto-Saved enabled)" data-empty="true" oninput="handleEditorInput()" role="textbox" aria-multiline="true" aria-label="Typing editor"></div>
+        </div>
+
+        <div class="action-bar">
+            <div class="counter" id="char-counter">Chars: 0 | Words: 0 | Lines: 0 | Read: ~0m</div>
+            <div class="capsule-scroll-wrap">
+                <div class="action-btns" id="actionBtnsCapsule">
+                    <button class="btn-action" onmousedown="event.preventDefault()" onclick="shareViaWhatsApp()">📲 Share</button>
+                    <button class="btn-action" onmousedown="event.preventDefault()" onclick="openKrutiDevModal()">🅰️ KrutiDev</button>
+                    <button class="btn-action" onmousedown="event.preventDefault()" onclick="openConverterModal()">🔄 Convert</button>
+                    <button class="btn-action" onmousedown="event.preventDefault()" onclick="openImeExportModal()">⚙️ IME Map</button>
+                    <button class="btn-action" onmousedown="event.preventDefault()" onclick="openEmojiModal()">😀 Emoji</button>
+                    <button class="btn-action" onmousedown="event.preventDefault()" onclick="openCharMapModal()">🔣 Char Map</button>
+                    <button class="btn-action" onmousedown="event.preventDefault()" onclick="copyText()">📋 Copy</button>
+                    <button class="btn-action" onmousedown="event.preventDefault()" onclick="openTypingTestModal()">🎯 Typing Practice</button>
+                    <button class="btn-action btn-clear" onmousedown="event.preventDefault()" onclick="clearText()">🗑️ Clear</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ VIRTUAL KEYBOARD ═══ -->
+    <div class="keyboard-deck">
+        <div class="keyboard-deck-title">
+            <span id="deck-mode-title">Virtual Keyboard: Default English</span>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <button class="btn-exit-typing" onclick="exitTypingMode()">✕ पूरा मेन्यू दिखाएं</button>
+                <span style="color:var(--primary);" id="numpad-script-tag">Numpad: English (0-9)</span>
+            </div>
+        </div>
+        <div class="keyboard-layout-container">
+            <div id="keyboard" class="keyboard-main-deck"></div>
+            <div id="keyboardNumpad" class="keyboard-numpad-deck"></div>
+        </div>
+    </div>
+
+    <!-- ═══ BOTTOM GRID ═══ -->
+    <div class="bottom-grid">
+        <div class="panel">
+            <div class="panel-title" id="modifiers-panel-title">English Symbols:</div>
+            <div id="modifiers-container"></div>
+        </div>
+        <div class="panel">
+            <div class="panel-title" id="mapping-panel-title">Mapping Guide:</div>
+            <div class="mapping-grid" id="mapping-info"></div>
+        </div>
+    </div>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🪟 MODALS (सभी modals वैसे ही हैं, कोई बदलाव नहीं)             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<!-- Vocab Manager -->
+<div class="modal-overlay" id="vocabManagerModal" onclick="handleModalOutsideClick(event, 'vocabManagerModal')">
+    <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title"><span>📚</span> <span>Vocabulary Manager</span></div>
+            <button class="modal-close" onclick="closeVocabManagerModal()" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div style="display:flex; gap:6px; align-items:center;">
+                <input type="text" id="newVocabInput" class="license-input" placeholder="नया शब्द जोड़ें..." onkeydown="if(event.key==='Enter') saveNewVocabWord()">
+                <button class="modal-btn modal-btn-primary" onclick="saveNewVocabWord()" style="white-space:nowrap; padding:6px 12px;">➕ Add</button>
+            </div>
+            <div style="font-size:0.7rem; font-weight:bold; margin-top:6px; display:flex; justify-content:space-between;">
+                <span>Words (<span id="customWordCount">0</span>):</span>
+                <button class="tool-btn" style="color:var(--primary);" onclick="resetActiveVocabToDefault()">🔄 Reset</button>
+            </div>
+            <div id="vocabListContainer" style="display:flex; flex-direction:column; gap:4px; max-height:260px; overflow-y:auto;"></div>
+        </div>
+        <div class="modal-footer" style="justify-content:flex-end;">
+            <button class="modal-btn" onclick="closeVocabManagerModal()">Done</button>
+        </div>
+    </div>
+</div>
+
+<!-- Donate Modal -->
+<div class="modal-overlay" id="donateModal" onclick="handleModalOutsideClick(event, 'donateModal')">
+    <div class="dnr-modal" onclick="event.stopPropagation()">
+        <div class="dnr-header">
+            <div class="dnr-header-left">
+                <div class="dnr-heart-icon">💖</div>
+                <div class="dnr-title-box">
+                    <div class="dnr-title">Support / Donate <span>to Developer</span></div>
+                    <div class="dnr-subtitle">आपका सहयोग | हमारा हौसला | बेहतर कल</div>
+                </div>
+            </div>
+            <button class="dnr-close" onclick="closeDonateModal()" aria-label="Close">✕</button>
+        </div>
+        <div class="dnr-body">
+            <div class="dnr-left">
+                <div class="dnr-info-banner">
+                    <div class="dnr-info-title">💡 संताली भाषा व आधुनिक टाइपिंग टूल के विकास में सहयोग करें</div>
+                    <div class="dnr-info-sub">यह प्रोजेक्ट हिन्दी / Santali / English में बेहतर टाइपिंग अनुभव और भाषा तकनीक के आगे बढ़ाने के लिए तैयार किया जा रहा है।</div>
+                </div>
+                <div class="dnr-section-title">🎁 Choose Contribution Amount:</div>
+                <div class="dnr-chips-row">
+                    <div class="donate-choice-pill dnr-chip" onclick="setDonateAmount(51, this)">
+                        <div class="dnr-chip-amt">₹51</div>
+                        <div class="dnr-chip-label">☕ Coffee</div>
+                    </div>
+                    <div class="donate-choice-pill dnr-chip" onclick="setDonateAmount(101, this)">
+                        <div class="dnr-chip-amt">₹101</div>
+                        <div class="dnr-chip-label">☕ Coffee</div>
+                    </div>
+                    <div class="donate-choice-pill dnr-chip active-pill" onclick="setDonateAmount(251, this)">
+                        <div class="dnr-chip-amt">₹251</div>
+                        <div class="dnr-chip-label">💗 Supporter</div>
+                    </div>
+                    <div class="donate-choice-pill dnr-chip" onclick="setDonateAmount(501, this)">
+                        <div class="dnr-chip-amt">₹501</div>
+                        <div class="dnr-chip-label">⭐ Pro Patron</div>
+                    </div>
+                </div>
+                <input type="number" id="customDonateInput" class="dnr-custom-input" placeholder="₹ Or enter custom amount" oninput="handleCustomDonateInput(this.value)">
+                <div class="dnr-trust-row">
+                    <div class="dnr-trust-box">
+                        <div class="dnr-trust-icon">⚡</div>
+                        <div class="dnr-trust-title">Secure &amp; Easy</div>
+                        <div class="dnr-trust-sub">Quick UPI Payments</div>
+                    </div>
+                    <div class="dnr-trust-box">
+                        <div class="dnr-trust-icon">🔒</div>
+                        <div class="dnr-trust-title">100% Safe</div>
+                        <div class="dnr-trust-sub">Trusted &amp; Secure</div>
+                    </div>
+                    <div class="dnr-trust-box">
+                        <div class="dnr-trust-icon">❤️</div>
+                        <div class="dnr-trust-title">Every Support</div>
+                        <div class="dnr-trust-sub">Helps Us Grow</div>
+                    </div>
+                    <div class="dnr-trust-box">
+                        <div class="dnr-trust-icon">💼</div>
+                        <div class="dnr-trust-title">Build Better</div>
+                        <div class="dnr-trust-sub">For Community</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dnr-right">
+                <div class="dnr-qr-card">
+                    <div class="dnr-qr-header">🔒 Scan QR with any UPI App</div>
+                    <div class="dnr-qr-box" id="donateQrBox"></div>
+                    <div class="dnr-qr-brands">BHIM • UPI • Paytm</div>
+                    <div class="dnr-qr-selected" id="donateAmountLabel">Selected: ₹251</div>
+                </div>
+            </div>
+        </div>
+        <div class="dnr-footer">
+            <div class="dnr-thank">
+                ❤️ <b>Thank You!</b>
+                <span>आपका सहयोग हमारी मेहनत को नई ऊर्जा देता है।</span>
+            </div>
+            <button class="dnr-wa-btn" onclick="redirectToWhatsAppDonate()">💬 Send Support Message on WhatsApp</button>
+        </div>
+    </div>
+</div>
+
+<!-- Buy Modal -->
+<div class="modal-overlay" id="buyModal" onclick="handleModalOutsideClick(event, 'buyModal')">
+    <div class="bmr-modal" onclick="event.stopPropagation()">
+        <div class="bmr-header">
+            <div class="bmr-header-left">
+                <img src="assets/icon.ico" class="bmr-logo" alt="BOSC Tech &amp; Edu Logo" onerror="this.style.display='none'">
+                <div class="bmr-title-box">
+                    <div class="bmr-main-title">Buy Hor Katha <span>Pro License</span></div>
+                    <div class="bmr-sub-title">ज्ञान की हर कहानी, अब आपके हाथ में — हमेशा के लिए</div>
+                </div>
+            </div>
+            <div class="bmr-header-right">
+                <img src="assets/icon.ico" class="bmr-dev-photo" alt="Developer — BOSC Tech &amp; Edu" onerror="this.style.display='none'">
+                <div class="bmr-dev-box">
+                    <div class="bmr-dev-by">DEVELOPED BY</div>
+                    <div class="bmr-dev-name">BOSC Tech &amp; Edu</div>
+                </div>
+            </div>
+            <button class="bmr-close" onclick="closeBuyModal()" aria-label="Close">✕</button>
+        </div>
+
+        <div class="bmr-topbanner">
+            <div class="bmr-topbanner-left">
+                <div class="bmr-star">⭐</div>
+                <div>
+                    <div class="bmr-tb-title">Hor/होड़ Katha Suite Pro (Lifetime Access)</div>
+                    <div class="bmr-tb-sub">एक बार लाइसेंस, जिंदगी भर की सुविधा</div>
+                </div>
+            </div>
+            <div class="bmr-features-strip">
+                <div class="bmr-feature-chip">
+                    <div class="bmr-feat-icon">🌐</div>
+                    <div class="bmr-feat-text"><b>All 5 Languages</b><small>(संताली, देवनागरी..)</small></div>
+                </div>
+                <div class="bmr-feature-chip">
+                    <div class="bmr-feat-icon">Aa</div>
+                    <div class="bmr-feat-text"><b>Auto-Sync Fonts</b><small>Direct Print/Word</small></div>
+                </div>
+                <div class="bmr-feature-chip">
+                    <div class="bmr-feat-icon">⚙️</div>
+                    <div class="bmr-feat-text"><b>System IME Map</b><small>Kruti Dev Converter</small></div>
+                </div>
+                <div class="bmr-feature-chip">
+                    <div class="bmr-feat-icon">🔒</div>
+                    <div class="bmr-feat-text"><b>Offline Lifetime</b><small>Device Locking</small></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bmr-name-section">
+            <div class="bmr-name-label">👤 YOUR NAME / BUSINESS NAME</div>
+            <div class="bmr-name-row">
+                <input type="text" id="buyCustomerName" placeholder="e.g. Parish Marandi" autocomplete="name">
+                <input type="text" id="buyDeviceIdDisplay" readonly placeholder="DVC-XXXX-XXXX">
+            </div>
+        </div>
+
+        <div class="bmr-grid">
+            <div class="bmr-benefits">
+                <div class="bmr-benefits-title">🎁 आपको क्या मिलेगा?</div>
+                <ul class="bmr-benefits-list">
+                    <li><span class="bmr-tick">✓</span> 5 भाषाओं में अनलॉक सभी कंटेंट</li>
+                    <li><span class="bmr-tick">✓</span> ऑटो-सिंक फॉन्ट्स (Print &amp; Word)</li>
+                    <li><span class="bmr-tick">✓</span> System IME Map &amp; Kruti Dev</li>
+                    <li><span class="bmr-tick">✓</span> ऑफलाइन लाइफटाइम एक्सेस</li>
+                    <li><span class="bmr-tick">✓</span> डिवाइस लॉकिंग के साथ सुरक्षा</li>
+                    <li><span class="bmr-tick">✓</span> Word / TXT / PDF Export सुविधा</li>
+                    <li><span class="bmr-tick">✓</span> Voice Typing + Text-to-Speech</li>
+                    <li><span class="bmr-tick">✓</span> Emoji + Char Map + Auto-Save</li>
+                    <li><span class="bmr-tick">✓</span> Typing Certificate (3 Levels)</li>
+                    <li><span class="bmr-tick">✓</span> 24h WhatsApp License Delivery</li>
+                </ul>
+                <div class="bmr-offer-box">
+                    <div class="bmr-offer-title">सीमित समय के लिए विशेष ऑफर!</div>
+                    <div class="bmr-offer-sub">अब सीखना और पढ़ना हुआ और भी आसान!</div>
+                </div>
+            </div>
+
+            <div class="bmr-plans">
+                <div class="bmr-plans-heading">अपनी जरूरत के अनुसार प्लान चुनें</div>
+
+                <label class="bm-plan bmr-plan" id="cardPlanTrial" onclick="selectTrialPlan()" style="border-color: #a855f7; background: linear-gradient(180deg, #ffffff 0%, #faf5ff 100%);">
+                    <input type="radio" name="licPlan" id="planTrial">
+                    <span class="bmr-plan-icon" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">🎁</span>
+                    <span class="bmr-plan-info">
+                        <span class="bmr-plan-title">(0) ₹9 Trial — 7 Days Full Access</span>
+                        <span class="bmr-plan-sub">1 Device · 7 Days Only</span>
+                        <span class="bmr-plan-feat">All 5 Languages + All Tools Unlocked</span>
+                    </span>
+                    <span class="bmr-plan-price">
+                        <span class="bmr-discount" style="background: #7c3aed;">सिर्फ ₹9</span>
+                        <span class="bmr-new-price" style="color: #7c3aed;">₹9</span>
+                    </span>
+                </label>
+
+                <label class="bm-plan bmr-plan active-plan" id="cardPlan1" onclick="selectPlan(199, 'P1 — Community (₹199)', 'cardPlan1')">
+                    <input type="radio" name="licPlan" id="plan1" checked>
+                    <span class="bmr-plan-icon" style="background:#0284c7;">👤</span>
+                    <span class="bmr-plan-info">
+                        <span class="bmr-plan-title">(1) P1 — Community Single PC</span>
+                        <span class="bmr-plan-sub">1 Device · Individual / Student Use</span>
+                        <span class="bmr-plan-feat">All 5 Languages + Kruti Dev + Export</span>
+                    </span>
+                    <span class="bmr-plan-price">
+                        <span class="bmr-discount">33% OFF</span>
+                        <span class="bmr-old-price">₹299</span>
+                        <span class="bmr-new-price">₹199</span>
+                    </span>
+                </label>
+
+                <label class="bm-plan bmr-plan" id="cardPlan2" onclick="selectPlan(399, 'P2 — Commercial (₹399)', 'cardPlan2')">
+                    <input type="radio" name="licPlan" id="plan2">
+                    <span class="bmr-plan-icon" style="background:#f59e0b;">🖨️</span>
+                    <span class="bmr-plan-info">
+                        <span class="bmr-plan-title">(2) P2 — Commercial / DTP Cafe ⭐</span>
+                        <span class="bmr-plan-sub">3 Devices · Commercial Use Allowed</span>
+                        <span class="bmr-plan-feat">IME + Script Converter + 1 Yr Updates</span>
+                    </span>
+                    <span class="bmr-plan-price">
+                        <span class="bmr-discount">20% OFF</span>
+                        <span class="bmr-old-price">₹499</span>
+                        <span class="bmr-new-price">₹399</span>
+                    </span>
+                </label>
+
+                <label class="bm-plan bmr-plan" id="cardPlan3" onclick="selectPlan(699, 'P3 — Enterprise (₹699)', 'cardPlan3')">
+                    <input type="radio" name="licPlan" id="plan3">
+                    <span class="bmr-plan-icon" style="background:#075985;">🏢</span>
+                    <span class="bmr-plan-info">
+                        <span class="bmr-plan-title">(3) P3 — Enterprise Lifetime &amp; Updates</span>
+                        <span class="bmr-plan-sub">5 Devices · Schools / Colleges / Offices</span>
+                        <span class="bmr-plan-feat">Lifetime Updates + Premium Support</span>
+                    </span>
+                    <span class="bmr-plan-price">
+                        <span class="bmr-discount">30% OFF</span>
+                        <span class="bmr-old-price">₹999</span>
+                        <span class="bmr-new-price">₹699</span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="bmr-pay">
+                <div class="bmr-pay-head">QR Code स्कैन करें और पैसे भेजें</div>
+                <div class="bmr-qr" id="upiQrCodeBox"></div>
+                <div class="bmr-brands">GPay · PhonePe · Paytm</div>
+                <div class="bmr-selected" id="selectedPlanLabel">Selected: ₹199 Plan</div>
+                <label class="bmr-checkbox">
+                    <input type="checkbox" id="paymentConfirmCheck">
+                    <span>मैंने UPI से payment कर दिया है और screenshot WhatsApp पर भेजूंगा</span>
+                </label>
+                <button id="btnPaymentDone" onclick="onPaymentCompleted()" disabled class="bmr-confirm">
+                    ✅ Payment हो गया? — अभी Confirm करें
+                    <span>(Receipt + WhatsApp Order — Auto)</span>
+                </button>
+                <div class="bmr-pay-note">💬 Click करते ही WhatsApp खुलेगा + Receipt भेज दी जाएगी</div>
+            </div>
+        </div>
+
+        <div class="bmr-footer">
+            <div class="bmr-trust">
+                <span>🔒 Safe &amp; Secure Payment</span>
+                <span>✓ 100% Original Content</span>
+                <span>∞ Lifetime Access</span>
+                <span>📞 24x7 Support</span>
+            </div>
+            <div class="bmr-footer-btns">
+                <button class="bmr-btn-outline" onclick="closeBuyModal(); openLicenseModal();">Already have Key? Activate →</button>
+                <button class="bmr-btn-wa" onclick="redirectToWhatsAppBuy()">💬 Order on WhatsApp</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- License Modal -->
+<div class="modal-overlay" id="licenseModal" onclick="handleModalOutsideClick(event, 'licenseModal')">
+    <div class="lcn-modal" onclick="event.stopPropagation()">
+        <div class="lcn-header">
+            <div class="lcn-header-left">
+                <div class="lcn-icon">🔐</div>
+                <div class="lcn-title-box">
+                    <div class="lcn-title">Activate <span>Pro License</span></div>
+                    <div class="lcn-subtitle">अपनी license key डालें और सभी features unlock करें</div>
+                </div>
+            </div>
+            <button class="lcn-close" onclick="closeLicenseModal()" aria-label="Close">✕</button>
+        </div>
+        <div class="lcn-status" id="licenseStatusText">Free Mode — Limited Features</div>
+        <div class="lcn-body">
+            <div class="lcn-field">
+                <label class="lcn-label" for="userDeviceIdDisplay">📱 Your Device ID (Bound)</label>
+                <input type="text" id="userDeviceIdDisplay" class="lcn-input lcn-input-device" readonly placeholder="Loading...">
+                <div class="lcn-help">यह ID license key से bind होगी। किसी और device पर नहीं चलेगी।</div>
+            </div>
+            <div class="lcn-field">
+                <label class="lcn-label" for="licCustomerName">👤 Your Name (as registered)</label>
+                <input type="text" id="licCustomerName" class="lcn-input" placeholder="e.g. Parish Marandi" autocomplete="name">
+            </div>
+            <div class="lcn-field">
+                <label class="lcn-label" for="licCustomerKey">🔑 License Key</label>
+                <input type="text" id="licCustomerKey" class="lcn-input lcn-input-key" placeholder="HKP-P3-9999-XXXX...">
+                <div class="lcn-help">Format: HKP-&lt;plan&gt;-&lt;expiry&gt;-&lt;128 char signature&gt;</div>
+            </div>
+
+            <div id="manualRecoverySection">
+                <div class="mrs-header">
+                    <div class="mrs-title">⚠️ Device ID बदल गई है?</div>
+                    <button type="button" class="mrs-toggle-btn" onclick="toggleManualRecovery()">🔄 Recover करें</button>
+                </div>
+
+                <div id="manualRecoveryBox">
+                    <div class="mrb-desc">
+                        अगर Windows update / reinstall के बाद Device ID बदल गई है, तो <b>पुरानी Device ID</b> डालें:
+                    </div>
+                    <input type="text" id="oldHwidInput" placeholder="DVC-XXXX-YYYY">
+                    <div class="mrb-buttons">
+                        <button type="button" class="mrb-btn mrb-cancel" onclick="cancelManualRecovery()">✕ Cancel</button>
+                        <button type="button" class="mrb-btn mrb-apply" onclick="applyManualRecovery()">✓ Recover</button>
+                    </div>
+                    <div id="recoveryStatusMsg"></div>
+                </div>
+            </div>
+
+            <div class="lcn-info-row">
+                <div class="lcn-info-box">
+                    <div class="lcn-info-icon">🛡️</div>
+                    <div class="lcn-info-text">
+                        <b>Bank-Grade Security</b>
+                        <small>ECDSA P-256 signature verification</small>
+                    </div>
+                </div>
+                <div class="lcn-info-box">
+                    <div class="lcn-info-icon">📶</div>
+                    <div class="lcn-info-text">
+                        <b>Works Offline</b>
+                        <small>No internet needed after activation</small>
+                    </div>
+                </div>
+                <div class="lcn-info-box">
+                    <div class="lcn-info-icon">💾</div>
+                    <div class="lcn-info-text">
+                        <b>Device-Locked</b>
+                        <small>License bound to this device only</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="lcn-footer" style="flex-direction: column; gap: 8px;">
+            <button class="lcn-btn lcn-btn-trial" onclick="closeLicenseModal(); openTrialActivationModal();" style="width: 100%; background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; padding: 14px; font-size: 0.9rem; font-weight: 900; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);">
+                🎁 ₹9 Trial — 7 Days सभी Features Unlock
+            </button>
+            <div style="display: flex; gap: 8px; width: 100%;">
+                <button class="lcn-btn lcn-btn-buy" onclick="openBuyModal(); closeLicenseModal();" style="flex: 1;">
+                    💳 Buy Full License
+                </button>
+                <button class="lcn-btn lcn-btn-activate" onclick="verifyAndActivateLicense()" style="flex: 1;">
+                    ✅ Activate Pro Key
+                </button>
+            </div>
+            <button class="lcn-btn lcn-btn-deactivate" onclick="deactivateLicense()" style="width: 100%; font-size: 0.72rem;">
+                🗑️ Deactivate License
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Trial Expiry Modal -->
+<div class="modal-overlay" id="trialExpiryModal" onclick="handleModalOutsideClick(event, 'trialExpiryModal')">
+    <div class="lcn-modal" onclick="event.stopPropagation()" style="max-width: 500px;">
+        <div class="lcn-header" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%);">
+            <div class="lcn-header-left">
+                <div class="lcn-icon">🎁</div>
+                <div class="lcn-title-box">
+                    <div class="lcn-title">₹9 <span style="color: #7c2d12;">Trial</span></div>
+                    <div class="lcn-subtitle">7-Day Trial — All Features Unlocked</div>
+                </div>
+            </div>
+            <button class="lcn-close" onclick="closeTrialExpiryModal()" aria-label="Close">✕</button>
+        </div>
+
+        <div class="lcn-body" style="text-align: center;">
+            <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+                <div style="font-size: 3rem; font-weight: 900; color: #92400e; line-height: 1;" id="trialDaysRemaining">7</div>
+                <div style="font-size: 0.85rem; font-weight: 800; color: #78350f; margin-top: 4px;">DAYS REMAINING</div>
+            </div>
+
+            <div id="trialStatusText" style="font-size: 0.85rem; font-weight: 700; color: #16a34a; margin-bottom: 16px; line-height: 1.5;">
+                🎁 You have 7 days left in your trial.
+            </div>
+
+            <div style="background: #f0fdf4; border: 1.5px solid #16a34a; border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+                <div style="font-size: 0.8rem; font-weight: 900; color: #166534; margin-bottom: 8px;">✨ Trial में सब कुछ Unlocked:</div>
+                <div style="text-align: left; font-size: 0.75rem; color: #14532d; line-height: 1.8;">
+                    ✅ सभी 5 भाषाएँ<br>
+                    ✅ Kruti Dev Converter<br>
+                    ✅ System IME Map<br>
+                    ✅ Export (Word/TXT/PDF)<br>
+                    ✅ Typing Practice + Certificate<br>
+                    ✅ Voice Typing + TTS<br>
+                    ✅ सभी Tools Unlocked
+                </div>
+            </div>
+        </div>
+
+        <div class="lcn-footer" style="justify-content: center; gap: 8px; flex-wrap: wrap;">
+            <button class="lcn-btn lcn-btn-buy" onclick="closeTrialExpiryModal(); openBuyModal();">
+                💳 Buy Pro — ₹199
+            </button>
+            <button class="lcn-btn" onclick="closeTrialExpiryModal();" style="background: #e5e7eb; color: #374151; border: none;">
+                ⏱️ Continue Trial
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Trial Activation Modal -->
+<div class="modal-overlay" id="trialActivationModal" onclick="handleModalOutsideClick(event, 'trialActivationModal')">
+    <div class="trm-modal" onclick="event.stopPropagation()">
+        <div class="trm-header">
+            <div>
+                <div class="trm-title">₹9 <span>Trial Pack</span></div>
+                <div class="trm-subtitle">7-Day Full Access — सभी features unlock</div>
+            </div>
+            <button class="trm-close" onclick="closeTrialActivationModal()" aria-label="Close">✕</button>
+        </div>
+
+        <div class="trm-body">
+            <div class="trm-price-badge">
+                <div class="trm-price-amount">₹9</div>
+                <div class="trm-price-sub">7 दिनों के लिए सभी Features Unlock</div>
+            </div>
+
+            <div style="text-align: center;">
+                <div style="font-size: 0.82rem; font-weight: 900; color: #1e293b; margin-bottom: 8px;">
+                    📱 UPI से ₹9 Pay करें
+                </div>
+                <div class="trm-qr-box" id="trialQrBox"></div>
+                <div style="font-size: 0.7rem; color: #64748b; font-weight: 700; margin-top: 6px;">
+                    GPay · PhonePe · Paytm · BHIM
+                </div>
+            </div>
+
+            <div class="trm-instruction">
+                <b>कैसे Activate करें:</b>
+                <ol>
+                    <li>ऊपर QR Code scan करें</li>
+                    <li><b>₹9</b> pay करें</li>
+                    <li>Screenshot WhatsApp पर भेजें</li>
+                    <li>Admin से <b>Trial Key</b> प्राप्त करें</li>
+                    <li>Key नीचे enter करें</li>
+                </ol>
+            </div>
+
+            <div>
+                <label for="trialKeyInput" style="display: block; font-size: 0.75rem; font-weight: 900; color: #475569; margin-bottom: 6px; letter-spacing: 0.5px;">
+                    🔑 TRIAL KEY
+                </label>
+                <input
+                    type="text"
+                    id="trialKeyInput"
+                    class="trm-key-input"
+                    placeholder="HKT-XXXXXXX-XXXX"
+                    maxlength="16"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                >
+            </div>
+
+            <div id="trialActivationStatus" class="trm-status"></div>
+        </div>
+
+        <div class="trm-footer">
+            <button class="trm-btn trm-btn-activate" onclick="activateTrialWithKey()">
+                🔓 Activate Trial
+            </button>
+            <button class="trm-btn trm-btn-wa" onclick="sendTrialPaymentToWhatsApp()">
+                💬 Payment Screenshot भेजें
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Receipt Modal -->
+<div class="modal-overlay" id="receiptModal" onclick="handleModalOutsideClick(event, 'receiptModal')">
+    <div class="modal-window" style="max-width:520px;" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background:linear-gradient(135deg,#16a34a,#22c55e);">
+            <div class="modal-title" style="color:#fff;">🧾 Receipt</div>
+            <button class="modal-close" onclick="closeReceiptModal()" style="color:#fff;" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="rcptNumber">-</div>
+            <div id="rcptDate">-</div>
+            <div id="rcptName">-</div>
+            <div id="rcptDevice">-</div>
+            <div id="rcptPlan">-</div>
+            <div id="rcptAmount">-</div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="preview-modal" id="previewModal" onclick="closePreviewModal(event)">
+    <div class="preview-box" onclick="event.stopPropagation()">
+        <div class="preview-header">
+            <div>📱 Live Preview</div>
+            <div class="device-selector-bar">
+                <button class="tool-btn active-state" id="btn-prev-desktop" onclick="setSimulatedDevice('desktop')">💻 Desktop</button>
+                <button class="tool-btn" id="btn-prev-tablet" onclick="setSimulatedDevice('tablet')">📟 Tablet</button>
+                <button class="tool-btn" id="btn-prev-mobile" onclick="setSimulatedDevice('mobile')">📱 Mobile</button>
+            </div>
+            <button class="tool-btn" style="color:#d00;" onclick="document.getElementById('previewModal').style.display='none'" aria-label="Close">✕</button>
+        </div>
+        <div class="preview-content-frame">
+            <div class="simulated-screen" id="simulatedScreen" style="width: 100%;">
+                <iframe id="previewIframe" title="App preview"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Find/Replace Modal -->
+<div class="modal-overlay" id="findReplaceModal" onclick="handleModalOutsideClick(event, 'findReplaceModal')">
+    <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header"><div class="modal-title">🔍 Find &amp; Replace</div><button class="modal-close" onclick="closeFindReplaceModal()" aria-label="Close">✕</button></div>
+        <div class="modal-body">
+            <input type="text" id="findInput" class="license-input" placeholder="Find...">
+            <input type="text" id="replaceInput" class="license-input" placeholder="Replace...">
+            <label><input type="checkbox" id="matchCaseCheck"> Match Case</label>
+            <div class="modal-footer" style="justify-content:flex-end;">
+                <button class="modal-btn" onclick="executeReplaceFirst()">One</button>
+                <button class="modal-btn modal-btn-primary" onclick="executeReplaceAll()">All</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kruti Dev Modal -->
+<div class="modal-overlay" id="krutiModal" onclick="handleModalOutsideClick(event, 'krutiModal')">
+    <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header"><div class="modal-title">🅰️ Kruti Dev</div><button class="modal-close" onclick="closeKrutiDevModal()" aria-label="Close">✕</button></div>
+        <div class="modal-body">
+            <textarea id="krutiPreview" style="height:120px;"></textarea>
+            <div class="modal-footer">
+                <button class="modal-btn" onclick="copyFromBox('krutiPreview')">Copy</button>
+                <button class="modal-btn modal-btn-primary" onclick="applyKrutiToEditor()">Replace</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile QR Modal -->
+<div class="modal-overlay" id="mobileQrModal" onclick="handleModalOutsideClick(event, 'mobileQrModal')">
+    <div class="modal-window" style="max-width:380px;" onclick="event.stopPropagation()">
+        <div class="modal-header"><div class="modal-title">📱 QR Sync</div><button class="modal-close" onclick="closeMobileQrModal()" aria-label="Close">✕</button></div>
+        <div class="modal-body" style="align-items:center;">
+            <div id="mobileQrBox" style="margin:10px auto; width:150px; height:150px; background:#fff; border-radius:6px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- IME Modal -->
+<div class="modal-overlay" id="imeModal" onclick="handleModalOutsideClick(event, 'imeModal')">
+    <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header"><div class="modal-title">⚙️ IME Map</div><button class="modal-close" onclick="closeImeModal()" aria-label="Close">✕</button></div>
+        <div class="modal-body">
+            <textarea id="imeJsonPreview" style="height:140px; font-size:0.72rem;" readonly></textarea>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="copyFromBox('imeJsonPreview')">Copy</button>
+                <button class="modal-btn" onclick="downloadImeMapFile()">Download</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Converter Modal -->
+<div class="modal-overlay" id="converterModal" onclick="handleModalOutsideClick(event, 'converterModal')">
+    <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header"><div class="modal-title">🔄 Converter</div><button class="modal-close" onclick="closeConverterModal()" aria-label="Close">✕</button></div>
+        <div class="modal-body">
+            <select id="convertDirectionSelect" class="license-input" onchange="executeConversion()">
+                <option value="dev-to-ol">Devanagari ➔ Ol Chiki</option>
+                <option value="ol-to-dev">Ol Chiki ➔ Devanagari</option>
+                <option value="roman-to-ol">Roman ➔ Ol Chiki</option>
+            </select>
+            <textarea id="converterPreview" style="height:100px;"></textarea>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="executeConversion()">Apply</button>
+                <button class="modal-btn" onclick="replaceEditorWithConverted()">Replace</button>
+                <button class="modal-btn" onclick="copyFromBox('converterPreview')">Copy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Char Map Modal -->
+<div class="modal-overlay" id="charmapModal" onclick="handleModalOutsideClick(event, 'charmapModal')">
+    <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header"><div class="modal-title">🔣 Char Map</div><button class="modal-close" onclick="closeCharMapModal()" aria-label="Close">✕</button></div>
+        <div class="modal-body">
+            <select id="fontSelect" onchange="onScriptMapSelect(this.value)">
+                <option value="english">English</option>
+                <option value="roman">Santali Roman</option>
+                <option value="hindi-dev">हिन्दी</option>
+                <option value="santali-dev">संताली</option>
+                <option value="olchiki">ओ़लचिकी</option>
+            </select>
+            <input type="text" id="charmapSearchInput" placeholder="Search..." oninput="filterCharMap(this.value)">
+            <div class="matrix-wrap" id="charmapMatrixWrap" onmouseleave="hideZoomLens()">
+                <div class="zoom-lens" id="charmapZoomLens"></div>
+                <div class="item-matrix" id="charmapMatrix"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="text" id="copyBox" class="modal-copybox">
+                <button class="modal-btn" onclick="deleteLastInBox('copyBox')">⌫</button>
+                <button class="modal-btn" onclick="clearBox('copyBox')">Clear</button>
+                <button class="modal-btn" onclick="copyFromBox('copyBox')">Copy</button>
+                <button class="modal-btn modal-btn-primary" onclick="insertFromBox('copyBox', 'charmapModal')">Insert</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Emoji Modal -->
+<div class="modal-overlay" id="emojiModal" onclick="handleModalOutsideClick(event, 'emojiModal')">
+    <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header"><div class="modal-title">😀 Emoji</div><button class="modal-close" onclick="closeEmojiModal()" aria-label="Close">✕</button></div>
+        <div class="modal-body">
+            <select id="emojiCategorySelect" onchange="onEmojiCategorySelect(this.value)">
+                <option value="smileys">Smileys</option>
+                <option value="gestures">Gestures</option>
+                <option value="hearts">Hearts</option>
+                <option value="symbols">Symbols</option>
+                <option value="nature">Nature</option>
+            </select>
+            <input type="text" id="emojiSearchInput" placeholder="Search..." oninput="filterEmoji(this.value)">
+            <div class="matrix-wrap" id="emojiMatrixWrap" onmouseleave="hideEmojiZoomLens()">
+                <div class="zoom-lens" id="emojiZoomLens"></div>
+                <div class="item-matrix" id="emojiMatrix"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="text" id="emojiCopyBox" class="modal-copybox">
+                <button class="modal-btn" onclick="deleteLastInBox('emojiCopyBox')">⌫</button>
+                <button class="modal-btn" onclick="clearBox('emojiCopyBox')">Clear</button>
+                <button class="modal-btn" onclick="copyFromBox('emojiCopyBox')">Copy</button>
+                <button class="modal-btn modal-btn-primary" onclick="insertFromBox('emojiCopyBox', 'emojiModal')">Insert</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Typing Test Modal -->
+<div class="modal-overlay" id="typingTestModal" onclick="if(event.target===this) closeTypingTestModal()">
+    <div class="modal-window tt-modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title"><span>🎯</span> <span>Typing Practice — 3 Levels</span></div>
+            <button class="modal-close" onclick="closeTypingTestModal()" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="ttSetup">
+                <div class="tt-section-title">📚 Choose Lesson</div>
+                <div class="tt-lessons-grid">
+                    <div class="tt-lesson-col">
+                        <h2 class="tt-lesson-heading">🟢 Basic</h2>
+                        <button class="tt-lesson-btn" data-group="basic" data-idx="0" onclick="selectTestLesson('basic', 0)">Lesson 1 — Home Row Practice</button>
+                        <button class="tt-lesson-btn" data-group="basic" data-idx="1" onclick="selectTestLesson('basic', 1)">Lesson 2 — Common Words</button>
+                        <button class="tt-lesson-btn" data-group="basic" data-idx="2" onclick="selectTestLesson('basic', 2)">Lesson 3 — Short Sentences</button>
+                    </div>
+                    <div class="tt-lesson-col">
+                        <h2 class="tt-lesson-heading">🟠 Advanced</h2>
+                        <button class="tt-lesson-btn" data-group="advanced" data-idx="0" onclick="selectTestLesson('advanced', 0)">Lesson 1 — Punctuation &amp; Quotes</button>
+                        <button class="tt-lesson-btn" data-group="advanced" data-idx="1" onclick="selectTestLesson('advanced', 1)">Lesson 2 — Numbers &amp; Symbols</button>
+                        <button class="tt-lesson-btn" data-group="advanced" data-idx="2" onclick="selectTestLesson('advanced', 2)">Lesson 3 — Complex Paragraph</button>
+                    </div>
+                    <div class="tt-lesson-col">
+                        <h2 class="tt-lesson-heading">🔵 Job Oriented</h2>
+                        <button class="tt-lesson-btn" data-group="job" data-idx="0" onclick="selectTestLesson('job', 0)">Lesson 1 — Email Writing</button>
+                        <button class="tt-lesson-btn" data-group="job" data-idx="1" onclick="selectTestLesson('job', 1)">Lesson 2 — Office Report</button>
+                        <button class="tt-lesson-btn" data-group="job" data-idx="2" onclick="selectTestLesson('job', 2)">Lesson 3 — Government Format</button>
+                    </div>
+                </div>
+                <div class="tt-section-title">⏱️ Duration</div>
+                <div class="tt-time-row">
+                    <button class="tt-time-btn active" data-sec="60" onclick="selectTestDuration(60)">1 Min</button>
+                    <button class="tt-time-btn" data-sec="120" onclick="selectTestDuration(120)">2 Min</button>
+                    <button class="tt-time-btn" data-sec="300" onclick="selectTestDuration(300)">5 Min</button>
+                    <button class="tt-time-btn" data-sec="600" onclick="selectTestDuration(600)">10 Min</button>
+                </div>
+                <div class="tt-selected-info">Selected: <b id="ttSelectedLesson">Select a lesson</b></div>
+                <div style="display:flex; justify-content:center;">
+                    <button id="ttStartBtn" class="modal-btn modal-btn-primary" disabled onclick="startTypingTest()" style="padding:12px 40px; font-weight:900;">▶️ Start Practice</button>
+                </div>
+            </div>
+            <div id="ttArena" style="display:none;">
+                <div class="tt-arena-header">
+                    <div class="tt-stat-box timer-box"><b id="ttTimer">01:00</b><span>Time</span></div>
+                    <div class="tt-stat-box"><b id="ttLiveWPM">0</b><span>WPM</span></div>
+                    <div class="tt-stat-box"><b id="ttLiveAcc">100%</b><span>Accuracy</span></div>
+                    <div class="tt-stat-box"><b id="ttLiveErr">0</b><span>Errors</span></div>
+                    <div class="tt-stat-box"><b id="ttLiveProg">0%</b><span>Progress</span></div>
+                </div>
+                <div id="ttTargetText" class="tt-target-text"></div>
+                <textarea id="ttInput" placeholder="Type here..."></textarea>
+                <div class="tt-arena-actions">
+                    <button class="modal-btn" onclick="closeTypingTestModal()">✕ Cancel</button>
+                    <button class="modal-btn" onclick="stopAndRestartTest()">🔄 Restart</button>
+                </div>
+            </div>
+            <div id="ttResult" style="display:none;">
+                <div class="tt-result-hero">
+                    <div class="tt-grade-badge" id="ttResGrade">A</div>
+                    <h3>Practice Complete!</h3>
+                    <p id="ttResMsg">Well done!</p>
+                </div>
+                <div class="tt-result-grid">
+                    <div class="tt-result-box highlight"><b id="ttResWPM">0</b><span>Net WPM</span></div>
+                    <div class="tt-result-box"><b id="ttResGross">0</b><span>Gross WPM</span></div>
+                    <div class="tt-result-box highlight"><b id="ttResAcc">0%</b><span>Accuracy</span></div>
+                    <div class="tt-result-box"><b id="ttResChars">0</b><span>Chars</span></div>
+                    <div class="tt-result-box"><b id="ttResErrors">0</b><span>Errors</span></div>
+                    <div class="tt-result-box"><b id="ttResTime">0m</b><span>Time</span></div>
+                </div>
+                <div class="tt-result-meta">
+                    <span>📖 <span id="ttResLesson">-</span></span>
+                    <span>📅 <span id="ttResDate"></span></span>
+                </div>
+                <div class="tt-result-actions">
+                    <button class="modal-btn" onclick="stopAndRestartTest()">🔄 Practice Again</button>
+                    <button class="modal-btn" style="background:linear-gradient(135deg,#7c3aed,#a855f7); color:#fff; border:none; font-weight:900; box-shadow:0 4px 14px rgba(124,58,237,0.4);" onclick="openCertificateFromResult()">🎓 Get Certificate</button>
+                    <button class="modal-btn modal-btn-primary" onclick="closeTypingTestModal()">✓ Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 📦 SCRIPTS                                                      -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<script src="js/keymaps.js"></script>
+<script src="js/crypto-utils.js"></script>
+<script src="js/security.js"></script>
+<script src="js/license.js"></script>
+
+<script src="js/audio.js" defer></script>
+<script src="js/tracker.js" defer></script>
+<script src="js/alerts.js" defer></script>
+<script src="js/editor.js" defer></script>
+<script src="js/keyboard.js" defer></script>
+<script src="js/modals.js" defer></script>
+<script src="js/privacy.js" defer></script>
+<script src="js/app.js" defer></script>
+<script src="js/typing-test.js" defer></script>
+
+<!-- ✅ FIX: Removed duplicate qrcode.min.js -->
+<script src="js/qr-offline.js" defer></script>
+
+<script src="js/certificate.js" defer></script>
+<script src="js/print-generator.js" defer></script>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🔧 EDITOR EMPTY-STATE FIX                                       -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+    'use strict';
+
+    function updateEditorEmptyState() {
+        const editor = document.getElementById('editor');
+        if (!editor) return;
+        const rawText = editor.textContent || '';
+        const hasEmbedded = editor.querySelector('img, table, hr, ul, ol') !== null;
+        const hasContent = rawText.length > 0 || hasEmbedded;
+        editor.setAttribute('data-empty', hasContent ? 'false' : 'true');
+    }
+
+    function cleanupEditor() {
+        const editor = document.getElementById('editor');
+        if (!editor) return;
+        const text = (editor.textContent || '').trim();
+        if (text === '' && !editor.querySelector('ul, ol, img, table, hr')) {
+            editor.innerHTML = '';
+        }
+        updateEditorEmptyState();
+        if (typeof updateCounter === 'function') setTimeout(updateCounter, 50);
+    }
+
+    function bindEditorEvents() {
+        const editor = document.getElementById('editor');
+        if (!editor || editor.dataset.emptyFixBound) return;
+        editor.dataset.emptyFixBound = '1';
+
+        ['input', 'keyup', 'paste', 'cut', 'drop'].forEach(evt => {
+            editor.addEventListener(evt, function() {
+                setTimeout(updateEditorEmptyState, 10);
+            });
+        });
+    }
+
+    function run() {
+        bindEditorEvents();
+        setTimeout(cleanupEditor, 200);
+        setTimeout(cleanupEditor, 800);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run);
+    } else {
+        run();
+    }
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 🎯 UI ENHANCEMENTS                                              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<script>
+(function setupRippleEffect() {
+    'use strict';
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('.tool-btn, .btn-action, .btn-pwa-install, .btn-donate-action, .btn-buy-action, .btn-license-action, .btn-trial-action, .btn-kb-mode-action, .tab-pill, .modal-btn, .focus-back-btn, .focus-bar-btn');
+        if (!target || target.disabled) return;
+        target.classList.add('click-ripple', 'rippling');
+        setTimeout(() => target.classList.remove('rippling'), 600);
+    }, { passive: true });
+})();
+
+(function setupCapsuleScroll() {
+    'use strict';
+    function attach() {
+        const capsule = document.getElementById('actionBtnsCapsule');
+        if (!capsule) { setTimeout(attach, 300); return; }
+        capsule.addEventListener('wheel', function(e) {
+            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                e.preventDefault();
+                capsule.scrollLeft += e.deltaY * 1.5;
+            }
+        }, { passive: false });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach);
+    else attach();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+{
+  "name": "hor-katha-suite",
+  "version": "3.7.4",
+  "description": "Hoṛ/होड़ Katha Suite — Multi-Script Typing Keyboard for Santali, Hindi, English, Ol Chiki. By BOSC Tech & Edu.",
+  "main": "main.js",
+  "author": {
+    "name": "BOSC Tech & Edu",
+    "email": "bosctechedu@gmail.com",
+    "url": "https://bosctech.in"
+  },
+  "license": "ISC",
+  "homepage": "https://github.com/bosctech/hor-katha-suite",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bosctech/hor-katha-suite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bosctech/hor-katha-suite/issues",
+    "email": "bosctechedu@gmail.com"
+  },
+  "keywords": [
+    "santali",
+    "hindi",
+    "ol-chiki",
+    "typing",
+    "keyboard",
+    "kruti-dev",
+    "multi-script",
+    "bosc",
+    "jharkhand",
+    "education",
+    "electron",
+    "desktop"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --enable-logging",
+    "kill-electron": "node scripts/kill-electron.js",
+    "clean": "node scripts/clean.js",
+    "wait-after-kill": "node -e \"setTimeout(()=>process.exit(0),2000)\"",
+    "prebuild": "npm run kill-electron && npm run wait-after-kill",
+    "prebuild:win": "npm run kill-electron && npm run wait-after-kill && npm run clean",
+    "prebuild:portable": "npm run kill-electron && npm run wait-after-kill && npm run clean",
+    "prebuild:nsis": "npm run kill-electron && npm run wait-after-kill && npm run clean",
+    "prebuild:dir": "npm run kill-electron && npm run wait-after-kill && npm run clean",
+    "build:win": "npm run prebuild:win && node scripts/build-helper.js --target=all",
+    "build:portable": "npm run prebuild:portable && node scripts/build-helper.js --target=portable",
+    "build:nsis": "npm run prebuild:nsis && node scripts/build-helper.js --target=nsis",
+    "build:dir": "npm run prebuild:dir && node scripts/build-helper.js --target=dir",
+    "rebuild": "npm run clean && npm run build:win",
+    "postinstall": "echo OK - Dependencies installed. Run: npm start"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
+    "rimraf": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "build": {
+    "appId": "com.bosctech.horkatha",
+    "productName": "Hor Katha Suite Pro",
+    "copyright": "Copyright © 2024-2026 BOSC Tech & Edu",
+    "asar": true,
+    "compression": "normal",
+    "buildDependenciesFromSource": false,
+    "npmRebuild": false,
+    "publish": null,
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "index.html",
+      "manual.html",
+      "privacy.html",
+      "terms.html",
+      "verify.html",
+      "manifest.json",
+      "sw.js",
+      "main.js",
+      "preload.js",
+      "package.json",
+      "css/**/*",
+      "js/**/*",
+      "assets/**/*",
+      "!admin/**",
+      "!admin/firebase-config.js",
+      "!js/config-private.local.js",
+      "!js/config-private.local.local.js",
+      "!js/qrcode.min.js",
+      "!**/secrets/**",
+      "!**/*.secret.js",
+      "!**/*.private.js",
+      "!.env",
+      "!.env.local",
+      "!.env.development.local",
+      "!.env.production.local",
+      "!.env.test.local",
+      "!dist/**",
+      "!docs/**",
+      "!**/*.md",
+      "!.gitignore",
+      "!.gitattributes",
+      "!package-lock.json",
+      "!node_modules/**",
+      "!**/*.map",
+      "!**/*.log",
+      "!build-error.log",
+      "!**/*.bak",
+      "!**/*.tmp",
+      "!**/*.swp",
+      "!**/.DS_Store",
+      "!**/Thumbs.db",
+      "!**/*.ts",
+      "!**/*.tsx",
+      "!**/.vscode/**",
+      "!**/.idea/**",
+      "!**/test/**",
+      "!**/tests/**",
+      "!**/__tests__/**",
+      "!**/*.test.js",
+      "!**/*.spec.js",
+      "!**/coverage/**",
+      "!**/.git/**",
+      "!**/build-error.log"
+    ],
+    "extraMetadata": {
+      "main": "main.js",
+      "version": "3.7.4"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "publisherName": "BOSC Tech & Edu",
+      "requestedExecutionLevel": "asInvoker",
+      "artifactName": "${productName} ${version}.${ext}",
+      "legalTrademarks": "Hor Katha Suite",
+      "signAndEditExecutable": false,
+      "verifyUpdateCodeSignature": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Hor Katha Suite Pro",
+      "uninstallDisplayName": "Hor Katha Suite Pro (BOSC Tech & Edu)",
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "Hor Katha Suite Pro Setup ${version}.${ext}",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "menuCategory": "BOSC Tech",
+      "warningsAsErrors": false,
+      "runAfterFinish": true,
+      "differentialPackage": false,
+      "include": "build/installer.nsh"
+    },
+    "portable": {
+      "artifactName": "Hor Katha Suite Pro ${version} Portable.${ext}",
+      "requestExecutionLevel": "user"
+    },
+    "asarUnpack": [
+      "assets/fonts/**/*",
+      "assets/logos/**/*"
+    ],
+    "electronDownload": {
+      "mirror": "https://github.com/electron/electron/releases/download/"
+    }
+  }
+}

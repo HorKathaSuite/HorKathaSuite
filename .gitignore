@@ -1,0 +1,230 @@
+# ═══════════════════════════════════════════════════════════
+# 🚫 GITIGNORE — Hoṛ Katha Suite
+# BOSC Tech & Edu · v3.7.4.83
+# ═══════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════
+# 🔐 SECRETS (CRITICAL — NEVER COMMIT)
+# ═══════════════════════════════════════════════════════════
+.env
+.env.packaged
+.env.local
+.env.production
+.env.development
+.env.staging
+.env.test
+.env.*.local
+
+# ─── Private Key (License Signing — CRITICAL!) ───
+admin/private-key.json
+admin/*.pem
+admin/*.key
+admin/*.p12
+admin/*.pfx
+admin/*-private.*
+admin/*-secret.*
+*PrivateKey*.json
+BOSCTech-PrivateKey-*.json
+
+# ─── Secure Admin Folders (Added from previous setup) ───
+admin-tools/
+admin-secure/
+
+# ─── Config with Secrets ───
+js/config-private.js
+js/config-private.prod.js
+js/config-private.local.js
+js/config-private.local.local.js
+admin/firebase-config.local.js
+js/config-private.js.backup
+js/config-*.local.js
+js/secrets.js
+js/credentials.js
+
+# IMPORTANT: Keep the example file for other developers
+!js/config-private.local.example.js
+
+# ─── Root-level sensitive ───
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.json
+credentials.json
+id_rsa
+id_dsa
+
+# ═══════════════════════════════════════════════════════════
+# 📦 DEPENDENCIES
+# ═══════════════════════════════════════════════════════════
+node_modules/
+jspm_packages/
+bower_components/
+
+# ═══════════════════════════════════════════════════════════
+# 🏗️ BUILD OUTPUT
+# ═══════════════════════════════════════════════════════════
+# NOTE: build/ folder is NOT ignored because it contains installer.nsh
+dist/
+out/
+release/
+dist-electron/
+dist-app/
+
+# Installers and executables
+*.exe
+*.msi
+*.dmg
+*.AppImage
+*.snap
+*.deb
+*.rpm
+
+# Build artifacts
+*.asar
+*.asar.unpacked
+builder-effective-config.yaml
+electron-builder-effective-config.yaml
+
+# ═══════════════════════════════════════════════════════════
+# 📝 LOGS
+# ═══════════════════════════════════════════════════════════
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+build-error.log
+firebase-debug.log
+firebase-debug.*.log
+
+# ═══════════════════════════════════════════════════════════
+# 💻 EDITOR / IDE
+# ═══════════════════════════════════════════════════════════
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.history/
+
+# ═══════════════════════════════════════════════════════════
+# 🖥️ OS FILES
+# ═══════════════════════════════════════════════════════════
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Thumbs.db:encryptable
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ═══════════════════════════════════════════════════════════
+# 🧪 TESTING / COVERAGE
+# ═══════════════════════════════════════════════════════════
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+
+# ═══════════════════════════════════════════════════════════
+# 📦 PACKAGE MANAGERS
+# ═══════════════════════════════════════════════════════════
+.npm
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+.pnpm-store/
+
+# ═══════════════════════════════════════════════════════════
+# 🎨 CACHE
+# ═══════════════════════════════════════════════════════════
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.nuxt
+.next
+.output
+.vercel/
+.netlify/
+
+# ═══════════════════════════════════════════════════════════
+# 📊 TEMP FILES
+# ═══════════════════════════════════════════════════════════
+*.tmp
+*.temp
+*.pid
+*.seed
+*.pid.lock
+
+# ═══════════════════════════════════════════════════════════
+# 🔒 BACKUP FILES
+# ═══════════════════════════════════════════════════════════
+*.bak
+*.backup
+*.old
+*.orig
+*_backup.*
+*-old.*
+*.backup.js
+*.backup.css
+*.backup.html
+*.backup.json
+
+# ═══════════════════════════════════════════════════════════
+# 🔥 FIREBASE / DEPLOY
+# ═══════════════════════════════════════════════════════════
+.firebase/
+.firebaserc.local
+.firebase/*.local
+
+# ═══════════════════════════════════════════════════════════
+# 🎯 PROJECT-SPECIFIC (Runtime data)
+# ═══════════════════════════════════════════════════════════
+hor_receipts.json
+hor_cert_history.json
+device_hwid.txt
+.hwid_backup.txt
+hor_lic_user.txt
+hor_lic_key.txt
+hor_trial_*.txt
+
+# Generated certificates
+Typing_Certificate_*.png
+Typing_Certificate_*.jpg
+Certificate_*.pdf
+
+# Internal build listings
+asar-contents.txt
+*asar-contents*
+asar-*.txt
+
+# User data folders
+userData/
+user-data/
+.hor-katha-data/
+
+# ═══════════════════════════════════════════════════════════
+# 📁 DOCS (Optional — uncomment अगर docs public नहीं करने)
+# ═══════════════════════════════════════════════════════════
+# docs/
+# !docs/README.md

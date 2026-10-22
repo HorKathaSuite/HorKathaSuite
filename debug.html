@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ═══ SECURITY: CSP ═══ -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self' 'unsafe-inline';
+                   style-src 'self' 'unsafe-inline';
+                   img-src 'self' data:;
+                   font-src 'self' data:;
+                   frame-ancestors 'none';
+                   base-uri 'self';
+                   form-action 'none';">
+
+    <title>🔍 License Debug Tool — BOSC Tech</title>
+
+    <meta name="description" content="Internal license verification debug tool for BOSC Tech support.">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="theme-color" content="#0d1117">
+    <meta name="referrer" content="no-referrer">
+    <link rel="icon" href="assets/icon.ico">
+
+    <style>
+        /* ============================================================
+           RESET + VARIABLES
+           ============================================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-body: #0d1117;
+            --bg-card: #161b22;
+            --bg-panel: #21262d;
+            --border: #30363d;
+            --primary: #58a6ff;
+            --primary-hover: #388bfd;
+            --success: #3fb950;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --text-bright: #f0f6fc;
+        }
+
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: var(--bg-body);
+            color: var(--text);
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ============================================================
+           A11Y
+           ============================================================ */
+        :focus {
+            outline: none;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .skip-to-content {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            z-index: 9999;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 800;
+            text-decoration: none;
+            border-radius: 0 0 8px 0;
+            font-family: -apple-system, sans-serif;
+        }
+
+        .skip-to-content:focus {
+            left: 0;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .debug-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        h1,
+        h2 {
+            color: var(--primary);
+            font-size: 1.3rem;
+            font-weight: 800;
+            line-height: 1.3;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .warning-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1.5px solid var(--warning);
+            color: var(--warning);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            font-family: -apple-system, sans-serif;
+        }
+
+        .intro-text {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin-bottom: 20px;
+            font-family: -apple-system, sans-serif;
+            line-height: 1.5;
+        }
+
+        /* ============================================================
+           FORM
+           ============================================================ */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 800;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.3px;
+            font-family: -apple-system, sans-serif;
+        }
+
+        label .hint {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.72rem;
+            margin-left: 4px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-bright);
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.82rem;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #4a5568;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        textarea.pubkey {
+            min-height: 60px;
+        }
+
+        textarea.lickey {
+            min-height: 90px;
+            word-break: break-all;
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .button-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 22px;
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background-color 0.15s, transform 0.1s;
+            font-family: -apple-system, sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button:focus-visible {
+            outline: 3px solid #fbbf24;
+            outline-offset: 2px;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: var(--bg-panel);
+            color: var(--text);
+            border: 1.5px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: var(--border);
+        }
+
+        button.success {
+            background: #238636;
+        }
+
+        button.success:hover {
+            background: #2ea043;
+        }
+
+        button.ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1.5px solid var(--border);
+            padding: 8px 14px;
+            font-size: 0.75rem;
+        }
+
+        button.ghost:hover {
+            color: var(--text);
+            border-color: var(--primary);
+            background: rgba(88, 166, 255, 0.05);
+        }
+
+        /* ============================================================
+           EXAMPLES
+           ============================================================ */
+        .examples {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .example-chip {
+            background: rgba(88, 166, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: -apple-system, sans-serif;
+            transition: all 0.15s;
+            user-select: none;
+        }
+
+        .example-chip:hover {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .example-chip:focus-visible {
+            outline: 2px solid #fbbf24;
+            outline-offset: 2px;
+        }
+
+        /* ============================================================
+           OUTPUT
+           ============================================================ */
+        .output-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border);
+        }
+
+        .output-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        #output {
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            color: var(--text);
+            min-height: 120px;
+            max-height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        #output::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #output::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        /* ============================================================
+           OUTPUT COLORS
+           ============================================================ */
+        .ok {
+            color: var(--success);
+            font-weight: 800;
+        }
+
+        .err {
+            color: var(--danger);
+            font-weight: 800;
+        }
+
+        .warn {
+            color: var(--warning);
+            font-weight: 800;
+        }
+
+        .info {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .muted {
+            color: var(--text-muted);
+        }
+
+        .divider {
+            color: var(--border);
+        }
+
+        .masked {
+            color: #a371f7;
+            font-style: italic;
+        }
+
+        /* ============================================================
+           LOCALHOST WARNING
+           ============================================================ */
+        .not-localhost-warning {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1.5px solid var(--danger);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            color: var(--danger);
+            font-weight: 700;
+            font-size: 0.8rem;
+            font-family: -apple-system, sans-serif;
+            display: none;
+            line-height: 1.5;
+        }
+
+        .not-localhost-warning.show {
+            display: block;
+        }
+
+        /* ============================================================
+           RESULT SUMMARY BOX
+           ============================================================ */
+        .result-summary {
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            margin: 12px 0;
+            display: none;
+            font-family: -apple-system, sans-serif;
+            line-height: 1.5;
+        }
+
+        .result-summary.show {
+            display: block;
+        }
+
+        .result-summary.success {
+            background: rgba(63, 185, 80, 0.15);
+            border: 2px solid var(--success);
+            color: var(--success);
+        }
+
+        .result-summary.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 2px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .result-summary.warning {
+            background: rgba(245, 158, 11, 0.15);
+            border: 2px solid var(--warning);
+            color: var(--warning);
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            h1 { font-size: 1.1rem; }
+            button { padding: 10px 16px; font-size: 0.8rem; }
+            .button-row { flex-direction: column; }
+            .button-row button { width: 100%; }
+        }
+
+        /* ============================================================
+           REDUCED MOTION
+           ============================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+            }
+
+            button:active {
+                transform: none;
+            }
+        }
+
+        /* ============================================================
+           PRINT
+           ============================================================ */
+        @media print {
+            body {
+                background: #ffffff;
+                color: #000000;
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .debug-header,
+            .button-row,
+            .examples,
+            .output-header button,
+            .skip-to-content,
+            .not-localhost-warning {
+                display: none !important;
+            }
+
+            .form-group,
+            input,
+            textarea {
+                border-color: #000000 !important;
+                color: #000000 !important;
+                background: #ffffff !important;
+            }
+
+            #output {
+                border-color: #000000 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                max-height: none;
+            }
+
+            .ok, .err, .warn, .info, .muted, .masked {
+                color: #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ SKIP TO CONTENT ═══ -->
+<a href="#main" class="skip-to-content">Skip to content</a>
+
+<main id="main">
+
+    <div class="debug-header">
+        <h1>🔍 License Debug Tool</h1>
+        <span class="warning-badge" id="envBadge">⚙️ Internal Tool</span>
+    </div>
+
+    <p class="intro-text">
+        Ye tool batayega ki aapki license key kyun reject ho rahi hai.
+        Fill all fields and click <b>"Debug License"</b> to see detailed verification steps.
+    </p>
+
+    <!-- Localhost warning -->
+    <div class="not-localhost-warning" id="nonLocalhostWarn">
+        ⚠️ <b>Warning:</b> Ye tool <b>localhost</b> par hi use karna chahiye.
+        Public internet par deploy nahi karna. Sensitive info expose ho sakti hai.
+    </div>
+
+    <!-- ═══ FORM ═══ -->
+    <div class="form-group">
+        <label for="pubKey">
+            1. Public Key JWK <span class="hint">(config.js se — sirf {"kty":"EC",...} part)</span>
+        </label>
+        <textarea
+            id="pubKey"
+            class="pubkey"
+            placeholder='{"kty":"EC","crv":"P-256","x":"...","y":"..."}'
+            spellcheck="false"
+            autocomplete="off"></textarea>
+        <div class="examples">
+            <span class="example-chip" data-example="jwk" role="button" tabindex="0">📋 Paste JWK from Clipboard</span>
+            <span class="example-chip" data-example="clear-pubkey" role="button" tabindex="0">🗑️ Clear</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="name">2. Customer Name <span class="hint">(as registered)</span></label>
+        <input
+            type="text"
+            id="name"
+            placeholder="e.g. Parish Marandi"
+            autocomplete="off"
+            spellcheck="false">
+    </div>
+
+    <div class="form-group">
+        <label for="dvc">3. Device ID <span class="hint">(from license modal)</span></label>
+        <input
+            type="text"
+            id="dvc"
+            placeholder="e.g. DVC-5F21-89C2"
+            autocomplete="off"
+            spellcheck="false"
+            autocapitalize="characters">
+    </div>
+
+    <div class="form-group">
+        <label for="licKey">
+            4. License Key <span class="hint">(HKP-P3-9999-XXXX...)</span>
+        </label>
+        <textarea
+            id="licKey"
+            class="lickey"
+            placeholder="HKP-P3-9999-XXXXXXXXXXXXXXXX..."
+            spellcheck="false"
+            autocomplete="off"></textarea>
+        <div class="examples">
+            <span class="example-chip" data-example="clear-lickey" role="button" tabindex="0">🗑️ Clear</span>
+        </div>
+    </div>
+
+    <!-- ═══ BUTTONS ═══ -->
+    <div class="button-row">
+        <button id="debugBtn" type="button">🔍 Debug License</button>
+        <button id="clearBtn" type="button" class="secondary">🧹 Clear All</button>
+        <button id="copyBtn" type="button" class="ghost" style="display: none;">📋 Copy Output</button>
+    </div>
+
+    <!-- ═══ RESULT SUMMARY ═══ -->
+    <div class="result-summary" id="resultSummary"></div>
+
+    <!-- ═══ OUTPUT ═══ -->
+    <div class="output-section">
+        <div class="output-header">
+            <h2>📄 Debug Output</h2>
+        </div>
+        <div id="output" role="log" aria-live="polite">Click "Debug License" after filling all fields...</div>
+    </div>
+
+</main>
+
+<script>
+(function() {
+    'use strict';
+
+    // ============================================================
+    // 📊 STATE
+    // ============================================================
+    let _lastDebugTime = 0;
+    const _DEBUG_RATE_LIMIT_MS = 1500;   // Min 1.5s between debug calls
+
+    // ============================================================
+    // 🛡️ ESCAPE HELPER
+    // ============================================================
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // ============================================================
+    // 🔐 MASK SENSITIVE DATA
+    // ============================================================
+    function mask(str, keepStart, keepEnd) {
+        keepStart = keepStart === undefined ? 8 : keepStart;
+        keepEnd = keepEnd === undefined ? 4 : keepEnd;
+
+        if (!str || typeof str !== 'string') return '';
+        if (str.length <= keepStart + keepEnd) return str;
+        return str.substring(0, keepStart) + '…' + str.substring(str.length - keepEnd);
+    }
+
+    // ============================================================
+    // 📝 OUTPUT LOGGER (XSS-Safe)
+    // ============================================================
+    const outputEl = document.getElementById('output');
+    const resultSummaryEl = document.getElementById('resultSummary');
+    const copyBtn = document.getElementById('copyBtn');
+    let _rawOutput = '';
+
+    function clearOutput() {
+        outputEl.replaceChildren();
+        _rawOutput = '';
+        resultSummaryEl.className = 'result-summary';
+        resultSummaryEl.textContent = '';
+        copyBtn.style.display = 'none';
+    }
+
+    function log(msg, cls) {
+        cls = cls || '';
+
+        // Store raw for copy
+        _rawOutput += String(msg) + '\n';
+
+        // Safe: create elements with textContent
+        const line = document.createElement('span');
+        line.textContent = String(msg);
+
+        if (cls) {
+            line.className = cls;
+        }
+
+        outputEl.appendChild(line);
+        outputEl.appendChild(document.createTextNode('\n'));
+
+        // Auto-scroll to bottom
+        outputEl.scrollTop = outputEl.scrollHeight;
+    }
+
+    function showSummary(type, message) {
+        resultSummaryEl.className = 'result-summary show ' + type;
+        resultSummaryEl.textContent = message;
+    }
+
+    // ============================================================
+    // 📋 COPY OUTPUT
+    // ============================================================
+    function copyOutput() {
+        if (!_rawOutput) return;
+
+        const onSuccess = () => {
+            const original = copyBtn.textContent;
+            copyBtn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = original;
+            }, 2000);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(_rawOutput)
+                .then(onSuccess)
+                .catch(() => fallbackCopy(_rawOutput, onSuccess));
+        } else {
+            fallbackCopy(_rawOutput, onSuccess);
+        }
+    }
+
+    function fallbackCopy(text, onSuccess) {
+        try {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            const ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            if (ok && onSuccess) onSuccess();
+        } catch (e) {}
+    }
+
+    // ============================================================
+    // 🔍 DEBUG LICENSE — Main verification flow
+    // ============================================================
+    async function debugLicense() {
+        // Rate limit
+        const now = Date.now();
+        if (now - _lastDebugTime < _DEBUG_RATE_LIMIT_MS) {
+            const wait = Math.ceil((_DEBUG_RATE_LIMIT_MS - (now - _lastDebugTime)) / 100) / 10;
+            console.warn('⏱️ Rate limited, wait ' + wait + 's');
+            return;
+        }
+        _lastDebugTime = now;
+
+        clearOutput();
+
+        try {
+            // ═══════════════════════════════════════════════════
+            // 1. PARSE PUBLIC KEY
+            // ═══════════════════════════════════════════════════
+            const pubKeyStr = (document.getElementById('pubKey').value || '').trim();
+
+            if (!pubKeyStr) {
+                log('❌ Public key blank hai!', 'err');
+                showSummary('error', '❌ Public key missing');
+                return;
+            }
+
+            let pubJwk;
+            try {
+                pubJwk = JSON.parse(pubKeyStr);
+            } catch (e) {
+                log('❌ Public key JSON invalid hai: ' + e.message, 'err');
+                showSummary('error', '❌ Invalid JWK JSON');
+                return;
+            }
+
+            // Validate JWK structure
+            if (!pubJwk.x || !pubJwk.y) {
+                log('❌ Public key me "x" ya "y" missing hai!', 'err');
+                showSummary('error', '❌ JWK missing x/y coordinates');
+                return;
+            }
+
+            // Check placeholder (case-insensitive)
+            const xUpper = String(pubJwk.x).toUpperCase();
+            const yUpper = String(pubJwk.y).toUpperCase();
+
+            if (xUpper.includes('YOUR_X') ||
+                xUpper.includes('REPLACE_WITH') ||
+                yUpper.includes('YOUR_Y') ||
+                yUpper.includes('REPLACE_WITH')) {
+
+                log('❌ config.js me DUMMY public key hai!', 'err');
+                log('');
+                log('👉 Aapne admin/keygen.html se public key copy karke', 'warn');
+                log('   config.js me paste nahi kiya.', 'warn');
+                log('');
+                log('Fix:', 'info');
+                log('  1. admin/keygen.html kholo', 'muted');
+                log('  2. "Copy Public Key Line" click karo', 'muted');
+                log('  3. config.js me LICENSE_PUBLIC_KEY_JWK replace karo', 'muted');
+                showSummary('error', '❌ Public key is placeholder (setup required)');
+                return;
+            }
+
+            // Base64url length check (P-256 = 43 chars)
+            if (pubJwk.x.length !== 43 || pubJwk.y.length !== 43) {
+                log('⚠️ Warning: x/y length is not 43 chars', 'warn');
+                log('   Expected: 43 chars (P-256 base64url)', 'muted');
+                log('   Got x: ' + pubJwk.x.length + ' chars', 'muted');
+                log('   Got y: ' + pubJwk.y.length + ' chars', 'muted');
+                log('   This may cause import failure. Check for extra spaces/quotes.', 'muted');
+                log('');
+            }
+
+            log('✅ Public key JSON parse ho gayi', 'ok');
+            log('   kty = ' + (pubJwk.kty || 'missing'), 'muted');
+            log('   crv = ' + (pubJwk.crv || 'missing'), 'muted');
+            log('   x   = ' + mask(String(pubJwk.x), 12, 6), 'masked');
+            log('   y   = ' + mask(String(pubJwk.y), 12, 6), 'masked');
+            log('');
+
+            // ═══════════════════════════════════════════════════
+            // 2. GET INPUTS
+            // ═══════════════════════════════════════════════════
+            const nameRaw = (document.getElementById('name').value || '').trim();
+            const name = nameRaw.toLowerCase();
+            const dvc = (document.getElementById('dvc').value || '').trim().toUpperCase();
+            const licKey = (document.getElementById('licKey').value || '').trim().toUpperCase();
+
+            if (!name || !dvc || !licKey) {
+                log('❌ Name, Device ID ya Key blank hai!', 'err');
+                showSummary('error', '❌ Missing required fields');
+                return;
+            }
+
+            log('📋 Inputs:', 'info');
+            log('   Name    = ' + name, 'muted');
+            log('   Device  = ' + mask(dvc, 4, 4), 'masked');
+            log('   Key len = ' + licKey.length + ' chars', 'muted');
+            log('');
+
+            // ═══════════════════════════════════════════════════
+            // 3. PARSE LICENSE KEY
+            // ═══════════════════════════════════════════════════
+            const parts = licKey.split('-');
+
+            if (parts.length !== 4 || parts[0] !== 'HKP') {
+                log('❌ Key format invalid: ' + parts.length + ' parts (expected 4)', 'err');
+                log('   Expected format: HKP-<plan>-<expiry>-<signature>', 'muted');
+                showSummary('error', '❌ Invalid key format');
+                return;
+            }
+
+            const plan = parts[1];
+            const expiry = parts[2];
+            const sigHex = parts[3];
+
+            log('✅ License key format sahi hai', 'ok');
+            log('   Plan    = ' + plan, 'muted');
+            log('   Expiry  = ' + expiry, 'muted');
+            log('   Sig len = ' + sigHex.length + ' chars (expected 128)', 'muted');
+            log('');
+
+            if (sigHex.length !== 128) {
+                log('❌ Signature length galat! Expected 128 hex chars.', 'err');
+                log('   Got: ' + sigHex.length + ' chars', 'muted');
+                showSummary('error', '❌ Signature length invalid');
+                return;
+            }
+
+            if (!/^[0-9A-F]+$/.test(sigHex)) {
+                log('❌ Signature me invalid hex chars hain!', 'err');
+                log('   Allowed: 0-9, A-F only', 'muted');
+                showSummary('error', '❌ Invalid hex in signature');
+                return;
+            }
+
+            if (!['P1', 'P2', 'P3'].includes(plan)) {
+                log('❌ Invalid plan code: ' + plan + ' (expected P1, P2, or P3)', 'err');
+                showSummary('error', '❌ Invalid plan code');
+                return;
+            }
+
+            // ═══════════════════════════════════════════════════
+            // 4. REBUILD PAYLOAD
+            // ═══════════════════════════════════════════════════
+            const payloadStr = name + '|' + dvc + '|' + plan + '|' + expiry + '|BOSC-HKP-v3.7.4';
+
+            log('📝 Payload being verified:', 'info');
+            log('   ' + payloadStr, 'muted');
+            log('   Length: ' + payloadStr.length + ' chars', 'muted');
+            log('');
+
+            // ═══════════════════════════════════════════════════
+            // 5. CHECK CRYPTO AVAILABILITY
+            // ═══════════════════════════════════════════════════
+            if (!window.crypto || !window.crypto.subtle) {
+                log('❌ Web Crypto API unavailable in this browser!', 'err');
+                log('   Use Chrome, Edge, Firefox, or modern Safari.', 'warn');
+                log('   Note: Web Crypto requires HTTPS or localhost.', 'warn');
+                showSummary('error', '❌ Browser not supported');
+                return;
+            }
+
+            // ═══════════════════════════════════════════════════
+            // 6. IMPORT PUBLIC KEY
+            // ═══════════════════════════════════════════════════
+            let publicKey;
+            try {
+                publicKey = await crypto.subtle.importKey(
+                    'jwk',
+                    {
+                        kty: pubJwk.kty,
+                        crv: pubJwk.crv,
+                        x: pubJwk.x,
+                        y: pubJwk.y
+                    },
+                    { name: 'ECDSA', namedCurve: 'P-256' },
+                    false,
+                    ['verify']
+                );
+                log('✅ Public key import ho gayi', 'ok');
+                log('   Algorithm: ' + publicKey.algorithm.name + ' / ' + publicKey.algorithm.namedCurve, 'muted');
+                log('   Usages: ' + (publicKey.usages || []).join(', '), 'muted');
+                log('');
+            } catch (e) {
+                log('❌ Public key import fail: ' + e.message, 'err');
+                log('   Possible causes:', 'warn');
+                log('   • Invalid base64url in x/y', 'muted');
+                log('   • Wrong curve (needs P-256)', 'muted');
+                log('   • Corrupted key data', 'muted');
+                log('   • Extra quotes or whitespace', 'muted');
+                showSummary('error', '❌ Public key import failed');
+                return;
+            }
+
+            // ═══════════════════════════════════════════════════
+            // 7. CONVERT SIGNATURE
+            // ═══════════════════════════════════════════════════
+            let sigBytes;
+            try {
+                const hexPairs = sigHex.match(/.{2}/g);
+                if (!hexPairs || hexPairs.length !== 64) {
+                    throw new Error('Expected 64 byte pairs, got ' + (hexPairs ? hexPairs.length : 0));
+                }
+                sigBytes = new Uint8Array(
+                    hexPairs.map(h => parseInt(h, 16))
+                );
+                log('✅ Signature decoded: ' + sigBytes.length + ' bytes', 'ok');
+                log('');
+            } catch (e) {
+                log('❌ Signature decode failed: ' + e.message, 'err');
+                showSummary('error', '❌ Signature decode failed');
+                return;
+            }
+
+            const payloadBytes = new TextEncoder().encode(payloadStr);
+            log('📊 Payload bytes: ' + payloadBytes.length, 'muted');
+            log('');
+
+            // ═══════════════════════════════════════════════════
+            // 8. VERIFY
+            // ═══════════════════════════════════════════════════
+            let valid = false;
+            try {
+                valid = await crypto.subtle.verify(
+                    { name: 'ECDSA', hash: 'SHA-256' },
+                    publicKey,
+                    sigBytes,
+                    payloadBytes
+                );
+            } catch (e) {
+                log('❌ Verification error: ' + e.message, 'err');
+                showSummary('error', '❌ Verification error');
+                return;
+            }
+
+            log('');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'divider');
+            log('');
+
+            if (valid) {
+                log('✅✅✅ SIGNATURE VALID! ✅✅✅', 'ok');
+                log('');
+                log('License sahi hai. Agar app me phir bhi fail ho raha hai,', 'muted');
+                log('to cache clear karo (Ctrl+Shift+R) ya service worker update karo.', 'muted');
+                showSummary('success', '✅ Valid signature — license is authentic');
+            } else {
+                log('❌❌❌ SIGNATURE INVALID! ❌❌❌', 'err');
+                log('');
+                log('Iska matlab:', 'warn');
+                log('  • Jo public key config.js me hai, wo is license ki', 'muted');
+                log('    private key se MATCH NAHI karti.', 'muted');
+                log('');
+                log('Common causes:', 'info');
+                log('  1. Public key config.js me update nahi hui', 'muted');
+                log('  2. License different private key se generate hua', 'muted');
+                log('  3. Name/Device ID mismatch', 'muted');
+                log('  4. Name me extra spaces ya case difference', 'muted');
+                log('');
+                log('Fix:', 'info');
+                log('  1. admin/keygen.html kholo', 'muted');
+                log('  2. "Load Private Key" se apni private key file load karo', 'muted');
+                log('  3. "Copy Public Key Line" click karo', 'muted');
+                log('  4. config.js me LICENSE_PUBLIC_KEY_JWK line replace karo', 'muted');
+                log('  5. Naya license generate karo (same private key se)', 'muted');
+                log('  6. App me Ctrl+Shift+R karke cache clear karo', 'muted');
+                log('  7. Naya license paste karke activate karo', 'muted');
+                showSummary('error', '❌ Signature invalid — public/private key mismatch');
+            }
+
+            // Show copy button
+            copyBtn.style.display = 'inline-flex';
+
+        } catch (e) {
+            log('💥 Unexpected error: ' + e.message, 'err');
+            console.error(e);
+            showSummary('error', '💥 ' + e.message);
+        }
+    }
+
+    // ============================================================
+    // 🧹 CLEAR ALL
+    // ============================================================
+    function clearAll() {
+        ['pubKey', 'name', 'dvc', 'licKey'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+
+        clearOutput();
+        outputEl.textContent = 'Click "Debug License" after filling all fields...';
+
+        // Focus first field
+        const pubKeyEl = document.getElementById('pubKey');
+        if (pubKeyEl) pubKeyEl.focus();
+    }
+
+    // ============================================================
+    // 📋 EXAMPLE CHIPS
+    // ============================================================
+    function setupExampleChips() {
+        document.querySelectorAll('.example-chip').forEach(chip => {
+            const handler = () => {
+                const example = chip.dataset.example;
+
+                if (example === 'jwk') {
+                    const pubKeyEl = document.getElementById('pubKey');
+
+                    // ✅ FIX: clipboard.readText() requires HTTPS or localhost
+                    //          Fallback: prompt user to paste manually
+                    if (navigator.clipboard && navigator.clipboard.readText) {
+                        navigator.clipboard.readText().then(text => {
+                            if (text && text.trim()) {
+                                pubKeyEl.value = text.trim();
+                            } else {
+                                alert('Clipboard is empty. Please copy the JWK first, then try again.');
+                            }
+                        }).catch(err => {
+                            // Common: NotAllowedError (no permission), or insecure context
+                            console.warn('Clipboard read failed:', err.message);
+                            alert(
+                                '⚠️ Clipboard access denied.\n\n' +
+                                'Please:\n' +
+                                '1. Copy the JWK manually (Ctrl+C)\n' +
+                                '2. Paste in the textarea (Ctrl+V)'
+                            );
+                        });
+                    } else {
+                        alert(
+                            '⚠️ Clipboard read not supported in this browser.\n\n' +
+                            'Please paste the JWK manually (Ctrl+V).'
+                        );
+                    }
+                } else if (example === 'clear-pubkey') {
+                    const el = document.getElementById('pubKey');
+                    if (el) el.value = '';
+                } else if (example === 'clear-lickey') {
+                    const el = document.getElementById('licKey');
+                    if (el) el.value = '';
+                }
+            };
+
+            chip.addEventListener('click', handler);
+            chip.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handler();
+                }
+            });
+        });
+    }
+
+    // ============================================================
+    // 🌐 ENVIRONMENT CHECK
+    // ============================================================
+    function checkEnvironment() {
+        const warn = document.getElementById('nonLocalhostWarn');
+        const badge = document.getElementById('envBadge');
+
+        const isLocalhost =
+            location.hostname === 'localhost' ||
+            location.hostname === '127.0.0.1' ||
+            location.hostname === '[::1]' ||
+            location.protocol === 'file:';
+
+        const isSecure = location.protocol === 'https:' || isLocalhost;
+
+        if (!isLocalhost) {
+            if (warn) warn.classList.add('show');
+            if (badge) {
+                badge.textContent = '⚠️ Public Environment';
+                badge.style.background = 'rgba(239, 68, 68, 0.15)';
+                badge.style.color = '#ef4444';
+                badge.style.borderColor = '#ef4444';
+            }
+        } else {
+            if (badge) {
+                badge.textContent = isSecure ? '✅ Localhost' : '⚠️ Insecure';
+                badge.style.background = 'rgba(63, 185, 80, 0.15)';
+                badge.style.color = '#3fb950';
+                badge.style.borderColor = '#3fb950';
+            }
+        }
+    }
+
+    // ============================================================
+    // 🚀 INIT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        checkEnvironment();
+        setupExampleChips();
+
+        const debugBtn = document.getElementById('debugBtn');
+        if (debugBtn) debugBtn.addEventListener('click', debugLicense);
+
+        const clearBtn = document.getElementById('clearBtn');
+        if (clearBtn) clearBtn.addEventListener('click', clearAll);
+
+        const copyBtnEl = document.getElementById('copyBtn');
+        if (copyBtnEl) copyBtnEl.addEventListener('click', copyOutput);
+
+        // Enter key shortcut for name/dvc fields
+        ['name', 'dvc'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        debugLicense();
+                    }
+                });
+            }
+        });
+
+        // ✅ NEW: Ctrl+Shift+C to copy output
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
+                if (copyBtn.style.display !== 'none' && _rawOutput) {
+                    e.preventDefault();
+                    copyOutput();
+                }
+            }
+        });
+    });
+
+    console.log('🔍 Debug tool loaded — internal use only');
+    console.log('💡 Tip: Ctrl+Shift+C to copy output after debugging');
+})();
+</script>
+
+</body>
+</html>

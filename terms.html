@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <!-- ═══ SECURITY: CSP ═══ -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self' 'unsafe-inline';
+                   style-src 'self' 'unsafe-inline';
+                   img-src 'self' data:;
+                   font-src 'self' data:;
+                   frame-ancestors 'none';
+                   base-uri 'self';
+                   form-action 'none';">
+
+    <title>Terms of Service — Hoṛ Katha Suite v3.7.4</title>
+
+    <meta name="description" content="Terms of Service / EULA for Hoṛ Katha Suite v3.7.4 — BOSC Tech & Edu. DPDP Act 2023, Consumer Protection Act 2019, IT Act 2000 compliant.">
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="robots" content="index, follow">
+    <meta name="color-scheme" content="dark light">
+    <link rel="icon" href="assets/icon.ico">
+
+    <style>
+        /* ============================================================
+           RESET + VARIABLES
+           ============================================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-body: #0d1117;
+            --bg-card: #161b22;
+            --bg-panel: #21262d;
+            --border: #30363d;
+            --primary: #58a6ff;
+            --success: #3fb950;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #a371f7;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --text-bright: #f0f6fc;
+        }
+
+        [data-theme="light"] {
+            --bg-body: #f6f8fa;
+            --bg-card: #ffffff;
+            --bg-panel: #f0f2f5;
+            --border: #d0d7de;
+            --primary: #0969da;
+            --success: #1a7f37;
+            --warning: #bf8700;
+            --danger: #cf222e;
+            --purple: #8250df;
+            --text: #1f2328;
+            --text-muted: #57606a;
+            --text-bright: #000000;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-body);
+            color: var(--text);
+            line-height: 1.65;
+            padding: 20px;
+            min-height: 100vh;
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        /* ============================================================
+           A11Y
+           ============================================================ */
+        :focus { outline: none; }
+        :focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .skip-to-content {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            z-index: 9999;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 800;
+            text-decoration: none;
+            border-radius: 0 0 8px 0;
+        }
+
+        .skip-to-content:focus {
+            left: 0;
+        }
+
+        /* ============================================================
+           READING PROGRESS
+           ============================================================ */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent;
+            z-index: 9998;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--purple));
+            width: 0%;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 8px var(--primary);
+        }
+
+        /* ============================================================
+           TOP FLOATING BAR
+           ============================================================ */
+        .top-float {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 9999;
+            display: flex;
+            gap: 8px;
+        }
+
+        .float-btn {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.15s ease;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .float-btn:hover {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(88, 166, 255, 0.4);
+        }
+
+        .float-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ============================================================
+           CONTAINER
+           ============================================================ */
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px 40px;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .subtitle-last-updated {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-bottom: 25px;
+        }
+
+        .compliance-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .compliance-badge {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .compliance-badge.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        /* ============================================================
+           TABLE OF CONTENTS
+           ============================================================ */
+        .toc {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+        }
+
+        .toc-title {
+            font-size: 0.82rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px 20px;
+        }
+
+        .toc-list a {
+            display: block;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 4px 0;
+            transition: color 0.15s ease;
+            border-left: 2px solid transparent;
+            padding-left: 8px;
+        }
+
+        .toc-list a:hover {
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .toc-list a.active {
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 900;
+        }
+
+        /* ============================================================
+           HEADINGS
+           ============================================================ */
+        h2 {
+            color: var(--purple);
+            font-size: 1.15rem;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-left: 4px solid var(--purple);
+            background: rgba(163, 113, 247, 0.06);
+            border-radius: 4px;
+            line-height: 1.35;
+            scroll-margin-top: 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        [data-theme="light"] h2 {
+            background: rgba(130, 80, 223, 0.06);
+        }
+
+        h2.critical {
+            color: var(--danger);
+            border-left-color: #dc2626;
+            background: rgba(220, 38, 38, 0.08);
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 0.95rem;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+
+        h4 {
+            color: var(--text-bright);
+            font-size: 0.88rem;
+            margin-top: 14px;
+            margin-bottom: 6px;
+            font-weight: 800;
+        }
+
+        .heading-copy {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s, background 0.15s, border-color 0.15s;
+            font-family: inherit;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        h2:hover .heading-copy,
+        h2:focus-within .heading-copy {
+            opacity: 1;
+        }
+
+        .heading-copy:hover {
+            background: var(--bg-card);
+            border-color: var(--border);
+            color: var(--primary);
+        }
+
+        .heading-copy.copied {
+            color: var(--success);
+            opacity: 1;
+        }
+
+        /* ============================================================
+           TEXT
+           ============================================================ */
+        p {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        li {
+            margin-bottom: 6px;
+            line-height: 1.65;
+        }
+
+        strong {
+            color: var(--text-bright);
+            font-weight: 800;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* ============================================================
+           HIGHLIGHT BOXES
+           ============================================================ */
+        .highlight {
+            background: rgba(35, 134, 54, 0.15);
+            border-left: 4px solid #238636;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .warn {
+            background: rgba(217, 119, 6, 0.12);
+            border-left: 4px solid #d97706;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 15px 0;
+            color: var(--warning);
+        }
+
+        .danger {
+            background: rgba(220, 38, 38, 0.12);
+            border-left: 4px solid #dc2626;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 15px 0;
+            color: var(--danger);
+        }
+
+        .info {
+            background: rgba(88, 166, 255, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        /* Legal Card */
+        .legal-card {
+            background: linear-gradient(135deg, rgba(163, 113, 247, 0.1), rgba(88, 166, 255, 0.06));
+            border: 2px solid var(--purple);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 15px 0;
+        }
+
+        .legal-card-title {
+            font-size: 1rem;
+            font-weight: 900;
+            color: var(--purple);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .legal-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+        }
+
+        .legal-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .legal-value {
+            font-size: 0.85rem;
+            color: var(--text-bright);
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        /* ============================================================
+           TABLE
+           ============================================================ */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 450px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--bg-panel);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-panel);
+        }
+
+        /* ============================================================
+           CODE
+           ============================================================ */
+        code {
+            background: var(--bg-body);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--success);
+            font-family: 'Consolas', 'Courier New', monospace;
+            border: 1px solid var(--border);
+            word-break: break-all;
+        }
+
+        /* ============================================================
+           STEPS
+           ============================================================ */
+        .steps {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+            margin-left: 0;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 26px;
+            height: 26px;
+            background: var(--purple);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 900;
+        }
+
+        /* ============================================================
+           PLAN CARDS
+           ============================================================ */
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .plan-card {
+            background: var(--bg-panel);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .plan-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(88, 166, 255, 0.15);
+        }
+
+        .plan-name {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .plan-price {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .plan-devices {
+            font-size: 0.78rem;
+            color: var(--text);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+            font-size: 0.75rem;
+        }
+
+        .plan-features li {
+            padding: 3px 0;
+            color: var(--text);
+        }
+
+        .plan-features li::before {
+            content: '✓ ';
+            color: var(--success);
+            font-weight: 900;
+            margin-right: 4px;
+        }
+
+        /* ============================================================
+           FOOTER LINKS
+           ============================================================ */
+        .footer-links {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-back {
+            display: inline-block;
+            background: #6d28d9;
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 800;
+            margin-top: 20px;
+            transition: background 0.2s, transform 0.15s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-back:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+            text-decoration: none;
+        }
+
+        /* ============================================================
+           BACK TO TOP
+           ============================================================ */
+        .back-to-top {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 44px;
+            height: 44px;
+            background: var(--purple);
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 16px rgba(163, 113, 247, 0.4);
+            z-index: 100;
+            transition: all 0.2s ease;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(163, 113, 247, 0.55);
+        }
+
+        .back-to-top.show {
+            display: flex;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 700px) {
+            body { padding: 12px; }
+            .container { padding: 20px; }
+            h1 { font-size: 1.4rem; }
+            h2 { font-size: 1rem; }
+            table { font-size: 0.75rem; }
+            th, td { padding: 8px 6px; }
+            .toc-list { grid-template-columns: 1fr; }
+            .legal-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 400px) {
+            .container { padding: 16px; }
+            h1 { font-size: 1.25rem; }
+            .plan-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ============================================================
+           REDUCED MOTION
+           ============================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+
+            *,
+            *::before,
+            *::after {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+            }
+        }
+
+        /* ============================================================
+           PRINT
+           ============================================================ */
+        @media print {
+            @page {
+                margin: 15mm;
+                size: A4;
+            }
+
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0;
+                font-size: 11pt;
+            }
+
+            .container {
+                background: #ffffff !important;
+                border: 1px solid #000 !important;
+                border-radius: 0 !important;
+                padding: 0;
+                max-width: 100%;
+                box-shadow: none;
+            }
+
+            .progress-bar,
+            .top-float,
+            .back-to-top,
+            .toc,
+            .heading-copy,
+            .skip-to-content {
+                display: none !important;
+            }
+
+            h1, h2, h3, h4 {
+                color: #000000 !important;
+                page-break-after: avoid;
+            }
+
+            h2 {
+                background: none !important;
+                border-left-color: #000000 !important;
+                display: block;
+            }
+
+            p, li {
+                color: #000000 !important;
+                page-break-inside: avoid;
+            }
+
+            .highlight,
+            .warn,
+            .danger,
+            .info,
+            .legal-card,
+            .plan-card {
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: 1px solid #000 !important;
+                page-break-inside: avoid;
+            }
+
+            code {
+                background: #f0f0f0 !important;
+                color: #000000 !important;
+                border: 1px solid #ccc !important;
+            }
+
+            .btn-back { display: none !important; }
+
+            a {
+                color: #000000 !important;
+                text-decoration: underline !important;
+            }
+
+            a[href]:after {
+                content: " (" attr(href) ")";
+                font-size: 9pt;
+                color: #555555;
+                word-break: break-all;
+            }
+
+            a[href^="#"]:after,
+            a[href^="javascript:"]:after,
+            a[href^="mailto:"]:after,
+            a[href^="https://wa.me"]:after {
+                content: "";
+            }
+
+            .footer-links a[href]:after { content: ""; }
+
+            table, .plan-card { page-break-inside: avoid; }
+
+            .steps li::before {
+                background: #000000 !important;
+                color: #ffffff !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ SKIP TO CONTENT ═══ -->
+<a href="#main" class="skip-to-content">Skip to content</a>
+
+<!-- ═══ READING PROGRESS ═══ -->
+<div class="progress-bar" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<!-- ═══ FLOATING THEME TOGGLE ═══ -->
+<div class="top-float">
+    <button class="float-btn" id="themeToggle" type="button" title="Toggle Theme" aria-label="Toggle theme">🌙</button>
+</div>
+
+<main class="container" id="main" role="main">
+
+    <h1>📜 Terms of Service</h1>
+    <p class="subtitle">Hoṛ/हो़ड़ Katha Suite v3.7.4 — BOSC Tech &amp; Edu</p>
+    <p class="subtitle-last-updated">Last Updated: <span id="tosLastUpdated">September 2026</span> · Effective: Immediately</p>
+
+    <!-- ═══ COMPLIANCE BADGES ═══ -->
+    <div class="compliance-badges">
+        <span class="compliance-badge success">✅ Indian Contract Act 1872</span>
+        <span class="compliance-badge success">✅ IT Act 2000</span>
+        <span class="compliance-badge success">✅ Consumer Protection Act 2019</span>
+        <span class="compliance-badge success">✅ DPDP Act 2023</span>
+        <span class="compliance-badge">⚖️ EULA</span>
+    </div>
+
+    <!-- ═══ TABLE OF CONTENTS ═══ -->
+    <nav class="toc" aria-label="Table of contents">
+        <div class="toc-title">📑 Quick Navigation</div>
+        <ul class="toc-list">
+            <li><a href="#section-1">1. Acceptance of Terms</a></li>
+            <li><a href="#section-2">2. Definitions</a></li>
+            <li><a href="#section-3">3. Eligibility</a></li>
+            <li><a href="#section-4">4. License Grant</a></li>
+            <li><a href="#section-5">5. Account &amp; Device Binding</a></li>
+            <li><a href="#section-6">6. User Responsibilities</a></li>
+            <li><a href="#section-7">7. Prohibited Uses</a></li>
+            <li><a href="#section-8">8. Pricing &amp; Payment</a></li>
+            <li><a href="#section-9">9. Refund Policy</a></li>
+            <li><a href="#section-10">10. Trial Terms</a></li>
+            <li><a href="#section-11">11. Updates &amp; Support</a></li>
+            <li><a href="#section-12">12. Intellectual Property</a></li>
+            <li><a href="#section-13">13. Third-Party Components</a></li>
+            <li><a href="#section-14">14. Disclaimer of Warranties</a></li>
+            <li><a href="#section-15">15. Limitation of Liability</a></li>
+            <li><a href="#section-16">16. Indemnification</a></li>
+            <li><a href="#section-17">17. Termination</a></li>
+            <li><a href="#section-18">18. Governing Law</a></li>
+            <li><a href="#section-19">19. Dispute Resolution</a></li>
+            <li><a href="#section-20">20. Force Majeure</a></li>
+            <li><a href="#section-21">21. Modifications</a></li>
+            <li><a href="#section-22">22. Severability</a></li>
+            <li><a href="#section-23">23. Entire Agreement</a></li>
+            <li><a href="#section-24">24. Contact &amp; Grievance</a></li>
+        </ul>
+    </nav>
+
+    <div class="highlight">
+        <strong>📌 Summary:</strong> ये Terms of Service आपके और BOSC Tech &amp; Edu के बीच एक कानूनी अनुबंध हैं। ऐप इस्तेमाल करने से पहले इन्हें ध्यान से पढ़ें। ऐप इस्तेमाल करने का मतलब है कि आप इन सभी शर्तों से सहमत हैं।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 1. ACCEPTANCE -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-1">
+        <span>1️⃣ Acceptance of Terms</span>
+        <button class="heading-copy" data-target="section-1" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <p>Hoṛ/होड़ Katha Suite ("<strong>App</strong>", "<strong>Software</strong>") को इस्तेमाल, install, activate, या download करके आप इन Terms of Service ("<strong>Terms</strong>") से बाध्य होते हैं।</p>
+
+    <div class="legal-card">
+        <div class="legal-card-title">📋 Agreement Parties</div>
+        <div class="legal-grid">
+            <div class="legal-item">
+                <div class="legal-label">Licensor</div>
+                <div class="legal-value">BOSC Tech &amp; Edu</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Licensee</div>
+                <div class="legal-value">आप (User/Customer)</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Effective Date</div>
+                <div class="legal-value">Installation की तारीख</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">App Version</div>
+                <div class="legal-value">v3.7.4</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="danger">
+        <strong>⚠️ अगर आप इन शर्तों से सहमत नहीं हैं</strong>, तो कृपया ऐप इस्तेमाल न करें और इसे uninstall कर दें।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 2. DEFINITIONS -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-2">
+        <span>2️⃣ Definitions</span>
+        <button class="heading-copy" data-target="section-2" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Term</th>
+                    <th>Meaning</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>"App"</strong></td>
+                    <td>Hoṛ/होड़ Katha Suite (all versions, platforms, and formats)</td>
+                </tr>
+                <tr>
+                    <td><strong>"Company" / "We"</strong></td>
+                    <td>BOSC Tech &amp; Edu (Jharkhand, India)</td>
+                </tr>
+                <tr>
+                    <td><strong>"User" / "You"</strong></td>
+                    <td>व्यक्ति जो App install, use, या access करता है</td>
+                </tr>
+                <tr>
+                    <td><strong>"License Key"</strong></td>
+                    <td>Alphanumeric key जो Pro/Trial features unlock करती है</td>
+                </tr>
+                <tr>
+                    <td><strong>"Device ID" / "HWID"</strong></td>
+                    <td>Anonymized hardware fingerprint (DVC-XXXX-XXXX format)</td>
+                </tr>
+                <tr>
+                    <td><strong>"Trial"</strong></td>
+                    <td>7-day limited access (₹9)</td>
+                </tr>
+                <tr>
+                    <td><strong>"Pro License"</strong></td>
+                    <td>Lifetime paid license (P1/P2/P3 plans)</td>
+                </tr>
+                <tr>
+                    <td><strong>"Services"</strong></td>
+                    <td>Typing tools, converters, certificates, and all features</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 3. ELIGIBILITY -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-3">
+        <span>3️⃣ Eligibility</span>
+        <button class="heading-copy" data-target="section-3" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <h3>✅ आपको इन शर्तों को पूरा करना होगा:</h3>
+    <ul>
+        <li><strong>आयु:</strong> कम से कम <strong>18 साल</strong> (DPDP Act 2023, Section 9)</li>
+        <li><strong>क्षमता:</strong> Contract करने की कानूनी योग्यता (Indian Contract Act, Section 11)</li>
+        <li><strong>स्थान:</strong> भारत या ऐसा देश जहाँ यह App उपलब्ध है</li>
+        <li><strong>Compliance:</strong> आपके देश के कानूनों का पालन करना</li>
+    </ul>
+
+    <div class="warn">
+        <strong>👶 Minors (18 से कम):</strong> यह App minors के लिए नहीं है। अगर आप 18 से कम हैं, तो parent/guardian की permission लें और उनके account से इस्तेमाल करें।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 4. LICENSE GRANT -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-4">
+        <span>4️⃣ License Grant</span>
+        <button class="heading-copy" data-target="section-4" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <h3>🆓 Free Version</h3>
+    <p>Free version में आपको मिलता है:</p>
+    <ul>
+        <li>✅ English typing</li>
+        <li>✅ Basic tools (Copy, Print)</li>
+        <li>❌ Hindi/Santali/Ol Chiki ❌</li>
+        <li>❌ Kruti Dev Converter ❌</li>
+        <li>❌ Typing Certificate ❌</li>
+    </ul>
+
+    <h3>🎁 Trial (₹9 — 7 Days)</h3>
+    <p>Trial License आपको देता है:</p>
+    <ul>
+        <li>✅ सभी 5 भाषाएँ</li>
+        <li>✅ सभी Pro features</li>
+        <li>✅ कोई restriction नहीं — 7 दिन के लिए</li>
+        <li>❌ Trial खत्म होने पर automatically Free mode में वापस</li>
+    </ul>
+
+    <h3>💎 Pro License (Lifetime)</h3>
+
+    <div class="plan-grid">
+        <div class="plan-card">
+            <div class="plan-name">P1 — Community</div>
+            <div class="plan-price">₹199</div>
+            <div class="plan-devices">1 Device</div>
+            <ul class="plan-features">
+                <li>All 5 Languages</li>
+                <li>All Pro Features</li>
+                <li>Lifetime License</li>
+                <li>Device-Locked</li>
+            </ul>
+        </div>
+        <div class="plan-card">
+            <div class="plan-name">P2 — Commercial</div>
+            <div class="plan-price">₹399</div>
+            <div class="plan-devices">3 Devices</div>
+            <ul class="plan-features">
+                <li>Everything in P1</li>
+                <li>Commercial Use Allowed</li>
+                <li>DTP Shop Friendly</li>
+                <li>IME + Script Converter</li>
+            </ul>
+        </div>
+        <div class="plan-card">
+            <div class="plan-name">P3 — Enterprise</div>
+            <div class="plan-price">₹699</div>
+            <div class="plan-devices">5 Devices</div>
+            <ul class="plan-features">
+                <li>Everything in P2</li>
+                <li>Schools/Colleges/Offices</li>
+                <li>Priority Support</li>
+                <li>Institutional Consent OK</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>📋 License Scope</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Allowed ✅</th>
+                    <th>Not Allowed ❌</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Personal use (as per plan)</td>
+                    <td>Reselling or sublicensing</td>
+                </tr>
+                <tr>
+                    <td>Commercial use (P2/P3 only)</td>
+                    <td>Reverse engineering</td>
+                </tr>
+                <tr>
+                    <td>Use on your own devices</td>
+                    <td>Sharing license key</td>
+                </tr>
+                <tr>
+                    <td>Backup your documents</td>
+                    <td>Bypassing security checks</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 5. ACCOUNT & DEVICE BINDING -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-5">
+        <span>5️⃣ Account &amp; Device Binding</span>
+        <button class="heading-copy" data-target="section-5" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <h3>🔐 Device ID Binding</h3>
+    <p>आपकी License Key आपकी <strong>Device ID (HWID)</strong> से bound होती है। यह ID पहली बार activation पर generate होती है और आपके device से link होती है।</p>
+
+    <div class="info">
+        <strong>📱 Device ID क्या है?</strong> यह एक anonymous fingerprint है (जैसे <code>DVC-A1B2-C3D4</code>) जो आपके hardware से generate होता है। इसमें कोई personal data नहीं होता।
+    </div>
+
+    <h3>🔄 Device Change / Recovery</h3>
+    <p>अगर आपका device बदल जाए (Windows reinstall, hardware change), तो:</p>
+
+    <ol class="steps">
+        <li>License modal खोलें</li>
+        <li><strong>"🔄 Recover करें"</strong> बटन दबाएं</li>
+        <li>पुरानी Device ID डालें</li>
+        <li>License verify हो जाएगी</li>
+    </ol>
+
+    <div class="warn">
+        <strong>⚠️ Important:</strong> Device change की जानकारी तुरंत <code>support@bosctech.in</code> पर भेजें। Multiple device changes पर manual verification हो सकती है।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 6. USER RESPONSIBILITIES -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-6">
+        <span>6️⃣ User Responsibilities</span>
+        <button class="heading-copy" data-target="section-6" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <p>एक User के रूप में, आप जिम्मेदार हैं:</p>
+
+    <ul>
+        <li>✅ <strong>License Key सुरक्षित रखें</strong> — किसी के साथ शेयर न करें</li>
+        <li>✅ <strong>Sahi जानकारी दें</strong> — name और email सही भरें</li>
+        <li>✅ <strong>System requirements पूरे करें</strong> — Windows 10+, 4GB RAM, आदि</li>
+        <li>✅ <strong>App को update रखें</strong> — security patches के लिए</li>
+        <li>✅ <strong>Data backup रखें</strong> — हम data loss के लिए जिम्मेदार नहीं</li>
+        <li>✅ <strong>कानूनी उपयोग करें</strong> — copy, print, share सिर्फ permitted तरीके से</li>
+        <li>✅ <strong>Cookies/Consent का सम्मान करें</strong> — privacy settings के अनुसार</li>
+    </ul>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 7. PROHIBITED USES -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-7" class="critical">
+        <span>🚫 7. Prohibited Uses</span>
+        <button class="heading-copy" data-target="section-7" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <div class="danger">
+        <strong>❌ ये गतिविधियाँ पूरी तरह प्रतिबंधित हैं:</strong>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Prohibited Activity</th>
+                    <th>Legal Consequence</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>License Sharing</strong> — Key को multiple devices पर use करना</td>
+                    <td>License revoke + Legal action</td>
+                </tr>
+                <tr>
+                    <td><strong>Piracy</strong> — Cracks, keygens, patched versions बनाना</td>
+                    <td>IT Act Section 66 + Copyright Act</td>
+                </tr>
+                <tr>
+                    <td><strong>Reverse Engineering</strong> — Code को decompile करना</td>
+                    <td>Copyright Act Section 63</td>
+                </tr>
+                <tr>
+                    <td><strong>Reselling</strong> — License को आगे बेचना</td>
+                    <td>Civil suit + Damages</td>
+                </tr>
+                <tr>
+                    <td><strong>Illegal Content</strong> — App से unlawful content create करना</td>
+                    <td>IT Act Section 67</td>
+                </tr>
+                <tr>
+                    <td><strong>Fake Certificates</strong> — Certificate forge करना</td>
+                    <td>IT Act Section 66C + IPC 420</td>
+                </tr>
+                <tr>
+                    <td><strong>Bypass Security</strong> — Clock change, tampering, hooking</td>
+                    <td>License blacklist + Legal</td>
+                </tr>
+                <tr>
+                    <td><strong>Automated Abuse</strong> — Bots, scripts, DDoS</td>
+                    <td>IT Act Section 43, 66</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="danger">
+        <strong>⚠️ उपरोक्त में से किसी भी गतिविधि में पाए जाने पर:</strong>
+        <ul style="margin-top: 8px; margin-bottom: 0;">
+            <li>आपका License तुरंत revoke कर दिया जाएगा</li>
+            <li>कोई refund नहीं मिलेगा</li>
+            <li>कानूनी कार्रवाई की जा सकती है</li>
+            <li>Damages की वसूली की जाएगी</li>
+        </ul>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 8. PRICING & PAYMENT -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-8">
+        <span>8️⃣ Pricing &amp; Payment</span>
+        <button class="heading-copy" data-target="section-8" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <h3>💰 Current Pricing</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Plan</th>
+                    <th>Price (INR)</th>
+                    <th>Devices</th>
+                    <th>Validity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Trial</td>
+                    <td>₹9</td>
+                    <td>1</td>
+                    <td>7 Days</td>
+                </tr>
+                <tr>
+                    <td>P1 — Community</td>
+                    <td>₹199</td>
+                    <td>1</td>
+                    <td>Lifetime</td>
+                </tr>
+                <tr>
+                    <td>P2 — Commercial</td>
+                    <td>₹399</td>
+                    <td>3</td>
+                    <td>Lifetime</td>
+                </tr>
+                <tr>
+                    <td>P3 — Enterprise</td>
+                    <td>₹699</td>
+                    <td>5</td>
+                    <td>Lifetime</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>💳 Payment Methods</h3>
+    <ul>
+        <li><strong>UPI:</strong> GPay, PhonePe, Paytm, BHIM, आदि</li>
+        <li><strong>QR Code:</strong> App के अंदर generated QR से payment</li>
+        <li><strong>Bank Transfer:</strong> Bulk orders के लिए (support से संपर्क)</li>
+    </ul>
+
+    <h3>📧 Payment Process</h3>
+    <ol class="steps">
+        <li>App में payment modal खोलें</li>
+        <li>QR code scan करें या UPI ID copy करें</li>
+        <li>Payment करें (exact amount)</li>
+        <li>Screenshot WhatsApp/Email पर भेजें</li>
+        <li>24 घंटे के अंदर License Key मिलेगी</li>
+    </ol>
+
+    <div class="warn">
+        <strong>⚠️ Note:</strong> Payment के समय <strong>exact amount</strong> भेजें। अगर गलत amount भेजी, तो processing में delay हो सकता है।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 9. REFUND POLICY -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-9">
+        <span>9️⃣ Refund Policy</span>
+        <button class="heading-copy" data-target="section-9" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <div class="warn">
+        <strong>⚠️ Digital Products:</strong> India के Consumer Protection (E-Commerce) Rules 2020 के तहत, <strong>digital products</strong> पर standard 7-day return policy लागू नहीं होती।
+    </div>
+
+    <h3>✅ Refund Eligible Situations</h3>
+    <ul>
+        <li><strong>Technical Failure:</strong> App आपके device पर 7 दिन के भीतर काम न करे</li>
+        <li><strong>Wrong License:</strong> गलत plan की License मिली हो</li>
+        <li><strong>Duplicate Payment:</strong> एक ही order का double payment</li>
+        <li><strong>Non-Delivery:</strong> 7 दिन में License Key न मिले</li>
+    </ul>
+
+    <h3>❌ Refund NOT Eligible</h3>
+    <ul>
+        <li>License Key successfully delivered हो चुकी हो</li>
+        <li>App 7 दिन से ज्यादा इस्तेमाल हो चुका हो</li>
+        <li>User ने खुद कानून का उल्लंघन किया हो (piracy, sharing)</li>
+        <li>Device change के बाद license न मिले (यह recoverable है)</li>
+        <li>Trial amount (₹9) — non-refundable</li>
+    </ul>
+
+    <h3>📩 Refund Process</h3>
+    <ol class="steps">
+        <li>Email करें: <code>refund@bosctech.in</code></li>
+        <li>Subject: "Refund Request — [Order ID]"</li>
+        <li>अपनी समस्या detail में लिखें</li>
+        <li>Screenshot + Payment proof attach करें</li>
+        <li>48 घंटे में confirmation</li>
+        <li>7-10 working days में refund process</li>
+    </ol>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 10. TRIAL TERMS -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-10">
+        <span>🎁 10. Trial Terms</span>
+        <button class="heading-copy" data-target="section-10" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Terms</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Price</strong></td>
+                    <td>₹9 (non-refundable)</td>
+                </tr>
+                <tr>
+                    <td><strong>Duration</strong></td>
+                    <td>7 days from activation</td>
+                </tr>
+                <tr>
+                    <td><strong>Devices</strong></td>
+                    <td>1 (bound to Device ID)</td>
+                </tr>
+                <tr>
+                    <td><strong>Features</strong></td>
+                    <td>All Pro features unlocked</td>
+                </tr>
+                <tr>
+                    <td><strong>After Expiry</strong></td>
+                    <td>Auto-revert to Free mode</td>
+                </tr>
+                <tr>
+                    <td><strong>Extension</strong></td>
+                    <td>❌ Not possible (one-time only)</td>
+                </tr>
+                <tr>
+                    <td><strong>Max Trials/Device</strong></td>
+                    <td>3 (based on trust score)</td>
+                </tr>
+                <tr>
+                    <td><strong>Cooldown</strong></td>
+                    <td>3-10 days between trials</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="info">
+        <strong>💡 Trial Abuse Prevention:</strong> एक ही device पर बार-बार trials लेने पर trust score गिरता है और cooldown बढ़ जाता है। Serious abuse पर device permanently blocked हो सकता है।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 11. UPDATES & SUPPORT -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-11">
+        <span>🔄 11. Updates &amp; Support</span>
+        <button class="heading-copy" data-target="section-11" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <h3>📦 Software Updates</h3>
+    <ul>
+        <li><strong>Free Version:</strong> Major updates available, minor updates paid</li>
+        <li><strong>Trial:</strong> All updates during trial period</li>
+        <li><strong>P1/P2:</strong> Minor updates free, major paid</li>
+        <li><strong>P3:</strong> Lifetime free updates (priority)</li>
+    </ul>
+
+    <h3>🛠️ Support Channels</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Channel</th>
+                    <th>Response Time</th>
+                    <th>Best For</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>📱 WhatsApp</td>
+                    <td>2-4 hours</td>
+                    <td>Urgent license issues</td>
+                </tr>
+                <tr>
+                    <td>📧 Email</td>
+                    <td>24 hours</td>
+                    <td>Technical issues</td>
+                </tr>
+                <tr>
+                    <td>📚 Help Docs</td>
+                    <td>Instant</td>
+                    <td>How-to questions</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="info">
+        <strong>⏰ Business Hours:</strong> Monday – Saturday, 9 AM – 9 PM IST<br>
+        <strong>📍 Location:</strong> Jharkhand, India 🇮🇳
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 12. INTELLECTUAL PROPERTY -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-12">
+        <span>©️ 12. Intellectual Property</span>
+        <button class="heading-copy" data-target="section-12" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <h3>All Rights Reserved</h3>
+    <ul>
+        <li><strong>Copyright:</strong> © 2024-2026 BOSC Tech &amp; Edu</li>
+        <li><strong>Source Code:</strong> Proprietary (except open-source components)</li>
+        <li><strong>Trademarks:</strong> "Hoṛ Katha Suite", "BOSC Tech &amp; Edu" logo</li>
+        <li><strong>Design:</strong> UI/UX, icons, graphics, illustrations</li>
+        <li><strong>Documentation:</strong> Manuals, guides, help content</li>
+    </ul>
+
+    <div class="danger">
+        <strong>⚠️ Copyright Infringement पर:</strong> Copyright Act 1957 की Section 63 के तहत 3 साल तक की जेल और ₹2 लाख तक का जुर्माना हो सकता है।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 13. THIRD-PARTY COMPONENTS -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-13">
+        <span>📦 13. Third-Party Components</span>
+        <button class="heading-copy" data-target="section-13" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <p>App में निम्न open-source components उपयोग होते हैं:</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>License</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>qrcode-generator</td>
+                    <td>MIT</td>
+                    <td>QR code generation</td>
+                </tr>
+                <tr>
+                    <td>html2canvas</td>
+                    <td>MIT</td>
+                    <td>Certificate rendering</td>
+                </tr>
+                <tr>
+                    <td>jsPDF</td>
+                    <td>MIT</td>
+                    <td>PDF export</td>
+                </tr>
+                <tr>
+                    <td>Noto Fonts</td>
+                    <td>OFL</td>
+                    <td>Multi-script fonts</td>
+                </tr>
+                <tr>
+                    <td>Firebase SDK</td>
+                    <td>Apache 2.0</td>
+                    <td>Backend services</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="highlight">
+        <strong>✅ Full Attribution:</strong> सभी third-party लाइसेंस का पालन किया जाता है। Attributions app के about section में दिए गए हैं।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 14. DISCLAIMER OF WARRANTIES -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-14" class="critical">
+        <span>⚠️ 14. Disclaimer of Warranties</span>
+        <button class="heading-copy" data-target="section-14" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <div class="danger">
+        <strong>⚠️ IMPORTANT — कृपया ध्यान से पढ़ें:</strong>
+    </div>
+
+    <p>The App is provided <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> without any warranty of any kind, express or implied.</p>
+
+    <h3>❌ We Do NOT Warrant:</h3>
+    <ul>
+        <li>अब App बिल्कुल error-free होगी</li>
+        <li>अब App हर device पर perfectly चलेगी</li>
+        <li>अब App हर data format सपोर्ट करेगी</li>
+        <li>अब App कभी crash नहीं होगी</li>
+        <li>अब App कोई specific business result देगी</li>
+        <li>अब App का uptime 100% रहेगा (PWA के लिए)</li>
+    </ul>
+
+    <h3>✅ We DO Warrant:</h3>
+    <ul>
+        <li>App को virus-free delivery</li>
+        <li>License Key का valid होना</li>
+        <li>Advertised features का availability (Pro में)</li>
+        <li>Industry-standard security practices</li>
+    </ul>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 15. LIMITATION OF LIABILITY -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-15" class="critical">
+        <span>🛡️ 15. Limitation of Liability</span>
+        <button class="heading-copy" data-target="section-15" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <div class="danger">
+        <strong>⚠️ कानूनी सीमा:</strong>
+    </div>
+
+    <p>किसी भी स्थिति में BOSC Tech &amp; Edu इससे ज्यादा liable नहीं होगा:</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Plan</th>
+                    <th>Maximum Liability</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Trial</td>
+                    <td>₹9 (जो भुगतान किया)</td>
+                </tr>
+                <tr>
+                    <td>P1 — Community</td>
+                    <td>₹199</td>
+                </tr>
+                <tr>
+                    <td>P2 — Commercial</td>
+                    <td>₹399</td>
+                </tr>
+                <tr>
+                    <td>P3 — Enterprise</td>
+                    <td>₹699</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>❌ Not Liable For:</h3>
+    <ul>
+        <li>Data loss (backup रखें!)</li>
+        <li>Business loss or lost profits</li>
+        <li>Indirect or consequential damages</li>
+        <li>Third-party claims</li>
+        <li>Force majeure events</li>
+        <li>User's own misuse of App</li>
+    </ul>
+
+    <div class="info">
+        <strong>💡 Real Meaning:</strong> अगर App में कोई bug हो, तो हम सिर्फ license fix या refund दे सकते हैं — उससे ज्यादा मुआवजा नहीं।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 16. INDEMNIFICATION -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-16">
+        <span>⚖️ 16. Indemnification</span>
+        <button class="heading-copy" data-target="section-16" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <p>आप BOSC Tech &amp; Edu, उसके employees, और partners को indemnify करते हैं और hold harmless रखेंगे निम्न से उत्पन्न किसी भी claim, damage, loss, या legal fees से:</p>
+
+    <ul>
+        <li>आपके द्वारा Terms का उल्लंघन</li>
+        <li>आपके द्वारा किसी third-party अधिकार का उल्लंघन</li>
+        <li>आपके द्वारा illegal या unauthorized use</li>
+        <li>आपके content से किसी को हुआ नुकसान</li>
+        <li>आपके device पर किसी भी तरह का tampering</li>
+    </ul>
+
+    <div class="warn">
+        <strong>⚠️ Meaning:</strong> अगर आपकी वजह से हम पर केस हो, तो उसका खर्चा आप उठाएंगे।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 17. TERMINATION -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-17">
+        <span>🔚 17. Termination</span>
+        <button class="heading-copy" data-target="section-17" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <h3>Termination by User</h3>
+    <ul>
+        <li>App को anytime uninstall कर सकते हैं</li>
+        <li>License deactivate कर सकते हैं (App में option है)</li>
+        <li>Refund policy के अनुसार refund claim कर सकते हैं</li>
+    </ul>
+
+    <h3>Termination by Company</h3>
+    <p>हम निम्न स्थितियों में License terminate कर सकते हैं:</p>
+
+    <ul>
+        <li>Terms का गंभीर उल्लंघन</li>
+        <li>Piracy या license sharing</li>
+        <li>Illegal activities</li>
+        <li>Fake information के साथ registration</li>
+        <li>Payment fraud या chargeback abuse</li>
+    </ul>
+
+    <div class="danger">
+        <strong>⚠️ Termination के बाद:</strong>
+        <ul style="margin-top: 8px; margin-bottom: 0;">
+            <li>License तुरंत invalid हो जाएगी</li>
+            <li>कोई refund नहीं मिलेगा</li>
+            <li>App Free mode में revert होगी</li>
+            <li>Data retention policy apply होगी</li>
+        </ul>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 18. GOVERNING LAW -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-18">
+        <span>🏛️ 18. Governing Law</span>
+        <button class="heading-copy" data-target="section-18" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <div class="legal-card">
+        <div class="legal-card-title">⚖️ Legal Framework</div>
+        <div class="legal-grid">
+            <div class="legal-item">
+                <div class="legal-label">Jurisdiction</div>
+                <div class="legal-value">Jharkhand, India 🇮🇳</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Governing Law</div>
+                <div class="legal-value">Indian Law</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Contract Act</div>
+                <div class="legal-value">Indian Contract Act, 1872</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">IT Act</div>
+                <div class="legal-value">Information Technology Act, 2000</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Consumer Law</div>
+                <div class="legal-value">Consumer Protection Act, 2019</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Data Law</div>
+                <div class="legal-value">DPDP Act, 2023</div>
+            </div>
+        </div>
+    </div>
+
+    <h3>Applicable Laws</h3>
+    <ul>
+        <li>Information Technology Act, 2000 (amended 2008)</li>
+        <li>Digital Personal Data Protection Act, 2023</li>
+        <li>Consumer Protection Act, 2019</li>
+        <li>Indian Contract Act, 1872</li>
+        <li>Copyright Act, 1957</li>
+        <li>CERT-In Directions, 2022</li>
+    </ul>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 19. DISPUTE RESOLUTION -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-19">
+        <span>🤝 19. Dispute Resolution</span>
+        <button class="heading-copy" data-target="section-19" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <p>किसी भी विवाद को हल करने के लिए, यह multi-step process follow करें:</p>
+
+    <ol class="steps">
+        <li>
+            <strong>Direct Contact (7 days):</strong><br>
+            पहले हमसे सीधे संपर्क करें: <code>support@bosctech.in</code>
+        </li>
+        <li>
+            <strong>Grievance Officer (30 days):</strong><br>
+            अगर 7 दिन में हल न मिले, तो Grievance Officer से संपर्क करें
+        </li>
+        <li>
+            <strong>Mediation (60 days):</strong><br>
+            Neutral mediator की मदद से settlement की कोशिश
+        </li>
+        <li>
+            <strong>Arbitration:</strong><br>
+            Arbitration and Conciliation Act, 1996 के तहत sole arbitrator
+        </li>
+        <li>
+            <strong>Court:</strong><br>
+            अगर सब fail हो, तो Jharkhand के courts में
+        </li>
+    </ol>
+
+    <div class="info">
+        <strong>💡 Preferred Method:</strong> हम सबसे पहले direct resolution की कोशिश करेंगे। ज्यादातर मामले 7 दिन में हल हो जाते हैं।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 20. FORCE MAJEURE -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-20">
+        <span>🌊 20. Force Majeure</span>
+        <button class="heading-copy" data-target="section-20" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <p>हम निम्न events के कारण service failure के लिए liable नहीं होंगे:</p>
+
+    <ul>
+        <li>🌪️ Natural disasters (earthquake, flood, cyclone)</li>
+        <li>⚔️ War, terrorism, civil unrest</li>
+        <li>⚡ Power outages, internet failures</li>
+        <li>🦠 Pandemics, government lockdowns</li>
+        <li>⚖️ Government actions, new laws</li>
+        <li>🔥 Fire, explosion, accidents</li>
+        <li>💻 Cyber attacks (beyond reasonable control)</li>
+    </ul>
+
+    <div class="highlight">
+        <strong>✅ Our Promise:</strong> Force majeure खत्म होने पर हम service restore करने की पूरी कोशिश करेंगे।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 21. MODIFICATIONS -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-21">
+        <span>📝 21. Modifications</span>
+        <button class="heading-copy" data-target="section-21" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <p>हम इन Terms को कभी भी update कर सकते हैं। Major changes के लिए:</p>
+
+    <ul>
+        <li>App में <strong>notification</strong> आएगा</li>
+        <li>Email पर <strong>सूचना</strong> भेजी जाएगी</li>
+        <li>Website पर <strong>30 दिन का public notice</strong></li>
+        <li>Last Updated date auto-update होगी</li>
+    </ul>
+
+    <div class="warn">
+        <strong>⚠️ Continued Use:</strong> Changes के बाद App इस्तेमाल करना = नई Terms से agreement।
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 22. SEVERABILITY -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-22">
+        <span>🔗 22. Severability</span>
+        <button class="heading-copy" data-target="section-22" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <p>अगर इन Terms का कोई भी हिस्सा किसी court द्वारा <strong>invalid या unenforceable</strong> पाया जाता है, तो:</p>
+
+    <ul>
+        <li>बाकी सभी clauses पूरी तरह valid रहेंगे</li>
+        <li>Invalid clause को valid clause से replace किया जाएगा</li>
+        <li>Overall agreement पर कोई असर नहीं पड़ेगा</li>
+    </ul>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 23. ENTIRE AGREEMENT -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-23">
+        <span>📄 23. Entire Agreement</span>
+        <button class="heading-copy" data-target="section-23" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <p>ये Terms, Privacy Policy के साथ मिलकर <strong>आपके और हमारे बीच पूरा agreement</strong> हैं। यह पिछले सभी agreements को replace करता है।</p>
+
+    <h3>Related Documents</h3>
+    <ul>
+        <li>📜 <a href="privacy.html">Privacy Policy</a></li>
+        <li>📚 <a href="manual.html">User Manual</a></li>
+        <li>🔄 <a href="index.html">App</a></li>
+    </ul>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 24. CONTACT & GRIEVANCE -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h2 id="section-24" class="critical">
+        <span>📞 24. Contact &amp; Grievance</span>
+        <button class="heading-copy" data-target="section-24" title="Copy link" aria-label="Copy link to section">🔗</button>
+    </h2>
+
+    <p>किसी भी सवाल, शिकायत, या legal notice के लिए:</p>
+
+    <div class="legal-card">
+        <div class="legal-card-title">⚖️ Grievance Officer (DPDP Act 2023, Section 13)</div>
+        <div class="legal-grid">
+            <div class="legal-item">
+                <div class="legal-label">Name</div>
+                <div class="legal-value">Parish Marandi</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Designation</div>
+                <div class="legal-value">Grievance Officer</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Email</div>
+                <div class="legal-value"><a href="mailto:grievance@bosctech.in">grievance@bosctech.in</a></div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Phone</div>
+                <div class="legal-value">+91 91109 77117</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Response Time</div>
+                <div class="legal-value">30 days</div>
+            </div>
+            <div class="legal-item">
+                <div class="legal-label">Business Hours</div>
+                <div class="legal-value">Mon–Sat, 9 AM – 9 PM IST</div>
+            </div>
+            <div class="legal-item" style="grid-column: 1 / -1;">
+                <div class="legal-label">Address</div>
+                <div class="legal-value">BOSC Tech &amp; Edu, Jharkhand, India 🇮🇳</div>
+            </div>
+        </div>
+    </div>
+
+    <h3>📧 Specialized Emails</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Purpose</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Technical Support</td>
+                    <td><a href="mailto:support@bosctech.in">support@bosctech.in</a></td>
+                </tr>
+                <tr>
+                    <td>Privacy / Data</td>
+                    <td><a href="mailto:privacy@bosctech.in">privacy@bosctech.in</a></td>
+                </tr>
+                <tr>
+                    <td>Refund</td>
+                    <td><a href="mailto:refund@bosctech.in">refund@bosctech.in</a></td>
+                </tr>
+                <tr>
+                    <td>Grievance</td>
+                    <td><a href="mailto:grievance@bosctech.in">grievance@bosctech.in</a></td>
+                </tr>
+                <tr>
+                    <td>Security</td>
+                    <td><a href="mailto:security@bosctech.in">security@bosctech.in</a></td>
+                </tr>
+                <tr>
+                    <td>General</td>
+                    <td><a href="mailto:bosctechedu@gmail.com">bosctechedu@gmail.com</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>📱 WhatsApp Support</h3>
+    <div class="info">
+        <strong>Phone:</strong> <a href="https://wa.me/919110977117" target="_blank" rel="noopener noreferrer">+91 91109 77117</a><br>
+        <strong>Response:</strong> 2-4 hours (business hours)<br>
+        <strong>Best for:</strong> Urgent license issues, payment queries
+    </div>
+
+    <!-- ═══ FINAL NOTE ═══ -->
+    <div class="highlight" style="margin-top: 30px;">
+        <strong>📌 Final Note:</strong> ये Terms आपके और BOSC Tech &amp; Edu के बीच एक कानूनी अनुबंध हैं। App इस्तेमाल करने का मतलब है कि आप इन सभी शर्तों से पूरी तरह सहमत हैं। किसी भी सवाल के लिए Grievance Officer से संपर्क करें।
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer-links">
+        <a href="index.html">🏠 Back to App</a>
+        <a href="privacy.html">🔒 Privacy Policy</a>
+        <a href="mailto:support@bosctech.in">📧 Support</a>
+        <a href="https://wa.me/919110977117" target="_blank" rel="noopener noreferrer">📱 WhatsApp</a>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="index.html" class="btn-back">← Back to App</a>
+    </div>
+
+</main>
+
+<button class="back-to-top" id="backToTop" type="button" aria-label="Back to top">↑</button>
+
+<script>
+(function() {
+    'use strict';
+
+    // ============================================================
+    // 📅 DYNAMIC LAST UPDATED DATE
+    // ============================================================
+    try {
+        const d = new Date();
+        let formatted;
+
+        if (window.Intl && Intl.DateTimeFormat) {
+            formatted = new Intl.DateTimeFormat('en-IN', {
+                month: 'long',
+                year: 'numeric'
+            }).format(d);
+        } else {
+            const months = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+            formatted = months[d.getMonth()] + ' ' + d.getFullYear();
+        }
+
+        const el = document.getElementById('tosLastUpdated');
+        if (el) el.textContent = formatted;
+    } catch (e) {}
+
+    // ============================================================
+    // 📊 PROGRESS BAR + BACK TO TOP
+    // ============================================================
+    let _progressTicking = false;
+
+    function updateProgress() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+        const fill = document.getElementById('progressFill');
+        if (fill) fill.style.width = progress + '%';
+
+        const btn = document.getElementById('backToTop');
+        if (btn) btn.classList.toggle('show', scrollTop > 300);
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!_progressTicking) {
+            _progressTicking = true;
+            requestAnimationFrame(() => {
+                updateProgress();
+                _progressTicking = false;
+            });
+        }
+    }, { passive: true });
+    updateProgress();
+
+    const backToTopBtn = document.getElementById('backToTop');
+    if (backToTopBtn) {
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // ============================================================
+    // 🎯 ACTIVE TOC SECTION
+    // ============================================================
+    const sections = document.querySelectorAll('h2[id]');
+    const tocLinks = document.querySelectorAll('.toc-list a');
+    let _tocTicking = false;
+
+    function updateActiveTOC() {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 120;
+            if (window.scrollY >= sectionTop) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        tocLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+        });
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!_tocTicking) {
+            _tocTicking = true;
+            requestAnimationFrame(() => {
+                updateActiveTOC();
+                _tocTicking = false;
+            });
+        }
+    }, { passive: true });
+    updateActiveTOC();
+
+    // ============================================================
+    // 🎨 THEME TOGGLE
+    // ============================================================
+    const themeBtn = document.getElementById('themeToggle');
+
+    function applyTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+        if (themeBtn) themeBtn.textContent = theme === 'dark' ? '🌙' : '☀️';
+    }
+
+    function toggleTheme() {
+        const current = document.body.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        try {
+            localStorage.setItem('tos_theme', next);
+        } catch (e) {}
+    }
+
+    if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+
+    try {
+        const saved = localStorage.getItem('tos_theme');
+        if (saved) {
+            applyTheme(saved);
+        } else {
+            const prefersDark = window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark ? 'dark' : 'light');
+        }
+    } catch (e) {
+        document.body.setAttribute('data-theme', 'dark');
+    }
+
+    // ============================================================
+    // 🔗 COPY-LINK BUTTONS
+    // ============================================================
+    document.querySelectorAll('.heading-copy').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const target = btn.dataset.target;
+            if (!target) return;
+
+            const url = window.location.origin + window.location.pathname + '#' + target;
+
+            const onSuccess = () => {
+                const original = btn.textContent;
+                btn.textContent = '✓';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = original;
+                    btn.classList.remove('copied');
+                }, 1500);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(onSuccess).catch(() => {});
+            } else {
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = url;
+                    ta.style.position = 'fixed';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    onSuccess();
+                } catch (err) {}
+            }
+        });
+    });
+
+    // ============================================================
+    // 🔗 SMOOTH SCROLL
+    // ============================================================
+    tocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    const offsetTop = target.getBoundingClientRect().top + window.scrollY - 20;
+                    window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+
+                    if (history && history.replaceState) {
+                        try { history.replaceState(null, '', href); } catch (err) {}
+                    }
+                }
+            }
+        });
+    });
+
+    console.log('📜 Terms of Service loaded — v3.7.4');
+})();
+</script>
+
+</body>
+</html>

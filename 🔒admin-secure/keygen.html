@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOSC Tech - Pro License + Trial Key Engine</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ═══════════════════════════════════════════
+           🎨 THEMES (Light, Dark, Neon)
+           ═══════════════════════════════════════════ */
+        :root[data-theme="light"] {
+            --bg-body: #e5e7eb; --bg-card: #f3f4f6; --bg-input: #ffffff;
+            --text-main: #1e293b; --text-muted: #64748b;
+            --primary: #2563eb; --primary-hover: #1d4ed8;
+            --border: #cbd5e1;
+            --icon-gradient: linear-gradient(135deg, #06b6d4, #2563eb);
+            --btn-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --header-bg: #e0f2fe; --header-text: #0284c7;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --purple: #a855f7;
+            --card-border: rgba(37, 99, 235, 0.25);
+        }
+
+        :root[data-theme="dark"] {
+            --bg-body: #0f172a; --bg-card: #1e293b; --bg-input: #0f172a;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --primary: #38bdf8; --primary-hover: #0ea5e9;
+            --border: #334155;
+            --icon-gradient: linear-gradient(135deg, #0ea5e9, #6366f1);
+            --btn-gradient: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            --header-bg: #0369a1; --header-text: #e0f2fe;
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --card-border: rgba(56, 189, 248, 0.25);
+        }
+
+        :root[data-theme="neon"] {
+            --bg-body: #050505; --bg-card: #111111; --bg-input: #1a1a1a;
+            --text-main: #ffffff; --text-muted: #a3a3a3;
+            --primary: #ff007f; --primary-hover: #e60073;
+            --border: #333333;
+            --icon-gradient: linear-gradient(135deg, #ff007f, #7000ff);
+            --btn-gradient: linear-gradient(135deg, #ff007f, #7000ff);
+            --header-bg: #1a001a; --header-text: #ff007f;
+            --shadow: 0 0 20px rgba(255, 0, 127, 0.2);
+            --card-border: rgba(255, 0, 127, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .bg-blur {
+            position: fixed; inset: 0; z-index: -1;
+            background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            filter: blur(8px) brightness(0.6);
+            opacity: 0.5;
+        }
+
+        /* 🔐 LOGIN SCREEN */
+        #loginScreen {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 20px; position: relative;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border-radius: 30px; width: 100%; max-width: 440px;
+            padding: 100px 30px 30px; position: relative;
+            border: 2px solid var(--card-border); 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1), inset 0 0 20px var(--card-border);
+            text-align: center; margin-top: 50px;
+        }
+
+        .welcome-header {
+            position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+            background: var(--header-bg); color: var(--header-text);
+            border: 2px solid var(--primary); border-radius: 50px;
+            padding: 12px 30px; white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: max-content; max-width: 95%;
+        }
+        .welcome-header h2 { font-size: 1.3rem; font-weight: 900; margin-bottom: 2px; }
+        .welcome-header p { font-size: 0.75rem; font-weight: 700; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .avatar-wrapper {
+            position: absolute; top: 45px; left: 50%; transform: translateX(-50%);
+            width: 90px; height: 90px; border-radius: 50%;
+            background: var(--bg-card); padding: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 10;
+        }
+        .avatar-inner {
+            width: 100%; height: 100%; border-radius: 50%;
+            background: #ccc; overflow: hidden; position: relative;
+            border: 2px solid var(--primary);
+        }
+        .avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.5);
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 1.2rem; opacity: 0; transition: 0.2s;
+        }
+        .avatar-wrapper:hover .avatar-overlay { opacity: 1; }
+        #avatarUpload { display: none; }
+
+        .role-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--bg-card); border: 2px solid var(--primary);
+            color: var(--primary); padding: 6px 20px; border-radius: 50px;
+            font-size: 0.8rem; font-weight: 900; margin: 40px 0 25px;
+            position: relative; z-index: 5;
+        }
+        .shield-icon { position: relative; display: inline-flex; justify-content: center; align-items: center; }
+        .shield-icon .tick { position: absolute; color: var(--success); font-size: 0.6rem; background: #fff; border-radius: 50%; padding: 1px; bottom: -3px; right: -4px; }
+
+        .input-group {
+            display: flex; align-items: center;
+            background: var(--bg-input); border: 2px solid var(--primary);
+            border-radius: 50px; margin-bottom: 16px; overflow: hidden; text-align: left;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .input-icon { width: 50px; height: 50px; background: var(--icon-gradient); color: white; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+        .input-group input { flex: 1; border: none; background: transparent; padding: 14px; color: var(--text-main); font-size: 0.95rem; font-weight: 600; outline: none; }
+        .input-group input::placeholder { color: var(--text-muted); font-weight: 500; }
+        .eye-toggle { background: transparent; border: none; color: var(--text-muted); padding: 0 15px; cursor: pointer; font-size: 1.1rem; }
+
+        .options-row { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 25px; font-size: 0.85rem; font-weight: 700; }
+        .remember-me { display: flex; align-items: center; gap: 8px; color: var(--primary); cursor: pointer; }
+        .remember-me input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+        .forgot-btn { background: var(--header-text); color: white; text-decoration: none; padding: 6px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; border: none; cursor: pointer; }
+
+        .btn-login { width: 100%; padding: 16px; border: none; border-radius: 50px; background: var(--btn-gradient); color: #000; font-size: 1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); transition: 0.3s; margin-bottom: 25px; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6); }
+
+        .secure-footer { display: inline-flex; align-items: center; gap: 8px; background: var(--bg-input); border: 1.5px solid var(--border); color: var(--text-muted); padding: 8px 20px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; }
+
+        /* 📊 DASHBOARD */
+        #dashboard { display: none; padding: 24px; max-width: 1600px; margin: 0 auto; width: 100%; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 16px; }
+        .brand { font-size: 1.5rem; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+        .brand i { color: var(--primary); }
+        
+        .header-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        
+        .email-capsule {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--bg-input); border: 1.5px solid var(--border);
+            padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 0.85rem;
+            color: var(--text-main); max-width: 250px; box-shadow: var(--shadow);
+        }
+        .email-capsule span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .btn-logout { 
+            background: #fef2f2; color: var(--danger); border: 1.5px solid #fca5a5; 
+            padding: 8px 16px; border-radius: 50px; font-weight: 800; cursor: pointer; 
+            display: flex; align-items: center; gap: 6px; transition: 0.2s; 
+        }
+        .btn-logout:hover { background: var(--danger); color: white; }
+
+        .theme-toggle { background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.85rem; color: var(--text-main); box-shadow: var(--shadow); }
+
+        /* Stats Row */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; box-shadow: var(--shadow); }
+        .stat-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+        .stat-icon.total { background: rgba(37, 99, 235, 0.15); color: var(--primary); }
+        .stat-icon.trial { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+        .stat-icon.status { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .stat-info h4 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+        .stat-info h2 { font-size: 1.4rem; font-weight: 900; }
+
+        /* 3 Columns Grid */
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px; align-items: start; }
+
+        .card { background: var(--bg-card); border: 2px solid var(--card-border); border-radius: 20px; padding: 24px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--btn-gradient); }
+        .card-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .card-title span i { color: var(--primary); margin-right: 6px; }
+
+        .clear-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .clear-btn:hover { background: var(--danger); color: white; }
+
+        .status-box { padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; margin-bottom: 16px; text-align: center; }
+        .status-box.warn { background: rgba(217, 119, 6, 0.15); color: var(--warning); border: 1px solid var(--warning); }
+        .status-box.ok { background: rgba(35, 134, 54, 0.15); color: var(--success); border: 1px solid var(--success); }
+        .status-box.err { background: rgba(220, 38, 38, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-size: 0.9rem; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+
+        .plan-details-box {
+            background: rgba(37, 99, 235, 0.05);
+            border: 1px dashed var(--primary);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+        }
+        .plan-details-row { display: flex; justify-content: space-between; color: var(--text-muted); }
+        .plan-details-row strong { color: var(--text-main); }
+        .plan-details-row .highlight { color: var(--success); font-weight: 900; font-size: 0.95rem; }
+
+        .btn-action { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: 0.2s; color: white; margin-top: 10px; }
+        .btn-action.pro { background: var(--primary); }
+        .btn-action.pro:hover { background: var(--primary-hover); }
+        .btn-action.trial { background: var(--purple); }
+        .btn-action.trial:hover { background: #9333ea; }
+        .btn-action.danger { background: var(--danger); }
+        .btn-action.danger:hover { background: #dc2626; }
+
+        .result-box { margin-top: 16px; background: rgba(0,0,0,0.05); border: 1px dashed var(--border); border-radius: 10px; padding: 16px; display: none; text-align: center; }
+        .result-box.show { display: block; }
+        
+        .key-display { font-family: monospace; font-size: 1rem; font-weight: 900; color: var(--success); word-break: break-all; padding: 10px; background: var(--bg-input); border-radius: 8px; margin: 10px 0; }
+        textarea.key-display { width: 100%; resize: vertical; min-height: 80px; text-align: left; }
+
+        .qr-container { display: flex; justify-content: center; margin: 10px 0; }
+        .qr-container img { border: 4px solid var(--border); border-radius: 10px; width: 140px; height: 140px; }
+
+        /* Live Users & Revoke List */
+        .live-list { max-height: 350px; overflow-y: auto; margin-top: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-input); }
+        .live-item { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+        .live-item:last-child { border-bottom: none; }
+        .live-name { font-weight: 800; color: var(--text-main); font-size: 0.85rem; }
+        .live-meta { font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+        .live-key-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; }
+        .live-key { font-family: monospace; color: var(--purple); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 180px; }
+        .copy-icon { cursor: pointer; color: var(--primary); transition: 0.2s; }
+        .copy-icon:hover { color: var(--primary-hover); transform: scale(1.2); }
+        
+        .live-badge { padding: 2px 8px; border-radius: 10px; font-weight: 800; font-size: 0.6rem; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--bg-card); padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        
+        @media (max-width: 768px) {
+            .login-card { padding: 100px 20px 20px; }
+            .welcome-header { width: 95%; padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-blur"></div>
+
+    <!-- 🔐 LOGIN SCREEN -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <div class="welcome-header">
+                <h2>Welcome Back</h2>
+                <p>Hoṛ/हो़ड़ Katha v3.7.4 PRO Ultra</p>
+            </div>
+
+            <div class="avatar-wrapper" onclick="document.getElementById('avatarUpload').click()" title="Click to upload photo">
+                <div class="avatar-inner">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0ea5e9&color=fff&size=128" id="profilePic" alt="Admin">
+                    <div class="avatar-overlay"><i class="fa-solid fa-camera"></i></div>
+                </div>
+            </div>
+            <input type="file" id="avatarUpload" accept="image/*" onchange="uploadAvatar(event)">
+
+            <div class="role-badge">
+                <span class="shield-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <i class="fa-solid fa-check-circle tick"></i>
+                </span> 
+                ADMIN
+            </div>
+
+            <form id="loginForm" onsubmit="event.preventDefault(); loginAdmin();" autocomplete="off">
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-solid fa-user"></i></div>
+                    <input type="email" id="adminEmail" name="email" placeholder="Enter Admin Email" autocomplete="off" required>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-solid fa-lock"></i></div>
+                    <input type="password" id="adminPassword" name="password" placeholder="Enter Password" autocomplete="new-password" required>
+                    <button type="button" class="eye-toggle" onclick="togglePassword()"><i class="fa-solid fa-eye" id="eyeIcon"></i></button>
+                </div>
+
+                <div class="options-row">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe"> Remember me
+                    </label>
+                    <button type="button" class="forgot-btn" onclick="resetPassword()">Forgot Password?</button>
+                </div>
+
+                <button type="submit" class="btn-login" id="btnLogin">
+                    SECURE LOG IN <i class="fa-solid fa-lock"></i>
+                </button>
+            </form>
+
+            <div class="secure-footer">
+                <i class="fa-solid fa-code" style="color:var(--primary);"></i> Developed By BOSC Tech & Edu
+            </div>
+        </div>
+    </div>
+
+    <!-- 📊 MAIN DASHBOARD -->
+    <div id="dashboard">
+        <header class="top-header">
+            <div class="brand"><i class="fa-solid fa-cube"></i> BOSC Key Engine</div>
+            
+            <div class="header-actions">
+                <div class="status-badge connected" style="display:flex; align-items:center; gap:6px; font-size:0.75rem; font-weight:800; color:var(--success); padding:8px 16px; border-radius:50px; background:var(--bg-card); border:1px solid var(--success);">
+                    <div style="width:8px; height:8px; background:var(--success); border-radius:50%; box-shadow:0 0 8px var(--success); animation:pulse 2s infinite;"></div> LIVE
+                </div>
+                
+                <div class="email-capsule">
+                    <i class="fa-solid fa-circle-user" style="color: var(--primary);"></i>
+                    <span id="userEmailBadge">-</span>
+                </div>
+                
+                <button class="theme-toggle" onclick="cycleTheme()" id="themeBtn"><i class="fa-solid fa-palette"></i> <span id="themeName">Light</span></button>
+                
+                <button class="btn-logout" onclick="logoutAdmin()"><i class="fa-solid fa-lock"></i> Logout</button>
+            </div>
+        </header>
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon total"><i class="fa-solid fa-key"></i></div>
+                <div class="stat-info">
+                    <h4>Pro Keys (Session)</h4>
+                    <h2 id="statProCount">0</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon trial"><i class="fa-solid fa-gift"></i></div>
+                <div class="stat-info">
+                    <h4>Trial Keys (Session)</h4>
+                    <h2 id="statTrialCount">0</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon status"><i class="fa-solid fa-server"></i></div>
+                <div class="stat-info">
+                    <h4>Firebase Status</h4>
+                    <h2 style="font-size:1.1rem; color:var(--success);">Connected</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Datalist for Auto-complete Device IDs -->
+        <datalist id="hwid_list"></datalist>
+
+        <div class="grid-layout">
+            
+            <!-- LEFT COLUMN: TRIAL KEY -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <div class="card">
+                    <div class="card-title">
+                        <span><i class="fa-solid fa-gift" style="color:var(--purple);"></i> Generate Trial Key</span>
+                        <button class="clear-btn" onclick="clearTrialForm()">Clear</button>
+                    </div>
+                    
+                    <div class="status-box ok" id="fbStatusText">✅ Ready to Generate</div>
+
+                    <div class="form-group">
+                        <label>Customer Device ID (DVC-XXXX-YYYY) <br><span style="color:var(--text-muted); font-size:0.65rem;">Bulk ke liye comma (,) lagakar multiple IDs daalein</span></label>
+                        <input type="text" id="trialDeviceId" list="hwid_list" placeholder="e.g. DVC-A0FC-0B9B, DVC-B1C2-D3E4" style="text-transform: uppercase;" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Name (Optional)</label>
+                        <input type="text" id="trialCustomerName" placeholder="e.g. Parish Marandi" autocomplete="off">
+                    </div>
+
+                    <button onclick="generateTrialKey()" id="btnGenerateTrial" class="btn-action trial">🎁 Generate Trial Key</button>
+
+                    <div class="result-box" id="trialResultContainer">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">GENERATED TRIAL KEY(S)</div>
+                        
+                        <div class="qr-container" id="trialQrContainer" style="display:none;">
+                            <img id="trialQrImg" src="" alt="QR Code">
+                        </div>
+
+                        <textarea id="trialKeyDisplay" class="key-display" style="color:var(--purple);" readonly>---</textarea>
+                        
+                        <div style="display:flex; gap:8px;">
+                            <button onclick="copyTrialKey()" class="btn-action trial" style="padding:8px; flex:1;">📋 Copy</button>
+                            <button onclick="sendTrialKeyWhatsApp()" class="btn-action" style="padding:8px; flex:1; background:#25d366;">💬 WhatsApp</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span><i class="fa-solid fa-circle-info"></i> Key Formats & Security</span></div>
+                    <ul class="info-list" style="list-style: none; padding: 0;">
+                        <li style="font-size: 0.85rem; padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); text-align: left;"><i class="fa-solid fa-check-circle" style="color:var(--primary); margin-top:3px;"></i> <div><b>Pro License:</b> HKP-&lt;plan&gt;-&lt;expiry&gt;-&lt;128 char ECDSA signature&gt;</div></li>
+                        <li style="font-size: 0.85rem; padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); text-align: left;"><i class="fa-solid fa-check-circle" style="color:var(--primary); margin-top:3px;"></i> <div><b>Trial Key:</b> HKT-&lt;7 digits&gt;-&lt;4 char device hash&gt;</div></li>
+                        <li style="font-size: 0.85rem; padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); text-align: left;"><i class="fa-solid fa-shield-halved" style="color:var(--primary); margin-top:3px;"></i> <div><b>Private Key:</b> Sirf aapke paas (password + recovery protected).</div></li>
+                        <li style="font-size: 0.85rem; padding: 8px 0; display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); text-align: left;"><i class="fa-solid fa-lock" style="color:var(--success); margin-top:3px;"></i> <div><b>Algorithm:</b> ECDSA P-256 + AES-256-GCM — bank-grade security.</div></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: PRO LICENSE -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <div class="card">
+                    <div class="card-title">
+                        <span><i class="fa-solid fa-key"></i> Pro License Management</span>
+                        <button class="clear-btn" onclick="clearProForm()">Clear</button>
+                    </div>
+                    
+                    <div class="status-box warn" id="keyStatus">⚠️ No private key loaded. Generate or load below.</div>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                        <button onclick="generateKeypair()" class="btn-action" style="background:var(--text-muted); flex:1;">🆕 Generate Keypair</button>
+                        <button onclick="document.getElementById('privKeyFile').click()" class="btn-action" style="background:var(--warning); flex:1;">📂 Load Key</button>
+                    </div>
+                    <input type="file" id="privKeyFile" accept=".json,.key" style="display:none" onchange="loadPrivateKey(event)">
+
+                    <div class="form-group">
+                        <label>📢 Public Key (JWK)</label>
+                        <textarea id="publicKeyDisplay" readonly style="height:60px; font-size:0.7rem; background:var(--bg-input); border:1px solid var(--border); padding:8px; border-radius:8px; color:var(--text-muted); resize:none; width:100%;"></textarea>
+                        <button onclick="copyPublicKey()" id="btnCopyPub" class="btn-action" style="background:var(--bg-input); color:var(--text-main); border:1px solid var(--border); margin-top:4px;" disabled>Copy Public Key</button>
+                    </div>
+
+                    <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
+
+                    <div class="form-group">
+                        <label>Customer / Org Name</label>
+                        <input type="text" id="adminCustName" placeholder="e.g. Parish Marandi" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Device ID (DVC-XXXX-YYYY)</label>
+                        <input type="text" id="adminDeviceId" list="hwid_list" placeholder="e.g. DVC-9A4B-31CF" autocomplete="off">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Select Plan Tier</label>
+                        <select id="adminPlanCode" onchange="updatePlanDetails()">
+                            <option value="P1">P1 — Community (1 Device)</option>
+                            <option value="P2">P2 — Commercial (3 Devices)</option>
+                            <option value="P3">P3 — Enterprise (5 Devices)</option>
+                        </select>
+                        <div id="planDetails" class="plan-details-box"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>License Validity</label>
+                        <select id="adminValidity" onchange="document.getElementById('adminCustomExpiry').value='';">
+                            <option value="9999">Lifetime (Permanent)</option>
+                            <option value="365">1 Year Subscription</option>
+                            <option value="30">30 Days Trial</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>OR Custom Expiry Date</label>
+                        <input type="date" id="adminCustomExpiry" onchange="document.getElementById('adminValidity').value='9999';" autocomplete="off">
+                    </div>
+
+                    <button onclick="createSignedKey()" id="btnGenerate" class="btn-action pro" disabled>🔏 Generate Pro Key</button>
+
+                    <div class="result-box" id="resultContainer">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">SIGNED PRO LICENSE</div>
+                        
+                        <div class="qr-container" id="proQrContainer">
+                            <img id="proQrImg" src="" alt="QR Code">
+                        </div>
+
+                        <div class="key-display" id="finalKeyDisplay">---</div>
+                        <button onclick="copyLicenseKey()" class="btn-action pro" style="padding:8px;">📋 Copy License Key</button>
+                    </div>
+                    
+                    <div id="passwordSetupContainer"></div>
+                </div>
+            </div>
+
+            <!-- THIRD COLUMN: REVOKE & LIVE USERS -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <!-- Revoke Section -->
+                <div class="card" style="border-color: var(--danger);">
+                    <div class="card-title">
+                        <span><i class="fa-solid fa-ban" style="color:var(--danger);"></i> Revoke / Block Key</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Enter Key OR Device ID to Revoke</label>
+                        <input type="text" id="revokeKeyInput" placeholder="HKP-..., HKT-... or DVC-XXXX-YYYY" style="text-transform: uppercase;" autocomplete="off">
+                    </div>
+                    <button onclick="revokeKey()" class="btn-action danger">🚫 Revoke Key / Device</button>
+                </div>
+
+                <!-- Live Activations Section -->
+                <div class="card">
+                    <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span><i class="fa-solid fa-users" style="color:var(--success);"></i> Live Activations</span>
+                        <div style="display:flex; gap:5px; align-items:center;">
+                            <button onclick="exportLiveList()" class="clear-btn" style="background:rgba(37,99,235,0.1); color:var(--primary);" title="Download CSV"><i class="fa-solid fa-download"></i></button>
+                            <span style="font-size:0.65rem; background:var(--success); color:white; padding:2px 8px; border-radius:10px; animation:pulse 2s infinite;">LIVE</span>
+                        </div>
+                    </div>
+                    <div class="live-list" id="liveUsersList">
+                        <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">Loading users...</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 🔒 AUTH CONFIRM MODAL FOR TRIAL KEY -->
+    <div class="modal" id="authConfirmModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:10px; color:var(--purple);"><i class="fa-solid fa-shield-halved"></i> Security Check</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">Enter Admin Password to generate Trial Key(s).</p>
+            
+            <div id="authConfirmError" style="color:var(--danger); font-size:0.8rem; font-weight:700; margin-bottom:10px; display:none;"></div>
+            
+            <div class="input-group" style="margin-bottom:16px; border-color:var(--border);">
+                <input type="password" id="trialAuthPassword" placeholder="Admin Password..." style="width:100%; padding:12px; background:transparent; border:none; color:var(--text-main);" autocomplete="new-password">
+            </div>
+            
+            <div style="display:flex; gap:10px;">
+                <button onclick="document.getElementById('authConfirmModal').classList.remove('active')" class="btn-action" style="background:var(--bg-input); color:var(--text-main);">Cancel</button>
+                <button onclick="verifyAndGenerateTrial()" id="btnVerifyTrial" class="btn-action trial">Verify & Generate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals (Unlock / Verify) -->
+    <div class="modal" id="methodModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:16px;">Unlock Private Key</h3>
+            <button onclick="openUnlockModal('password')" class="btn-action pro">Password</button>
+            <button onclick="openUnlockModal('recovery')" class="btn-action trial">Recovery Code</button>
+            <button onclick="document.getElementById('methodModal').classList.remove('active')" class="btn-action" style="background:var(--bg-input); color:var(--text-main);">Cancel</button>
+        </div>
+    </div>
+
+    <div class="modal" id="unlockModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:16px;" id="unlockTitle">Enter Password</h3>
+            <div id="unlockError" style="color:var(--danger); font-size:0.8rem; margin-bottom:10px; display:none;"></div>
+            <div class="input-group" style="margin-bottom:16px; border-color:var(--border);">
+                <input type="password" id="unlockInput" placeholder="Enter password..." style="width:100%; padding:12px; background:transparent; border:none; color:white;" autocomplete="new-password">
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="document.getElementById('unlockModal').classList.remove('active')" class="btn-action" style="background:var(--bg-input); color:var(--text-main);">Cancel</button>
+                <button onclick="submitUnlock()" class="btn-action pro">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
+    <script src="firebase-config.js"></script>
+    <script src="firebase-config.local.js" onerror="console.info('[Keygen] Config not found')"></script>
+
+    <script>
+        // ═══════════════════════════════════════════
+        // 🎨 THEME MANAGEMENT & AVATAR
+        // ═══════════════════════════════════════════
+        const themes = ['light', 'dark', 'neon'];
+        let currentThemeIdx = 0;
+        
+        // Audio for Live Notification
+        const notifySound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+
+        function cycleTheme() {
+            currentThemeIdx = (currentThemeIdx + 1) % themes.length;
+            const newTheme = themes[currentThemeIdx];
+            document.documentElement.setAttribute('data-theme', newTheme);
+            document.getElementById('themeName').innerText = newTheme.charAt(0).toUpperCase() + newTheme.slice(1);
+            localStorage.setItem('bosc_keygen_theme', newTheme);
+        }
+
+        const savedTheme = localStorage.getItem('bosc_keygen_theme');
+        if (savedTheme) {
+            currentThemeIdx = themes.indexOf(savedTheme);
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeName').innerText = savedTheme.charAt(0).toUpperCase() + savedTheme.slice(1);
+        }
+
+        function uploadAvatar(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgSrc = e.target.result;
+                document.getElementById('profilePic').src = imgSrc;
+                localStorage.setItem('bosc_keygen_avatar', imgSrc);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        const savedAvatar = localStorage.getItem('bosc_keygen_avatar');
+        if (savedAvatar) document.getElementById('profilePic').src = savedAvatar;
+
+        // ═══════════════════════════════════════════
+        // 🎯 UTILS & FORMATTERS
+        // ═══════════════════════════════════════════
+        function copyText(text) {
+            if (!text || text === 'N/A') return;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Copied: ' + text);
+            }).catch(err => alert('Copy failed!'));
+        }
+
+        function formatDeviceIdInput(input) {
+            let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (val.startsWith('DVC')) val = val.substring(3);
+            let formatted = 'DVC';
+            if (val.length > 0) formatted += '-' + val.substring(0, 4);
+            if (val.length > 4) formatted += '-' + val.substring(4, 8);
+            input.value = formatted;
+        }
+
+        // ═══════════════════════════════════════════
+        // ⚡ AUTO-FILL FROM LIVE LIST
+        // ═══════════════════════════════════════════
+        function fillFromLiveUser(name, hwid) {
+            document.getElementById('adminCustName').value = name;
+            document.getElementById('adminDeviceId').value = hwid;
+            document.getElementById('trialCustomerName').value = name;
+            document.getElementById('trialDeviceId').value = hwid;
+            
+            // Flash the inputs to show they are filled
+            ['adminCustName', 'adminDeviceId', 'trialCustomerName', 'trialDeviceId'].forEach(id => {
+                let el = document.getElementById(id);
+                el.style.border = '2px solid var(--success)';
+                setTimeout(() => { el.style.border = '1px solid var(--border)'; }, 1000);
+            });
+
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ═══════════════════════════════════════════
+        // 🎯 PLAN DETAILS LOGIC
+        // ═══════════════════════════════════════════
+        const planInfo = {
+            'P1': { name: 'Community', devices: '1 Device', price: '₹199', old: '₹299', features: 'All 5 Languages + Kruti Dev + Export' },
+            'P2': { name: 'Commercial', devices: '3 Devices', price: '₹399', old: '₹499', features: 'IME + Script Converter + 1 Yr Updates' },
+            'P3': { name: 'Enterprise', devices: '5 Devices', price: '₹699', old: '₹999', features: 'Lifetime Updates + Premium Support' }
+        };
+
+        function updatePlanDetails() {
+            const plan = document.getElementById('adminPlanCode').value;
+            const info = planInfo[plan];
+            if (!info) return;
+            document.getElementById('planDetails').innerHTML = `
+                <div class="plan-details-row"><span>Plan:</span> <strong>${info.name}</strong></div>
+                <div class="plan-details-row"><span>Devices:</span> <strong>${info.devices}</strong></div>
+                <div class="plan-details-row"><span>Features:</span> <strong>${info.features}</strong></div>
+                <div class="plan-details-row"><span>Price:</span> <strong class="highlight">${info.price} <del style="color:var(--text-muted); font-size:0.7rem;">${info.old}</del></strong></div>
+            `;
+        }
+
+        // ═══════════════════════════════════════════
+        // 🔥 FIREBASE INIT
+        // ═══════════════════════════════════════════
+        const FIREBASE_CONFIG = window.FIREBASE_CONFIG || {
+            apiKey: "AIzaSyAxt6hDf8LQVVjwRq-FfwfxAbOUlzBwQAo", authDomain: "hor-katha-tracker.firebaseapp.com",
+            databaseURL: "https://hor-katha-tracker-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "hor-katha-tracker",
+            storageBucket: "hor-katha-tracker.firebasestorage.app", messagingSenderId: "1061782692250", appId: "1:1061782692250:web:ff414fd346f13daec45a23",
+        };
+
+        let db, auth;
+        if (!Object.values(FIREBASE_CONFIG).some(v => String(v).includes('YOUR_'))) {
+            firebase.initializeApp(FIREBASE_CONFIG);
+            db = firebase.database();
+            auth = firebase.auth();
+        } else {
+            console.warn('⚠️ Firebase Config missing.');
+        }
+
+        // ═══════════════════════════════════════════
+        // 🔐 AUTHENTICATION LOGIC
+        // ═══════════════════════════════════════════
+        function togglePassword() {
+            const input = document.getElementById('adminPassword');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+            else { input.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+        }
+
+        function resetPassword() {
+            const email = document.getElementById('adminEmail').value.trim();
+            if (!email) return alert("Please enter your email address first to reset password.");
+            
+            auth.sendPasswordResetEmail(email)
+                .then(() => alert(`✅ Password reset email sent to ${email}. Check your inbox!`))
+                .catch(err => alert("❌ Error: " + err.message));
+        }
+
+        function loginAdmin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const pass = document.getElementById('adminPassword').value;
+            const btn = document.getElementById('btnLogin');
+
+            if (!email || !pass) return alert("Please enter email and password");
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
+            btn.disabled = true;
+
+            auth.signInWithEmailAndPassword(email, pass)
+                .then(() => {
+                    if (document.getElementById('rememberMe').checked) localStorage.setItem('bosc_admin_email', email);
+                    else localStorage.removeItem('bosc_admin_email');
+                    document.getElementById('adminPassword').value = '';
+                })
+                .catch(err => {
+                    alert("Login Failed: " + err.message);
+                    btn.innerHTML = 'SECURE LOG IN <i class="fa-solid fa-lock"></i>';
+                    btn.disabled = false;
+                });
+        }
+
+        function logoutAdmin() { auth.signOut(); }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                
+                document.getElementById('userEmailBadge').innerText = user.email;
+                document.getElementById('userEmailBadge').title = user.email;
+                
+                updatePlanDetails();
+                updateStats();
+                initLiveUsers();
+                loadHwidDatalist(); 
+            } else {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('btnLogin').innerHTML = 'SECURE LOG IN <i class="fa-solid fa-lock"></i>';
+                document.getElementById('btnLogin').disabled = false;
+                
+                document.getElementById('adminEmail').value = '';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('rememberMe').checked = false;
+            }
+        });
+
+        // ═══════════════════════════════════════════
+        // 📊 STATS COUNTER
+        // ═══════════════════════════════════════════
+        function updateStats() {
+            const trials = JSON.parse(localStorage.getItem('hor_generated_trials') || '[]');
+            const pros = JSON.parse(localStorage.getItem('bosc_generated_pros') || '[]');
+            document.getElementById('statTrialCount').innerText = trials.length;
+            document.getElementById('statProCount').innerText = pros.length;
+        }
+
+        // ═══════════════════════════════════════════
+        // 📡 DATALIST - AUTO FILL HWID
+        // ═══════════════════════════════════════════
+        function loadHwidDatalist() {
+            const datalist = document.getElementById('hwid_list');
+            datalist.innerHTML = '';
+
+            db.ref('activations').once('value').then(snap => {
+                const data = snap.val() || {};
+                const hwids = new Set();
+                
+                Object.keys(data).forEach(k => {
+                    if (data[k].hwid && data[k].hwid !== 'RESET_BY_ADMIN') hwids.add(data[k].hwid);
+                });
+
+                hwids.forEach(h => {
+                    const opt = document.createElement('option');
+                    opt.value = h;
+                    datalist.appendChild(opt);
+                });
+            }).catch(err => console.warn("Could not load HWIDs:", err));
+            
+            db.ref('smart_trial/keys').once('value').then(snap => {
+                const data = snap.val() || {};
+                const hwids = new Set();
+                
+                Object.keys(data).forEach(k => {
+                    if (data[k].device) hwids.add(data[k].device);
+                });
+
+                hwids.forEach(h => {
+                    const opt = document.createElement('option');
+                    opt.value = h;
+                    datalist.appendChild(opt);
+                });
+            }).catch(err => console.warn("Could not load Trial HWIDs:", err));
+        }
+
+        // ═══════════════════════════════════════════
+        // 🎁 TRIAL KEY GENERATOR
+        // ═══════════════════════════════════════════
+        
+        document.getElementById('trialDeviceId').addEventListener('input', function() {
+            formatDeviceIdInput(this);
+        });
+
+        function clearTrialForm() {
+            document.getElementById('trialDeviceId').value = '';
+            document.getElementById('trialCustomerName').value = '';
+        }
+
+        function generateTrialKey() {
+            document.getElementById('trialAuthPassword').value = '';
+            document.getElementById('authConfirmError').style.display = 'none';
+            document.getElementById('authConfirmModal').classList.add('active');
+            setTimeout(() => document.getElementById('trialAuthPassword').focus(), 100);
+        }
+
+        async function verifyAndGenerateTrial() {
+            const pass = document.getElementById('trialAuthPassword').value;
+            const errEl = document.getElementById('authConfirmError');
+            const btn = document.getElementById('btnVerifyTrial');
+
+            if (!pass) {
+                errEl.innerText = '❌ Please enter your password.';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
+            btn.disabled = true;
+            errEl.style.display = 'none';
+
+            try {
+                const user = auth.currentUser;
+                if (!user || !user.email) throw new Error('No user logged in.');
+
+                const credential = firebase.auth.EmailAuthProvider.credential(user.email, pass);
+                await user.reauthenticateWithCredential(credential);
+
+                document.getElementById('authConfirmModal').classList.remove('active');
+                await _doGenerateTrialKey();
+
+            } catch (error) {
+                console.error('Auth error:', error);
+                errEl.innerText = '❌ Incorrect password! Please try again.';
+                errEl.style.display = 'block';
+            } finally {
+                btn.innerHTML = 'Verify & Generate';
+                btn.disabled = false;
+            }
+        }
+
+        async function _doGenerateTrialKey() {
+            const deviceRaw = document.getElementById('trialDeviceId').value.trim().toUpperCase();
+            const customerName = document.getElementById('trialCustomerName').value.trim();
+            
+            if (!deviceRaw) return alert('Please enter at least one Device ID!');
+            
+            const deviceIds = deviceRaw.split(',').map(d => d.trim()).filter(d => d);
+            
+            for (let d of deviceIds) {
+                if (!/^DVC-[A-F0-9]{4}-[A-F0-9]{4}$/i.test(d)) {
+                    return alert(`❌ Invalid Device ID format: ${d}\n\nCorrect format: DVC-XXXX-YYYY (Example: DVC-A0FC-0B9B)`);
+                }
+            }
+
+            const btn = document.getElementById('btnGenerateTrial');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            const generatedKeys = [];
+            const trialResultContainer = document.getElementById('trialResultContainer');
+            const trialQrContainer = document.getElementById('trialQrContainer');
+            const trialQrImg = document.getElementById('trialQrImg');
+            const trialKeyDisplay = document.getElementById('trialKeyDisplay');
+
+            try {
+                for (let deviceId of deviceIds) {
+                    const deviceHash = deviceId.split('-')[2];
+                    const randomDigits = String(Math.floor(1000000 + Math.random() * 9000000));
+                    const trialKey = `HKT-${randomDigits}-${deviceHash}`;
+                    const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000);
+
+                    await db.ref('smart_trial/keys/' + trialKey).set({
+                        device: deviceId, status: 'active', key: trialKey,
+                        device_hash: deviceHash, customer_name: customerName || null,
+                        created_at: Date.now(), expires_at: expiresAt,
+                        plan: 'TRIAL_7DAY', price_paid: 9, used: false,
+                        created_by: auth.currentUser.email
+                    });
+                    generatedKeys.push(trialKey);
+                }
+
+                trialKeyDisplay.value = generatedKeys.join('\n');
+                trialResultContainer.classList.add('show');
+                window._lastTrialKeys = generatedKeys; 
+                window._lastTrialDeviceId = deviceRaw;
+                window._lastTrialCustomerName = customerName;
+
+                if (generatedKeys.length === 1) {
+                    trialQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${generatedKeys[0]}`;
+                    trialQrContainer.style.display = 'flex';
+                } else {
+                    trialQrContainer.style.display = 'none';
+                }
+
+                const trials = JSON.parse(localStorage.getItem('hor_generated_trials') || '[]');
+                generatedKeys.forEach(k => {
+                    trials.unshift({ key: k, deviceId: deviceRaw, customerName: customerName, generatedAt: new Date().toISOString() });
+                });
+                localStorage.setItem('hor_generated_trials', JSON.stringify(trials.slice(0, 20)));
+                
+                updateStats();
+            } catch (e) {
+                alert('Error saving to Firebase: ' + e.message);
+            } finally {
+                btn.innerHTML = '🎁 Generate Trial Key';
+                btn.disabled = false;
+            }
+        }
+
+        function copyTrialKey() {
+            if (!window._lastTrialKeys || window._lastTrialKeys.length === 0) return;
+            navigator.clipboard.writeText(window._lastTrialKeys.join('\n')).then(() => alert('✅ Trial Key(s) Copied!'));
+        }
+
+        function sendTrialKeyWhatsApp() {
+            if (!window._lastTrialKeys || window._lastTrialKeys.length === 0) return alert('पहले Trial Key generate करें');
+            const keysText = window._lastTrialKeys.join('\n');
+            const message = `🎁 *Hoṛ Katha Suite — ₹9 Trial Activated*\n\n🔑 *Trial Key(s):*\n\`${keysText}\`\n\n📱 Device ID: ${window._lastTrialDeviceId}\n📅 Validity: 7 Days\n💰 Amount: ₹9\n\nBOSC Tech & Edu`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // ═══════════════════════════════════════════
+        // 🔐 PRO KEY LOGIC (ECDSA)
+        // ═══════════════════════════════════════════
+        let currentPrivateKey = null;
+        let currentPrivateKeyJwk = null;
+        let currentPublicKeyDisplayLine = '';
+        let pendingEncryptedFile = null;
+        const PAYLOAD_VERSION = 'BOSC-HKP-v3.7.4';
+
+        document.getElementById('adminDeviceId').addEventListener('input', function() {
+            formatDeviceIdInput(this);
+        });
+
+        function clearProForm() {
+            document.getElementById('adminCustName').value = '';
+            document.getElementById('adminDeviceId').value = '';
+            document.getElementById('adminCustomExpiry').value = '';
+        }
+
+        function normalizePassword(pw) { return String(pw || '').normalize('NFC'); }
+
+        async function deriveKeyFromPassword(password, salt) {
+            const enc = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(normalizePassword(password)), { name: 'PBKDF2' }, false, ['deriveKey']);
+            return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+        }
+
+        async function encryptData(plaintext, password) {
+            const enc = new TextEncoder();
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const key = await deriveKeyFromPassword(password, salt);
+            const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(plaintext));
+            return { salt: Array.from(salt), iv: Array.from(iv), ciphertext: Array.from(new Uint8Array(ciphertext)) };
+        }
+
+        async function decryptData(encryptedObj, password) {
+            const salt = new Uint8Array(encryptedObj.salt);
+            const iv = new Uint8Array(encryptedObj.iv);
+            const ciphertext = new Uint8Array(encryptedObj.ciphertext);
+            const key = await deriveKeyFromPassword(password, salt);
+            const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+            return new TextDecoder().decode(plaintext);
+        }
+
+        async function generateKeypair() {
+            if (!confirm('Naya keypair generate karne se PURANI private key invalid ho jayegi. Continue?')) return;
+            try {
+                const keyPair = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+                const privateJwk = await crypto.subtle.exportKey('jwk', keyPair.privateKey);
+                const publicJwk = await crypto.subtle.exportKey('jwk', keyPair.publicKey);
+                currentPrivateKey = keyPair.privateKey; currentPrivateKeyJwk = privateJwk;
+                currentPublicKeyDisplayLine = JSON.stringify({ kty: publicJwk.kty, crv: publicJwk.crv, x: publicJwk.x, y: publicJwk.y });
+                
+                document.getElementById('publicKeyDisplay').value = currentPublicKeyDisplayLine;
+                document.getElementById('btnCopyPub').disabled = false;
+                document.getElementById('btnGenerate').disabled = false;
+                document.getElementById('keyStatus').className = 'status-box ok';
+                document.getElementById('keyStatus').innerText = '✅ Keypair ready! Save it securely below.';
+                
+                showPasswordSection();
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        function copyPublicKey() {
+            navigator.clipboard.writeText(currentPublicKeyDisplayLine).then(() => alert('Public Key Copied!'));
+        }
+
+        async function createSignedKey() {
+            if (!currentPrivateKey) return alert('Load private key first!');
+            const name = document.getElementById('adminCustName').value.trim().toLowerCase();
+            const dvc = document.getElementById('adminDeviceId').value.trim().toUpperCase();
+            const plan = document.getElementById('adminPlanCode').value;
+            
+            const customDate = document.getElementById('adminCustomExpiry').value;
+            const days = parseInt(document.getElementById('adminValidity').value, 10);
+
+            if (!name) return alert('Customer Name required!');
+            if (!/^DVC-[A-F0-9]{4}-[A-F0-9]{4}$/i.test(dvc)) {
+                return alert(`❌ Invalid Device ID format: ${dvc}\n\nCorrect format: DVC-XXXX-YYYY`);
+            }
+
+            let expiryToken = '9999';
+            
+            if (customDate) {
+                const d = new Date(customDate);
+                expiryToken = `${String(d.getFullYear()).slice(-2)}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+            } else if (days !== 9999) {
+                const expDate = new Date(); expDate.setDate(expDate.getDate() + days);
+                expiryToken = `${String(expDate.getFullYear()).slice(-2)}${String(expDate.getMonth()+1).padStart(2,'0')}${String(expDate.getDate()).padStart(2,'0')}`;
+            }
+
+            try {
+                const payloadStr = `${name}|${dvc}|${plan}|${expiryToken}|${PAYLOAD_VERSION}`;
+                const signature = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, currentPrivateKey, new TextEncoder().encode(payloadStr));
+                const sigHex = Array.from(new Uint8Array(signature)).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+                
+                const finalKey = `HKP-${plan}-${expiryToken}-${sigHex}`;
+                document.getElementById('finalKeyDisplay').innerText = finalKey;
+                document.getElementById('resultContainer').classList.add('show');
+
+                document.getElementById('proQrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${finalKey}`;
+
+                const pros = JSON.parse(localStorage.getItem('bosc_generated_pros') || '[]');
+                pros.unshift({ key: finalKey, name: name, generatedAt: new Date().toISOString() });
+                localStorage.setItem('bosc_generated_pros', JSON.stringify(pros.slice(0, 50)));
+                updateStats();
+
+            } catch (e) { alert('Signing failed: ' + e.message); }
+        }
+
+        function copyLicenseKey() {
+            navigator.clipboard.writeText(document.getElementById('finalKeyDisplay').innerText).then(() => alert('License Key Copied!'));
+        }
+
+        // ═══════════════════════════════════════════
+        // 🚫 REVOKE / BLOCK KEY OR DEVICE
+        // ═══════════════════════════════════════════
+        async function revokeKey() {
+            let keyInput = document.getElementById('revokeKeyInput').value.trim().toUpperCase();
+            if (!keyInput) return alert('Please enter a Key or Device ID to revoke!');
+
+            const isDevice = /^DVC-[A-F0-9]{4}-[A-F0-9]{4}$/i.test(keyInput);
+            const isProKey = keyInput.startsWith('HKP-');
+            const isTrialKey = keyInput.startsWith('HKT-');
+
+            if (!isDevice && !isProKey && !isTrialKey) {
+                return alert('❌ Invalid Format!\n\nPlease enter a valid Key (HKP-... / HKT-...) OR Device ID (DVC-XXXX-YYYY)');
+            }
+
+            if (!confirm(`Are you sure you want to REVOKE this?\n\n${keyInput}\n\nUser won't be able to use this anymore.`)) return;
+
+            try {
+                let revokedCount = 0;
+
+                if (isDevice) {
+                    const actSnap = await db.ref('activations').once('value');
+                    const actData = actSnap.val() || {};
+                    for (let key in actData) {
+                        if (actData[key].hwid === keyInput) {
+                            await db.ref(`revoked/licenses/${key}`).set({
+                                revokedAt: Date.now(), revokedBy: auth.currentUser.email, reason: 'Admin manual revoke by Device ID'
+                            });
+                            await db.ref(`activations/${key}`).update({ status: 'revoked_by_admin', revokedAt: Date.now() });
+                            revokedCount++;
+                        }
+                    }
+
+                    const trialSnap = await db.ref('smart_trial/keys').once('value');
+                    const trialData = trialSnap.val() || {};
+                    for (let key in trialData) {
+                        if (trialData[key].device === keyInput) {
+                            await db.ref(`smart_trial/keys/${key}`).update({ status: 'revoked', revokedAt: Date.now(), revokedBy: auth.currentUser.email });
+                            revokedCount++;
+                        }
+                    }
+
+                    if (revokedCount === 0) return alert('No active keys found for this Device ID!');
+                    alert(`✅ ${revokedCount} key(s) successfully revoked for Device ${keyInput}!`);
+
+                } 
+                else if (isProKey) {
+                    await db.ref(`revoked/licenses/${keyInput}`).set({
+                        revokedAt: Date.now(),
+                        revokedBy: auth.currentUser.email,
+                        reason: 'Admin manual revoke from Keygen'
+                    });
+                    await db.ref(`activations/${keyInput}`).update({
+                        status: 'revoked_by_admin',
+                        revokedAt: Date.now()
+                    }).catch(() => {});
+                    alert('✅ Pro Key successfully revoked!');
+                } 
+                else if (isTrialKey) {
+                    await db.ref(`smart_trial/keys/${keyInput}`).update({
+                        status: 'revoked',
+                        revokedAt: Date.now(),
+                        revokedBy: auth.currentUser.email
+                    });
+                    alert('✅ Trial Key successfully revoked!');
+                } 
+
+                document.getElementById('revokeKeyInput').value = '';
+            } catch (e) {
+                alert('Error revoking: ' + e.message);
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        // 👥 LIVE ACTIVATIONS (With Auto-Fill & Sound)
+        // ═══════════════════════════════════════════
+        let liveUsersRef = null;
+        let previousUserCount = 0;
+        let currentLiveUsers = [];
+
+        function initLiveUsers() {
+            const listEl = document.getElementById('liveUsersList');
+            
+            if (liveUsersRef) liveUsersRef.off();
+
+            liveUsersRef = db.ref('activations').orderByChild('timestamp').limitToLast(10);
+            
+            liveUsersRef.on('value', snapshot => {
+                const data = snapshot.val();
+                if (!data) {
+                    listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">No active users yet.</div>';
+                    return;
+                }
+
+                const users = Object.keys(data).map(k => ({ id: k, ...data[k] })).reverse();
+                currentLiveUsers = users;
+
+                // Play notification sound if a NEW user arrives (skip first load)
+                if (users.length > previousUserCount && previousUserCount !== 0) {
+                    notifySound.play().catch(e => console.log('Audio play blocked by browser'));
+                }
+                previousUserCount = users.length;
+                
+                listEl.innerHTML = users.map(u => {
+                    const dateObj = new Date(u.timestamp || Date.now());
+                    const dateStr = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    const timeStr = dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+                    
+                    const plan = u.plan || 'P1';
+                    const isDeactivated = u.status === 'deactivated' || u.status === 'revoked_by_admin';
+                    const keyDisplay = u.key || u.id || 'N/A';
+                    const hwidDisplay = u.hwid || 'N/A';
+                    const nameDisplay = u.name || 'Unknown';
+
+                    // Generate exact 3 rows
+                    return `
+                        <div class="live-item">
+                            <!-- ROW 1: Name & Status & Fill Button -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 2px;">
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span class="live-name">${nameDisplay}</span>
+                                    <button onclick="fillFromLiveUser('${nameDisplay}', '${hwidDisplay}')" style="background:var(--primary); color:white; border:none; border-radius:4px; padding:2px 6px; font-size:0.65rem; cursor:pointer; font-weight:800;" title="Auto-Fill Form"><i class="fa-solid fa-bolt"></i> Fill</button>
+                                </div>
+                                <span class="live-badge" style="background:rgba(${isDeactivated ? '239,68,68' : '16,185,129'}, 0.15); color:${isDeactivated ? 'var(--danger)' : 'var(--success)'};">
+                                    ${isDeactivated ? 'DEACTIVATED' : plan}
+                                </span>
+                            </div>
+                            
+                            <!-- ROW 2: HWID + Copy & Date/Time -->
+                            <div class="live-meta" style="justify-content: space-between; width: 100%;">
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <span>${hwidDisplay}</span>
+                                    ${hwidDisplay !== 'N/A' ? `<i class="fa-regular fa-copy copy-icon" onclick="copyText('${hwidDisplay}')" title="Copy HWID"></i>` : ''}
+                                </div>
+                                <span>${dateStr} • ${timeStr}</span>
+                            </div>
+                            
+                            <!-- ROW 3: Key + Copy -->
+                            <div class="live-key-row">
+                                <span class="live-key" title="${keyDisplay}">${keyDisplay.substring(0, 22)}...</span>
+                                ${keyDisplay !== 'N/A' ? `<i class="fa-regular fa-copy copy-icon" onclick="copyText('${keyDisplay}')" title="Copy Key"></i>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        // ═══════════════════════════════════════════
+        // 📥 EXPORT LIVE USERS TO CSV
+        // ═══════════════════════════════════════════
+        function exportLiveList() {
+            if (!currentLiveUsers || currentLiveUsers.length === 0) return alert('No data to export!');
+            
+            let csv = "Name,HWID,Plan,Key,Date,Time,Status\n";
+            currentLiveUsers.forEach(u => {
+                const dateObj = new Date(u.timestamp || Date.now());
+                const dateStr = dateObj.toLocaleDateString('en-IN');
+                const timeStr = dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+                const isDeactivated = u.status === 'deactivated' || u.status === 'revoked_by_admin';
+                
+                csv += `"${u.name || 'Unknown'}","${u.hwid || 'N/A'}","${u.plan || 'P1'}","${u.key || u.id || 'N/A'}","${dateStr}","${timeStr}","${isDeactivated ? 'DEACTIVATED' : 'ACTIVE'}"\n`;
+            });
+
+            const link = document.createElement("a");
+            link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
+            link.download = `Live_Activations_${Date.now()}.csv`;
+            link.click();
+        }
+
+        // ═══════════════════════════════════════════
+        // 🔑 PRIVATE KEY SAVE / LOAD UI
+        // ═══════════════════════════════════════════
+        function showPasswordSection() {
+            const container = document.getElementById('passwordSetupContainer');
+            container.innerHTML = `
+                <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
+                <div class="form-group">
+                    <label>🔒 Secure Private Key (Password)</label>
+                    <input type="password" id="keyPasswordInput" placeholder="Set strong password (12+ chars)" autocomplete="new-password">
+                </div>
+                <button onclick="saveEncryptedKey()" class="btn-action danger">💾 Save Encrypted Key</button>
+            `;
+        }
+
+        async function saveEncryptedKey() {
+            const pw = document.getElementById('keyPasswordInput').value;
+            if (pw.length < 8) return alert('Password must be 8+ characters!');
+            if (!currentPrivateKeyJwk) return alert('Generate keypair first!');
+
+            try {
+                const encrypted = await encryptData(JSON.stringify(currentPrivateKeyJwk), pw);
+                const payload = { type: 'BOSCTech-License-PrivateKey', encryptedPayload: encrypted };
+                const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+                a.download = `BOSCTech-PrivateKey-${Date.now()}.json`; a.click();
+                alert('✅ Private Key Saved! Keep it safe.');
+            } catch(e) { alert('Encryption failed: ' + e.message); }
+        }
+
+        function loadPrivateKey(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.encryptedPayload) {
+                        pendingEncryptedFile = data;
+                        document.getElementById('methodModal').classList.add('active');
+                    }
+                } catch (err) { alert('Invalid file format.'); }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function openUnlockModal(mode) {
+            document.getElementById('methodModal').classList.remove('active');
+            document.getElementById('unlockModal').classList.add('active');
+            document.getElementById('unlockTitle').innerText = mode === 'password' ? 'Enter Password' : 'Enter Recovery Code';
+            document.getElementById('unlockInput').value = '';
+            window._unlockMode = mode;
+        }
+
+        async function submitUnlock() {
+            const val = normalizePassword(document.getElementById('unlockInput').value);
+            const err = document.getElementById('unlockError');
+            err.style.display = 'none';
+
+            try {
+                let payloadKey = window._unlockMode === 'password' ? 'encryptedPayload' : 'recoveryPayload';
+                const decrypted = await decryptData(pendingEncryptedFile[payloadKey], val);
+                const jwk = JSON.parse(decrypted);
+                
+                const imported = await crypto.subtle.importKey('jwk', jwk, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
+                currentPrivateKey = imported; currentPrivateKeyJwk = jwk;
+                currentPublicKeyDisplayLine = JSON.stringify({ kty: jwk.kty, crv: jwk.crv, x: jwk.x, y: jwk.y });
+                
+                document.getElementById('publicKeyDisplay').value = currentPublicKeyDisplayLine;
+                document.getElementById('btnCopyPub').disabled = false;
+                document.getElementById('btnGenerate').disabled = false;
+                document.getElementById('keyStatus').className = 'status-box ok';
+                document.getElementById('keyStatus').innerText = '✅ Private key unlocked successfully!';
+                
+                document.getElementById('unlockModal').classList.remove('active');
+            } catch (e) {
+                err.style.display = 'block';
+                err.innerText = '❌ Wrong password or corrupted file!';
+            }
+        }
+    </script>
+</body>
+</html>

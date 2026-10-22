@@ -1,0 +1,3542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ═══ SECURITY: CSP ═══ -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self' 'unsafe-inline';
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+                   img-src 'self' data: https:;
+                   font-src 'self' https://fonts.gstatic.com data:;
+                   frame-ancestors 'none';
+                   base-uri 'self';
+                   form-action 'none';">
+
+    <title>📖 User Manual — Hoṛ Katha Suite v3.7.4</title>
+
+    <meta name="description" content="Complete user manual for Hoṛ Katha Suite v3.7.4 — Multi-script typing suite by BOSC Tech & Edu.">
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="robots" content="index, follow">
+    <meta name="color-scheme" content="dark light">
+    <link rel="icon" href="assets/icon.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           VARIABLES
+           ============================================================ */
+        :root {
+            --bg-body: #0d1117;
+            --bg-card: #161b22;
+            --bg-panel: #21262d;
+            --border: #30363d;
+            --border-accent: #1f6feb;
+            --primary: #58a6ff;
+            --success: #3fb950;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #a371f7;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --text-bright: #f0f6fc;
+        }
+
+        [data-theme="light"] {
+            --bg-body: #f6f8fa;
+            --bg-card: #ffffff;
+            --bg-panel: #f0f2f5;
+            --border: #d0d7de;
+            --border-accent: #0969da;
+            --primary: #0969da;
+            --success: #1a7f37;
+            --warning: #bf8700;
+            --danger: #cf222e;
+            --purple: #8250df;
+            --text: #1f2328;
+            --text-muted: #57606a;
+            --text-bright: #000000;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-body);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* ============================================================
+           A11Y
+           ============================================================ */
+        :focus { outline: none; }
+        :focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .skip-to-content {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            z-index: 9999;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 800;
+            text-decoration: none;
+            border-radius: 0 0 8px 0;
+        }
+
+        .skip-to-content:focus {
+            left: 0;
+        }
+
+        /* ============================================================
+           TOP NAV
+           ============================================================ */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--bg-card);
+            border-bottom: 1.5px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nav-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .nav-title {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-title small {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            display: block;
+            margin-top: -2px;
+        }
+
+        .nav-search {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 20px;
+            position: relative;
+        }
+
+        .nav-search input {
+            width: 100%;
+            padding: 9px 40px 9px 14px;
+            background: var(--bg-panel);
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.15s ease;
+            font-family: inherit;
+        }
+
+        .nav-search input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+        }
+
+        .nav-search .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            pointer-events: none;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            padding: 8px 14px;
+            background: var(--bg-panel);
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.78rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn.primary {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: var(--bg-panel);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 900;
+        }
+
+        /* ============================================================
+           PROGRESS BAR
+           ============================================================ */
+        .progress-bar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent;
+            z-index: 999;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--purple));
+            width: 0%;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 8px var(--primary);
+        }
+
+        /* ============================================================
+           LAYOUT
+           ============================================================ */
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 64px auto 0;
+            gap: 30px;
+            padding: 30px 24px;
+        }
+
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .sidebar {
+            position: sticky;
+            top: 84px;
+            height: calc(100vh - 104px);
+            overflow-y: auto;
+            padding-right: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .toc-title {
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            padding-left: 8px;
+        }
+
+        .toc {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc li { margin-bottom: 4px; }
+
+        .toc a {
+            display: block;
+            padding: 7px 12px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border-radius: 6px;
+            border-left: 3px solid transparent;
+            transition: all 0.15s ease;
+            line-height: 1.4;
+        }
+
+        .toc a:hover {
+            background: var(--bg-panel);
+            border-left-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .toc a.active {
+            background: var(--bg-panel);
+            border-left-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .toc .toc-num {
+            display: inline-block;
+            width: 22px;
+            font-weight: 900;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        /* ============================================================
+           CONTENT
+           ============================================================ */
+        .content {
+            min-width: 0;
+            max-width: 900px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--text-bright);
+            margin-bottom: 12px;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        h1 .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        h2 {
+            font-size: 1.55rem;
+            font-weight: 900;
+            color: var(--text-bright);
+            margin-top: 48px;
+            margin-bottom: 16px;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05));
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            line-height: 1.3;
+            scroll-margin-top: 90px;
+            position: relative;
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-top: 28px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            scroll-margin-top: 90px;
+        }
+
+        h4 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-bright);
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        strong {
+            color: var(--text-bright);
+            font-weight: 800;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Copy-link button on headings */
+        .heading-copy {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s, background 0.15s, border-color 0.15s;
+            font-family: inherit;
+            font-weight: 700;
+        }
+
+        h2:hover .heading-copy,
+        h2:focus-within .heading-copy {
+            opacity: 1;
+        }
+
+        .heading-copy:hover {
+            background: var(--bg-panel);
+            border-color: var(--border);
+            color: var(--primary);
+        }
+
+        .heading-copy.copied {
+            color: var(--success);
+            opacity: 1;
+        }
+
+        /* ============================================================
+           STEPS
+           ============================================================ */
+        .step {
+            background: var(--bg-card);
+            border-left: 4px solid var(--border-accent);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 14px 0;
+            position: relative;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            background: var(--border-accent);
+            color: #ffffff;
+            border-radius: 50%;
+            font-weight: 900;
+            font-size: 0.8rem;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-weight: 900;
+            color: var(--text-bright);
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .step-body {
+            margin-top: 8px;
+            padding-left: 36px;
+            font-size: 0.9rem;
+            line-height: 1.65;
+        }
+
+        /* ============================================================
+           TIP / WARNING / INFO
+           ============================================================ */
+        .tip,
+        .warning,
+        .danger,
+        .info {
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 14px 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .tip {
+            background: rgba(63, 185, 80, 0.1);
+            border-left: 4px solid var(--success);
+        }
+        .tip::before {
+            content: "💡 ";
+            font-size: 1.05rem;
+            margin-right: 4px;
+        }
+
+        .warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            color: var(--warning);
+        }
+        .warning::before {
+            content: "⚠️ ";
+            font-size: 1.05rem;
+            margin-right: 4px;
+        }
+
+        .danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+        }
+        .danger::before {
+            content: "🚨 ";
+            font-size: 1.05rem;
+            margin-right: 4px;
+        }
+
+        .info {
+            background: rgba(88, 166, 255, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+        .info::before {
+            content: "ℹ️ ";
+            font-size: 1.05rem;
+            margin-right: 4px;
+        }
+
+        /* ============================================================
+           LISTS
+           ============================================================ */
+        ul, ol {
+            margin: 10px 0 14px 24px;
+            font-size: 0.92rem;
+        }
+
+        li {
+            margin-bottom: 6px;
+            line-height: 1.65;
+        }
+
+        li::marker {
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        /* ============================================================
+           CODE
+           ============================================================ */
+        code {
+            background: var(--bg-panel);
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.85em;
+            color: var(--success);
+            font-weight: 700;
+            border: 1px solid var(--border);
+        }
+
+        kbd {
+            display: inline-block;
+            padding: 3px 8px;
+            background: var(--bg-panel);
+            border: 1.5px solid var(--border);
+            border-bottom-width: 3px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.82em;
+            font-weight: 800;
+            color: var(--text-bright);
+            margin: 0 2px;
+        }
+
+        /* ============================================================
+           TABLE
+           ============================================================ */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            min-width: 400px;
+        }
+
+        th {
+            background: var(--bg-panel);
+            color: var(--primary);
+            font-weight: 900;
+            text-align: left;
+            padding: 12px 14px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tbody tr:hover { background: var(--bg-panel); }
+
+        /* ============================================================
+           FEATURE GRID
+           ============================================================ */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 166, 255, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+        }
+
+        .feature-title {
+            font-weight: 900;
+            color: var(--text-bright);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .feature-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ============================================================
+           FAQ
+           ============================================================ */
+        .faq-item {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+
+        .faq-item.open { border-color: var(--primary); }
+
+        .faq-question {
+            padding: 14px 18px;
+            font-weight: 800;
+            color: var(--text-bright);
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            user-select: none;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .faq-question:hover {
+            background: var(--bg-panel);
+        }
+
+        .faq-arrow {
+            font-size: 1.1rem;
+            color: var(--primary);
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .faq-item.open .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 18px;
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 1200px;
+            padding: 0 18px 16px;
+        }
+
+        /* ============================================================
+           HERO
+           ============================================================ */
+        .hero {
+            background: linear-gradient(135deg,
+                rgba(88, 166, 255, 0.12) 0%,
+                rgba(163, 113, 247, 0.08) 50%,
+                rgba(63, 185, 80, 0.08) 100%);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 32px 28px;
+            margin-bottom: 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(88, 166, 255, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(88, 166, 255, 0.3);
+            object-fit: cover;
+        }
+
+        .hero-badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .hero-badge {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .hero-badge.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+        .hero-badge.primary {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .hero-badge.purple {
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+
+        /* ============================================================
+           QUICK LINKS
+           ============================================================ */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .quick-link-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quick-link-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 166, 255, 0.15);
+            text-decoration: none;
+        }
+
+        .quick-link-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .quick-link-text b {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 900;
+            color: var(--text-bright);
+            margin-bottom: 2px;
+        }
+
+        .quick-link-text small {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* ============================================================
+           SEARCH HIGHLIGHT
+           ============================================================ */
+        .search-highlight {
+            background: rgba(245, 158, 11, 0.4);
+            padding: 1px 3px;
+            border-radius: 3px;
+            color: var(--text-bright);
+            font-weight: 900;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 700;
+            display: none;
+        }
+
+        /* ============================================================
+           BACK TO TOP
+           ============================================================ */
+        .back-to-top {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(88, 166, 255, 0.4);
+            z-index: 100;
+            transition: all 0.2s ease;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 28px rgba(88, 166, 255, 0.6);
+        }
+
+        .back-to-top.show {
+            display: flex;
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer {
+            margin-top: 60px;
+            padding: 30px 24px;
+            border-top: 1.5px solid var(--border);
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .footer-links a {
+            font-weight: 800;
+        }
+
+        /* ============================================================
+           NEW IN VERSION BANNER
+           ============================================================ */
+        .whats-new-section {
+            background: linear-gradient(135deg, rgba(63, 185, 80, 0.1), rgba(88, 166, 255, 0.08));
+            border: 1.5px solid var(--success);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 32px;
+        }
+
+        .whats-new-section h2 {
+            margin-top: 0;
+            border-left-color: var(--success);
+            background: none;
+            padding-left: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.4rem;
+        }
+
+        .whats-new-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .whats-new-card {
+            background: var(--bg-card);
+            border-left: 3px solid var(--success);
+            padding: 10px 14px;
+            border-radius: 6px;
+        }
+
+        .whats-new-card.security { border-left-color: var(--success); }
+        .whats-new-card.performance { border-left-color: var(--primary); }
+        .whats-new-card.reliability { border-left-color: var(--warning); }
+        .whats-new-card.offline { border-left-color: var(--purple); }
+        .whats-new-card.data { border-left-color: #16a34a; }
+        .whats-new-card.certificate { border-left-color: var(--danger); }
+        .whats-new-card.legal { border-left-color: #7c3aed; }
+
+        .whats-new-card-title {
+            font-weight: 900;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .whats-new-card.security .whats-new-card-title { color: var(--success); }
+        .whats-new-card.performance .whats-new-card-title { color: var(--primary); }
+        .whats-new-card.reliability .whats-new-card-title { color: var(--warning); }
+        .whats-new-card.offline .whats-new-card-title { color: var(--purple); }
+        .whats-new-card.data .whats-new-card-title { color: #16a34a; }
+        .whats-new-card.certificate .whats-new-card-title { color: var(--danger); }
+        .whats-new-card.legal .whats-new-card-title { color: #7c3aed; }
+
+        .whats-new-card-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ============================================================
+           SIDEBAR OVERLAY (mobile)
+           ============================================================ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 998;
+        }
+
+        /* ============================================================
+           RESPONSIVE — 900px
+           ============================================================ */
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+                padding: 20px 16px;
+                gap: 0;
+            }
+
+            .menu-toggle {
+                display: inline-flex;
+            }
+
+            .nav-search {
+                display: none;
+            }
+
+            .nav-actions .nav-btn:not(.primary) {
+                display: none;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -300px;
+                width: 280px;
+                height: 100vh;
+                background: var(--bg-card);
+                padding: 80px 20px 20px;
+                z-index: 999;
+                transition: left 0.3s ease;
+                border-right: 1.5px solid var(--border);
+                overflow-y: auto;
+            }
+
+            .sidebar.open {
+                left: 0;
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+            h1 { font-size: 1.7rem; }
+            h2 {
+                font-size: 1.25rem;
+                padding: 12px 16px;
+            }
+            h3 { font-size: 1.05rem; }
+
+            .hero {
+                padding: 24px 18px;
+            }
+
+            .hero-logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .back-to-top {
+                bottom: 16px;
+                right: 16px;
+                width: 42px;
+                height: 42px;
+            }
+
+            .whats-new-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================================
+           RESPONSIVE — 500px
+           ============================================================ */
+        @media (max-width: 500px) {
+            body { font-size: 14px; }
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.1rem; }
+
+            .nav-title { font-size: 0.95rem; }
+            .nav-title small { font-size: 0.62rem; }
+            .nav-logo {
+                width: 34px;
+                height: 34px;
+            }
+
+            .step-body {
+                padding-left: 0;
+                margin-top: 8px;
+            }
+
+            .table-wrap {
+                font-size: 0.78rem;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+
+            .whats-new-section {
+                padding: 16px 18px;
+            }
+
+            .whats-new-section h2 {
+                font-size: 1.15rem;
+            }
+        }
+
+        /* ============================================================
+           REDUCED MOTION
+           ============================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ============================================================
+           PRINT
+           ============================================================ */
+        @media print {
+            @page {
+                margin: 12mm;
+                size: A4;
+            }
+
+            .top-nav,
+            .sidebar,
+            .back-to-top,
+            .progress-bar,
+            .menu-toggle,
+            .sidebar-overlay,
+            .quick-links,
+            .nav-search,
+            .heading-copy {
+                display: none !important;
+            }
+
+            .layout {
+                display: block;
+                margin: 0;
+                padding: 0;
+                gap: 0;
+            }
+
+            .content {
+                max-width: 100%;
+            }
+
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                font-size: 11pt;
+            }
+
+            h1, h2, h3, h4 {
+                color: #000000 !important;
+                page-break-after: avoid;
+            }
+
+            h2 {
+                background: none !important;
+                border-left: 4px solid #000;
+                padding-left: 12px;
+            }
+
+            .step,
+            .tip,
+            .warning,
+            .danger,
+            .info {
+                border: 1px solid #000 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                page-break-inside: avoid;
+            }
+
+            a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            code, kbd {
+                background: #f0f0f0;
+                color: #000000;
+                border: 1px solid #ccc;
+            }
+
+            .faq-answer {
+                max-height: none !important;
+                padding: 0 18px 16px !important;
+            }
+
+            .faq-item.open .faq-answer {
+                max-height: none !important;
+            }
+
+            table {
+                page-break-inside: avoid;
+                font-size: 9pt;
+            }
+
+            .hero {
+                background: none !important;
+                border: 1px solid #000 !important;
+            }
+
+            .feature-card,
+            .faq-item {
+                page-break-inside: avoid;
+                border: 1px solid #000 !important;
+            }
+
+            .whats-new-section {
+                background: #ffffff !important;
+                border: 1px solid #000 !important;
+            }
+        }
+
+        /* ============================================================
+           HIGH CONTRAST
+           ============================================================ */
+        @media (prefers-contrast: high) {
+            :root {
+                --border: #ffffff;
+                --text-muted: #ffffff;
+                --primary: #00ffff;
+            }
+
+            .feature-card,
+            .faq-item,
+            .step {
+                border-width: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ SKIP LINK ═══ -->
+<a href="#intro" class="skip-to-content">Skip to content</a>
+
+<!-- ═══ TOP NAV ═══ -->
+<nav class="top-nav" role="navigation" aria-label="Manual navigation">
+    <div class="nav-left">
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="sidebar">☰</button>
+        <img src="assets/icon.ico" alt="Logo" class="nav-logo" onerror="this.style.display='none'">
+        <div class="nav-title">
+            📖 User Manual
+            <small>Hoṛ Katha Suite v3.7.4</small>
+        </div>
+    </div>
+
+    <div class="nav-search">
+        <input type="text"
+               id="searchInput"
+               placeholder="🔍 Search manual..."
+               autocomplete="off"
+               spellcheck="false"
+               aria-label="Search manual">
+        <span class="search-icon">🔍</span>
+    </div>
+
+    <div class="nav-actions">
+        <button class="nav-btn" id="themeToggle" type="button" title="Toggle Theme" aria-label="Toggle theme">🌙</button>
+        <button class="nav-btn" id="printBtn" type="button" title="Print / Save PDF" aria-label="Print">🖨️ PDF</button>
+        <a href="index.html" class="nav-btn primary">← Back to App</a>
+    </div>
+</nav>
+
+<div class="progress-bar" role="progressbar" aria-label="Reading progress">
+    <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<div class="layout">
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar" id="sidebar" aria-label="Table of contents">
+        <div class="toc-title">📚 Table of Contents</div>
+        <ul class="toc">
+            <li><a href="#intro"><span class="toc-num">1.</span> Introduction</a></li>
+            <li><a href="#getting-started"><span class="toc-num">2.</span> Getting Started</a></li>
+            <li><a href="#languages"><span class="toc-num">3.</span> Language Support</a></li>
+            <li><a href="#editor"><span class="toc-num">4.</span> Editor Basics</a></li>
+            <li><a href="#formatting"><span class="toc-num">5.</span> Formatting</a></li>
+            <li><a href="#reading"><span class="toc-num">6.</span> Reading (TTS)</a></li>
+            <li><a href="#voice-typing"><span class="toc-num">7.</span> Voice Typing (Mic)</a></li>
+            <li><a href="#tools"><span class="toc-num">8.</span> Tools</a></li>
+            <li><a href="#typing-practice"><span class="toc-num">9.</span> Typing Practice</a></li>
+            <li><a href="#certificate"><span class="toc-num">10.</span> Certificate</a></li>
+            <li><a href="#export"><span class="toc-num">11.</span> Export &amp; Share</a></li>
+            <li><a href="#payment"><span class="toc-num">12.</span> Payment (UPI/QR)</a></li>
+            <li><a href="#trial-license"><span class="toc-num">13.</span> Trial &amp; License</a></li>
+            <li><a href="#privacy"><span class="toc-num">14.</span> Privacy &amp; Security</a></li>
+            <li><a href="#troubleshooting"><span class="toc-num">15.</span> Troubleshooting</a></li>
+            <li><a href="#faq"><span class="toc-num">16.</span> FAQ</a></li>
+            <li><a href="#shortcuts"><span class="toc-num">17.</span> Keyboard Shortcuts</a></li>
+            <li><a href="#contact"><span class="toc-num">18.</span> Contact &amp; Support</a></li>
+            <li><a href="#legal"><span class="toc-num">19.</span> Legal &amp; Compliance</a></li>
+        </ul>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+    <!-- ═══ MAIN CONTENT ═══ -->
+    <main class="content" id="mainContent">
+
+        <!-- HERO -->
+        <section class="hero">
+            <img src="assets/icon.ico" alt="Logo" class="hero-logo" onerror="this.style.display='none'">
+            <h1>Hoṛ Katha Suite <span class="gradient-text">User Manual</span></h1>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-top: 8px;">
+                Complete guide for the Multi-Script Typing Suite — English · Hindi · Santali · Ol Chiki
+            </p>
+            <div class="hero-badges">
+                <span class="hero-badge success">✅ v3.7.4 Pro Ultra (Hardened)</span>
+                <span class="hero-badge primary">🌐 5 Languages</span>
+                <span class="hero-badge purple">🎁 ₹9 Trial</span>
+                <span class="hero-badge">🔒 AES-256 Secure</span>
+                <span class="hero-badge">🇮🇳 Made in India</span>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 🌟 WHAT'S NEW IN v3.7.4 -->
+        <!-- ═══════════════════════════════════════════ -->
+        <section class="whats-new-section">
+            <h2>
+                <span style="font-size: 1.6rem;">🎉</span>
+                <span>What's New in v3.7.4</span>
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+                इस version में <strong>security, performance, और reliability</strong> के कई major improvements हैं।
+            </p>
+            <div class="whats-new-grid">
+                <div class="whats-new-card security">
+                    <div class="whats-new-card-title">🔐 Security Hardened</div>
+                    <div class="whats-new-card-desc">Trusted hosts whitelist strict, CSP hardened, script trust strict</div>
+                </div>
+                <div class="whats-new-card performance">
+                    <div class="whats-new-card-title">⚡ Performance Boost</div>
+                    <div class="whats-new-card-desc">TTS race-safe sessions, faster QR rendering, optimized DOM</div>
+                </div>
+                <div class="whats-new-card reliability">
+                    <div class="whats-new-card-title">🎯 Reliability Fix</div>
+                    <div class="whats-new-card-desc">Double-char typing fix, idempotent finish, race-safe retries</div>
+                </div>
+                <div class="whats-new-card offline">
+                    <div class="whats-new-card-title">🌐 Better Offline</div>
+                    <div class="whats-new-card-desc">Service Worker v18, per-page fallback, queue retry limits</div>
+                </div>
+                <div class="whats-new-card data">
+                    <div class="whats-new-card-title">🔒 Data Protection</div>
+                    <div class="whats-new-card-desc">Strict NAME_ENCRYPTION_SECRET, production startup check</div>
+                </div>
+                <div class="whats-new-card certificate">
+                    <div class="whats-new-card-title">🎓 Certificate Polish</div>
+                    <div class="whats-new-card-desc">URL-safe escaping, jsPDF compat, ESC cleanup</div>
+                </div>
+                <div class="whats-new-card legal">
+                    <div class="whats-new-card-title">⚖️ Legal Compliance</div>
+                    <div class="whats-new-card-desc">DPDP Act 2023, CERT-In 2022, Terms of Service added</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUICK LINKS -->
+        <section class="quick-links">
+            <a href="index.html" class="quick-link-card">
+                <div class="quick-link-icon">🏠</div>
+                <div class="quick-link-text">
+                    <b>Open App</b>
+                    <small>Start typing now</small>
+                </div>
+            </a>
+            <a href="https://wa.me/919110977117" target="_blank" rel="noopener noreferrer" class="quick-link-card">
+                <div class="quick-link-icon">💬</div>
+                <div class="quick-link-text">
+                    <b>WhatsApp Support</b>
+                    <small>+91 91109 77117</small>
+                </div>
+            </a>
+            <a href="privacy.html" class="quick-link-card">
+                <div class="quick-link-icon">🔒</div>
+                <div class="quick-link-text">
+                    <b>Privacy Policy</b>
+                    <small>Data protection</small>
+                </div>
+            </a>
+            <a href="terms.html" class="quick-link-card">
+                <div class="quick-link-icon">📜</div>
+                <div class="quick-link-text">
+                    <b>Terms of Service</b>
+                    <small>Legal agreement</small>
+                </div>
+            </a>
+            <a href="#trial-license" class="quick-link-card">
+                <div class="quick-link-icon">🎁</div>
+                <div class="quick-link-text">
+                    <b>₹9 Trial</b>
+                    <small>7 days access</small>
+                </div>
+            </a>
+        </section>
+
+        <div class="no-results" id="noResults" role="status" aria-live="polite">
+            <div style="font-size: 3rem; opacity: 0.4;">🔍</div>
+            <p style="margin-top: 12px;">No results found for "<span id="noResultsTerm"></span>"</p>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- 1. INTRODUCTION -->
+        <!-- ═══════════════════════════════════════════ -->
+        <h2 id="intro">1. Introduction<button class="heading-copy" data-target="intro" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>🏠 App क्या है?</h3>
+        <p>
+            <strong>Hoṛ/होड़ Katha Suite</strong> एक modern multi-script typing application है जो
+            <strong>5 भाषाओं</strong> में typing, reading, और conversion की सुविधा देती है।
+            यह छात्रों, teachers, DTP shops, government offices, और हर उस व्यक्ति के लिए design किया गया है
+            जिसे एक से अधिक भाषाओं में type करना होता है।
+        </p>
+
+        <h3>👥 किसके लिए है?</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎓</div>
+                <div class="feature-title">Students</div>
+                <div class="feature-desc">Typing practice + exam preparation</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏛️</div>
+                <div class="feature-title">Government Offices</div>
+                <div class="feature-desc">Hindi + Santali documentation</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🖨️</div>
+                <div class="feature-title">DTP Shops</div>
+                <div class="feature-desc">Kruti Dev + Unicode conversion</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌏</div>
+                <div class="feature-title">Santali Community</div>
+                <div class="feature-desc">Ol Chiki script typing</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💼</div>
+                <div class="feature-title">Freelancers</div>
+                <div class="feature-desc">Multi-script typing work</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏫</div>
+                <div class="feature-title">Schools &amp; Colleges</div>
+                <div class="feature-desc">Teaching + practice tool</div>
+            </div>
+        </div>
+
+        <h3>📊 Version Info</h3>
+        <div class="table-wrap">
+            <table>
+                <tr><th>Field</th><th>Value</th></tr>
+                <tr><td>Version</td><td><strong>3.7.4 Pro Ultra</strong></td></tr>
+                <tr><td>Build Type</td><td>Production Hardened</td></tr>
+                <tr><td>Developer</td><td><strong>BOSC Tech &amp; Edu</strong></td></tr>
+                <tr><td>License</td><td>Free + Paid Plans (₹9 Trial → ₹199+)</td></tr>
+                <tr><td>Platforms</td><td>Windows · PWA · Web</td></tr>
+                <tr><td>Languages</td><td>English · हिन्दी · Santali (D) · Santali (R) · Ol Chiki</td></tr>
+            </table>
+        </div>
+
+        <h3>✨ All Features (Complete List)</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⌨️</div>
+                <div class="feature-title">Virtual Keyboard</div>
+                <div class="feature-desc">5 layouts, shift/caps, numpad</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎤</div>
+                <div class="feature-title">Voice Typing</div>
+                <div class="feature-desc">Speech-to-text (Hindi/English)</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔊</div>
+                <div class="feature-title">Text-to-Speech</div>
+                <div class="feature-desc">51 voices, speed/pitch control</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🅰️</div>
+                <div class="feature-title">Kruti Dev</div>
+                <div class="feature-desc">Unicode ↔ Kruti conversion</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <div class="feature-title">Script Converter</div>
+                <div class="feature-desc">Devanagari ↔ Ol Chiki ↔ Roman</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">Typing Practice</div>
+                <div class="feature-desc">3 levels × 9 lessons</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎓</div>
+                <div class="feature-title">Certificate</div>
+                <div class="feature-desc">3 styles + QR verify</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <div class="feature-title">UPI Payment</div>
+                <div class="feature-desc">QR code + WhatsApp order</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">😀</div>
+                <div class="feature-title">Emoji Palette</div>
+                <div class="feature-desc">500+ emojis, search + categories</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔣</div>
+                <div class="feature-title">Character Map</div>
+                <div class="feature-desc">Unicode + hover zoom</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💾</div>
+                <div class="feature-title">Export</div>
+                <div class="feature-desc">Word · TXT · PDF · Print</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧘</div>
+                <div class="feature-title">Zen Mode</div>
+                <div class="feature-desc">Distraction-free writing</div>
+            </div>
+        </div>
+
+        <!-- 2. GETTING STARTED -->
+        <h2 id="getting-started">2. Getting Started<button class="heading-copy" data-target="getting-started" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>💻 Windows पर Install करें (.exe)</h3>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> Setup File Download करें</div>
+            <div class="step-body">
+                <code>Hor Katha Suite Pro Setup 3.7.4.exe</code> file download करें।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> Installer Run करें</div>
+            <div class="step-body">
+                File पर <strong>double-click</strong> करें। Windows SmartScreen warning आ सकती है → <strong>"More info" → "Run anyway"</strong> click करें।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">3</span> Install Complete करें</div>
+            <div class="step-body">
+                Installation location चुनें → <strong>Desktop Shortcut</strong> ✓ → <strong>Install</strong> करें।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">4</span> App खोलें</div>
+            <div class="step-body">
+                Desktop या Start Menu से <strong>Hor Katha Suite Pro</strong> खोलें।
+            </div>
+        </div>
+
+        <h3>📱 Mobile पर Install करें (PWA)</h3>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> Browser में खोलें</div>
+            <div class="step-body">
+                Chrome में app URL खोलें
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> Install Button दबाएँ</div>
+            <div class="step-body">
+                Top-right <strong>"📲 Install"</strong> button दबाएँ
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">3</span> Home Screen पर Add करें</div>
+            <div class="step-body">
+                Browser prompt में <strong>"Install"</strong> या <strong>"Add to Home screen"</strong> select करें।
+            </div>
+        </div>
+
+        <div class="tip">
+            PWA install के बाद app offline भी काम करेगी — internet की जरूरत नहीं।
+        </div>
+
+        <h3>🎨 Interface Tour</h3>
+
+        <p>App खोलने पर आपको 6 main sections मिलेंगे:</p>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📌</div>
+                <div class="feature-title">1. Header Bar</div>
+                <div class="feature-desc">Logo, version, buttons (Install, Preview, Support, Buy, License, Trial)</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <div class="feature-title">2. Language Tabs</div>
+                <div class="feature-desc">5 भाषाओं में से एक चुनें: Eng, हिन्दी, संताली, ओलचिकी</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">3. Status Strip</div>
+                <div class="feature-desc">Live stats — words, chars, WPM, online status, time</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛠️</div>
+                <div class="feature-title">4. Toolbar</div>
+                <div class="feature-desc">Bold, Italic, Font, Mic, Read, Print, Export buttons</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✏️</div>
+                <div class="feature-title">5. Editor</div>
+                <div class="feature-desc">Main typing area — यहाँ type करें</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⌨️</div>
+                <div class="feature-title">6. Virtual Keyboard</div>
+                <div class="feature-desc">Click करके type करें (mobile-friendly)</div>
+            </div>
+        </div>
+
+        <!-- 3. LANGUAGES -->
+        <h2 id="languages">3. Language Support<button class="heading-copy" data-target="languages" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>🌐 5 भाषाएँ</h3>
+
+        <div class="table-wrap">
+            <table>
+                <tr>
+                    <th>Language</th>
+                    <th>Tab</th>
+                    <th>Script</th>
+                    <th>Features</th>
+                </tr>
+                <tr>
+                    <td><strong>English</strong></td>
+                    <td>Eng</td>
+                    <td>Latin</td>
+                    <td>Full QWERTY + Typography + TTS</td>
+                </tr>
+                <tr>
+                    <td><strong>Hindi</strong></td>
+                    <td>हिन्दी</td>
+                    <td>Devanagari</td>
+                    <td>Complete Hindi typing</td>
+                </tr>
+                <tr>
+                    <td><strong>Santali (D)</strong></td>
+                    <td>Santali (D)</td>
+                    <td>Devanagari + Nukta</td>
+                    <td>Glottal marks + modifiers</td>
+                </tr>
+                <tr>
+                    <td><strong>Santali (R)</strong></td>
+                    <td>Santali (R)</td>
+                    <td>Roman</td>
+                    <td>Diacritics (a̱, ṭ, ṇ, ñ)</td>
+                </tr>
+                <tr>
+                    <td><strong>Ol Chiki</strong></td>
+                    <td>ओलचिकी</td>
+                    <td>ᱚᱞ ᱪᱤᱠᱤ</td>
+                    <td>30 characters + 11 digraphs</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>🔄 भाषा Switch कैसे करें?</h3>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> Language Tab दबाएँ</div>
+            <div class="step-body">
+                Header में स्थित <strong>Eng</strong>, <strong>हिन्दी</strong>, <strong>Santali</strong>, या <strong>ओलचिकी</strong> button दबाएँ।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> Keyboard बदलेगा</div>
+            <div class="step-body">
+                Virtual keyboard automatically उस भाषा की layout में बदल जाएगा।
+            </div>
+        </div>
+
+        <div class="warning">
+            <strong>Free Mode में सिर्फ English available है।</strong> बाकी भाषाओं के लिए ₹9 Trial activate करें या Pro License खरीदें।
+        </div>
+
+        <h3>⌨️ Virtual Keyboard का उपयोग</h3>
+
+        <ul>
+            <li><strong>Screen पर दिखने वाली keys पर click</strong> करें — character आएगा</li>
+            <li><strong>Shift key</strong> दबाकर uppercase letters type करें</li>
+            <li><strong>Caps Lock</strong> से लगातार uppercase</li>
+            <li><strong>Space Bar</strong> से space</li>
+            <li><strong>Enter</strong> से new line</li>
+            <li><strong>⌫ Del</strong> से backspace</li>
+        </ul>
+
+        <h3>🖥️ Hardware Keyboard Shortcuts</h3>
+
+        <p>अगर आपके पास physical keyboard है, तो तेज़ी से type कर सकते हैं:</p>
+
+        <div class="table-wrap">
+            <table>
+                <tr>
+                    <th>Layout</th>
+                    <th>Physical Key</th>
+                    <th>Output</th>
+                </tr>
+                <tr><td>Hindi</td><td><kbd>k</kbd></td><td>क</td></tr>
+                <tr><td>Hindi</td><td><kbd>Shift</kbd> + <kbd>K</kbd></td><td>ख</td></tr>
+                <tr><td>Hindi</td><td><kbd>a</kbd></td><td>ा (आ की मात्रा)</td></tr>
+                <tr><td>Ol Chiki</td><td><kbd>k</kbd></td><td>ᱠ</td></tr>
+                <tr><td>Ol Chiki</td><td><kbd>y</kbd></td><td>ᱭ</td></tr>
+                <tr><td>Roman</td><td><kbd>Alt</kbd> + <kbd>N</kbd></td><td>ñ</td></tr>
+                <tr><td>Roman</td><td><kbd>Alt</kbd> + <kbd>R</kbd></td><td>ṛ</td></tr>
+                <tr><td>Roman</td><td><kbd>Alt</kbd> + <kbd>T</kbd></td><td>ṭ</td></tr>
+            </table>
+        </div>
+
+        <div class="tip">
+            पूरी कीबोर्ड मैपिंग के लिए app में <strong>Mapping Guide</strong> section देखें (bottom-left panel)। 
+        </div>
+
+        <!-- 4. EDITOR BASICS -->
+        <h2 id="editor">4. Editor Basics<button class="heading-copy" data-target="editor" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>✏️ Type करना</h3>
+        <p>Editor में type करने के 3 तरीके हैं:</p>
+
+        <ol>
+            <li><strong>Virtual Keyboard</strong> — Screen पर keys click करें</li>
+            <li><strong>Hardware Keyboard</strong> — Physical keyboard use करें</li>
+            <li><strong>Mic (Voice Typing)</strong> — बोलकर type करें</li>
+        </ol>
+
+        <h3>💾 Auto-Save</h3>
+        <p>
+            हर 800ms में आपका text <strong>automatically save</strong> होता है। Status strip में 💾 <strong>"Saved"</strong> दिखेगा।
+            Browser refresh करने पर भी आपका काम वापस आएगा।
+        </p>
+
+        <h3>↶ Undo / Redo</h3>
+
+        <ul>
+            <li><strong>Undo:</strong> Toolbar में <code>↶</code> button दबाएँ या <kbd>Ctrl</kbd> + <kbd>Z</kbd></li>
+            <li><strong>Redo:</strong> Toolbar में <code>↷</code> button दबाएँ या <kbd>Ctrl</kbd> + <kbd>Y</kbd></li>
+            <li>50 steps तक undo/redo available है</li>
+        </ul>
+
+        <h3>📋 Copy / Paste / Clear</h3>
+
+        <ul>
+            <li><strong>Copy:</strong> Action Bar में <code>📋 Copy</code> button</li>
+            <li><strong>Clear:</strong> <code>🗑️ Clear</code> button — पूरा editor खाली हो जाएगा</li>
+            <li><strong>Paste:</strong> <kbd>Ctrl</kbd> + <kbd>V</kbd> से paste करें</li>
+        </ul>
+
+        <h3>🔤 Font Size बदलना</h3>
+        <p>Toolbar में:</p>
+        <ul>
+            <li><code>A+</code> — Font size बड़ा करें</li>
+            <li><code>A-</code> — Font size छोटा करें</li>
+        </ul>
+
+        <!-- 5. FORMATTING -->
+        <h2 id="formatting">5. Formatting<button class="heading-copy" data-target="formatting" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>🎨 Text Styling</h3>
+        <p>Toolbar में formatting buttons हैं:</p>
+
+        <div class="table-wrap">
+            <table>
+                <tr><th>Button</th><th>Function</th></tr>
+                <tr><td><b>B</b></td><td><strong>Bold</strong> — Text मोटा करें</td></tr>
+                <tr><td><i>I</i></td><td><em>Italic</em> — Text तिरछा करें</td></tr>
+                <tr><td><u>U</u></td><td><u>Underline</u> — नीचे line</td></tr>
+                <tr><td><s>S</s></td><td><s>Strike</s> — बीच में line</td></tr>
+                <tr><td>🧹</td><td>Remove Format — सारी formatting हटाएँ</td></tr>
+            </table>
+        </div>
+
+        <h3>🎨 Colors</h3>
+        <p>Toolbar में दो color pickers हैं:</p>
+        <ul>
+            <li><strong>🎨 Text Color</strong> — Text का रंग बदलें</li>
+            <li><strong>🖍️ Highlight</strong> — Background color</li>
+        </ul>
+
+        <div class="info">
+            पहले text <strong>select</strong> करें, फिर color picker से color चुनें।
+        </div>
+
+        <h3>🔤 Font Selection</h3>
+        <p>
+            Toolbar में <strong>Font dropdown</strong> से 40+ fonts चुन सकते हैं। हर भाषा के लिए अलग fonts available हैं:
+        </p>
+
+        <ul>
+            <li><strong>English:</strong> Roboto, Inter, Poppins, Montserrat, etc.</li>
+            <li><strong>Hindi:</strong> Noto Sans Devanagari, Mangal, Kruti Dev, Kalam, etc.</li>
+            <li><strong>Ol Chiki:</strong> Noto Sans Ol Chiki, Guru Gomke, etc.</li>
+        </ul>
+
+        <h3>🔠 Case Conversion</h3>
+        <p>Toolbar में <strong>Case dropdown</strong> से text का case बदलें:</p>
+
+        <ul>
+            <li><strong>UPPERCASE</strong> — सब बड़े letters</li>
+            <li><strong>lowercase</strong> — सब छोटे letters</li>
+            <li><strong>Title Case</strong> — हर शब्द का पहला letter बड़ा</li>
+            <li><strong>Sentence case</strong> — सिर्फ वाक्य का पहला letter बड़ा</li>
+            <li><strong>camelCase, kebab-case, snake_case</strong> — Code variable names</li>
+            <li><strong>123 ➔ १२३</strong> — Numbers को Devanagari में</li>
+            <li><strong>123 ➔ ᱑᱒᱓</strong> — Numbers को Ol Chiki में</li>
+            <li><strong>१२३ ➔ 123</strong> — Devanagari/Ol Chiki से Latin में</li>
+        </ul>
+
+        <!-- 6. READING -->
+        <h2 id="reading">6. Reading (Text-to-Speech)<button class="heading-copy" data-target="reading" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>🔊 Read Button</h3>
+        <p>
+            <strong>Read button</strong> आपके editor के text को आवाज़ में बदलकर पढ़ता है।
+            यह feature सिर्फ <strong>English layout</strong> में काम करता है।
+        </p>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> English tab चुनें</div>
+            <div class="step-body">
+                Header में <strong>"Eng"</strong> tab active करें।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> Text Type करें</div>
+            <div class="step-body">
+                Editor में English text लिखें — जैसे <code>Hello World</code>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">3</span> Read Button दबाएँ</div>
+            <div class="step-body">
+                Toolbar में <strong>"🗣️ Read"</strong> button दबाएँ। आवाज़ आएगी।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">4</span> Stop करें</div>
+            <div class="step-body">
+                दोबारा Read दबाएँ, या <kbd>Esc</kbd> दबाएँ।
+            </div>
+        </div>
+
+        <h3>🌐 Supported Languages (TTS)</h3>
+        <div class="table-wrap">
+            <table>
+                <tr>
+                    <th>Language</th>
+                    <th>Voice Code</th>
+                    <th>Fallback</th>
+                    <th>Notes</th>
+                </tr>
+                <tr>
+                    <td>English</td>
+                    <td><code>en-US</code></td>
+                    <td>en-GB, en-IN</td>
+                    <td>✅ 51 voices available</td>
+                </tr>
+                <tr>
+                    <td>Hindi</td>
+                    <td><code>hi-IN</code></td>
+                    <td>en-IN</td>
+                    <td>✅ Devanagari + Santali</td>
+                </tr>
+                <tr>
+                    <td>Santali (Roman)</td>
+                    <td><code>en-IN</code></td>
+                    <td>en-US</td>
+                    <td>✅ Diacritics supported</td>
+                </tr>
+                <tr>
+                    <td>Ol Chiki</td>
+                    <td><code>sat-IN</code></td>
+                    <td>hi-IN, en-IN</td>
+                    <td>⚠️ Browser support varies</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="tip">
+            <strong>Ol Chiki TTS:</strong> Chrome/Edge में better support हो सकता है। अगर voice न मिले, तो Hindi voice fallback के रूप में use होगी।
+        </div>
+
+        <h3>🎙️ Voice Settings (⚙️)</h3>
+        <p>
+            <strong>⚙️ button</strong> (Read के पास) दबाकर voice settings खोलें:
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <tr><th>Setting</th><th>क्या करता है</th></tr>
+                <tr><td>🎙️ Voice List</td><td>51 English voices में से choose करें</td></tr>
+                <tr><td>⚡ Speed</td><td>0.5x (धीमा) — 2.0x (तेज़)</td></tr>
+                <tr><td>🎵 Pitch</td><td>आवाज़ की ऊँचाई (0.5 — 1.5)</td></tr>
+                <tr><td>🔉 Volume</td><td>10% — 100%</td></tr>
+                <tr><td>🎧 Test</td><td>Voice preview सुनें</td></tr>
+                <tr><td>🔄 Auto</td><td>Default voice पर वापस</td></tr>
+            </table>
+        </div>
+
+        <h3>🌟 Best Voices</h3>
+
+        <div class="table-wrap">
+            <table>
+                <tr><th>Voice Name</th><th>Type</th><th>Quality</th></tr>
+                <tr><td>Microsoft David</td><td>Local Male</td><td>⭐ Fast &amp; Clear</td></tr>
+                <tr><td>Microsoft Zira</td><td>Local Female</td><td>⭐⭐ Natural</td></tr>
+                <tr><td>Google US English</td><td>Online Female</td><td>⭐⭐⭐ Premium</td></tr>
+                <tr><td>Google UK English</td><td>Online Female</td><td>⭐⭐⭐ British</td></tr>
+            </table>
+        </div>
+
+        <div class="tip">
+            <strong>Search box</strong> में type करें — जैसे "Google" या "Female" — voice filter हो जाएँगी।
+        </div>
+
+        <div class="warning">
+            <strong>Hindi/Santali reading नहीं है।</strong> Read feature सिर्फ English में काम करती है।
+        </div>
+
+        <!-- 7. VOICE TYPING -->
+        <h2 id="voice-typing">7. Voice Typing (Mic)<button class="heading-copy" data-target="voice-typing" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <p>
+            <strong>Mic button</strong> आपकी आवाज़ को सुनकर text में बदलता है (Speech-to-Text)।
+        </p>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> Mic Button दबाएँ</div>
+            <div class="step-body">
+                Toolbar में <strong>"🎤 Mic"</strong> button दबाएँ। Button red हो जाएगा।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> बोलें</div>
+            <div class="step-body">
+                साफ़ बोलें — आपकी आवाज़ text में convert होगी।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">3</span> Stop करें</div>
+            <div class="step-body">
+                दोबारा Mic दबाएँ — recording बंद हो जाएगी।
+            </div>
+        </div>
+
+        <div class="tip">
+            Hindi layout active हो तो voice recognition <strong>Hindi (hi-IN)</strong> में होगी,
+            English में <strong>English (en-US)</strong> में।
+        </div>
+
+        <!-- 8. TOOLS -->
+        <h2 id="tools">8. Tools<button class="heading-copy" data-target="tools" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>🅰️ Kruti Dev Converter</h3>
+        <p>
+            Unicode text को <strong>Kruti Dev</strong> font में convert करें — DTP shops के लिए useful।
+        </p>
+        <ol>
+            <li>Action Bar में <strong>"🅰️ KrutiDev"</strong> button दबाएँ</li>
+            <li>Preview में converted text दिखेगा</li>
+            <li><strong>"Copy"</strong> या <strong>"Replace"</strong> button use करें</li>
+        </ol>
+
+        <h3>🔄 Script Converter</h3>
+        <p>एक script से दूसरे में convert करें:</p>
+
+        <ul>
+            <li><strong>Devanagari ➔ Ol Chiki</strong></li>
+            <li><strong>Ol Chiki ➔ Devanagari</strong></li>
+            <li><strong>Roman ➔ Ol Chiki</strong></li>
+        </ul>
+
+        <h3>⚙️ IME Map Export</h3>
+        <p>System के लिए IME (Input Method Editor) map JSON file में download करें।</p>
+
+        <h3>😀 Emoji Palette</h3>
+        <p>500+ emojis — search करें और insert करें:</p>
+
+        <ul>
+            <li><strong>Smileys</strong> — 😀 😃 😄</li>
+            <li><strong>Gestures</strong> — 👋 👍 🙏</li>
+            <li><strong>Hearts</strong> — ❤️ 💕 💖</li>
+            <li><strong>Symbols</strong> — © ® ™ ₹</li>
+            <li><strong>Nature</strong> — 🌸 🌺 🌳</li>
+        </ul>
+
+        <h3>🔣 Character Map</h3>
+        <p>हर भाषा के सभी characters देखें और copy करें। Hover करने पर zoom preview दिखेगा।</p>
+
+        <h3>🔍 Find &amp; Replace</h3>
+        <ol>
+            <li><strong>"🔍 Find"</strong> button दबाएँ</li>
+            <li>Find box में search term डालें</li>
+            <li>Replace box में new text डालें</li>
+            <li><strong>"One"</strong> (पहला) या <strong>"All"</strong> (सब) दबाएँ</li>
+        </ol>
+
+        <!-- 9. TYPING PRACTICE -->
+        <h2 id="typing-practice">9. Typing Practice<button class="heading-copy" data-target="typing-practice" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <p>
+            <strong>Typing Practice</strong> feature आपकी typing speed और accuracy improve करने के लिए है।
+            इसमें <strong>3 levels</strong> और <strong>9 lessons</strong> हैं।
+        </p>
+
+        <h3>📚 Levels</h3>
+
+        <div class="table-wrap">
+            <table>
+                <tr><th>Level</th><th>Lessons</th><th>Content</th></tr>
+                <tr>
+                    <td><strong>🟢 Basic</strong></td>
+                    <td>3 lessons</td>
+                    <td>Home row, common words, short sentences</td>
+                </tr>
+                <tr>
+                    <td><strong>🟠 Advanced</strong></td>
+                    <td>3 lessons</td>
+                    <td>Punctuation, numbers, complex paragraphs</td>
+                </tr>
+                <tr>
+                    <td><strong>🔵 Job Oriented</strong></td>
+                    <td>3 lessons</td>
+                    <td>Email, reports, government formats</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>🎯 Practice कैसे करें?</h3>
+
+        <ol>
+            <li><strong>"🎯 Typing Practice"</strong> button दबाएँ</li>
+            <li>Level और Lesson select करें</li>
+            <li>Duration चुनें (1/2/5/10 min)</li>
+            <li><strong>"▶️ Start Practice"</strong> दबाएँ</li>
+            <li>Target text को type करें</li>
+            <li>Result screen में performance देखें</li>
+        </ol>
+
+        <h3>📊 Live Stats</h3>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">WPM</div>
+                <div class="feature-desc">Words Per Minute — typing speed</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">Accuracy</div>
+                <div class="feature-desc">Correct chars का percentage</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚠️</div>
+                <div class="feature-title">Errors</div>
+                <div class="feature-desc">कुल गलतियाँ</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Progress</div>
+                <div class="feature-desc">कितना पूरा हुआ</div>
+            </div>
+        </div>
+
+        <h3>🏆 Grades</h3>
+
+        <ul>
+            <li><strong>A+</strong> — 60+ WPM, 95%+ accuracy (Outstanding! 🏆)</li>
+            <li><strong>A</strong> — 45+ WPM, 92%+ accuracy (Excellent! 🌟)</li>
+            <li><strong>B</strong> — 30+ WPM, 88%+ accuracy (Good! 👍)</li>
+            <li><strong>C</strong> — 20+ WPM, 80%+ accuracy (Keep going!)</li>
+            <li><strong>D</strong> — बाकी cases (Practice more)</li>
+        </ul>
+
+        <!-- 10. CERTIFICATE -->
+        <h2 id="certificate">10. Typing Certificate<button class="heading-copy" data-target="certificate" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <p>Typing test complete करने के बाद <strong>professional certificate</strong> generate करें।</p>
+
+        <h3>🎓 3 Certificate Styles</h3>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📘</div>
+                <div class="feature-title">Basic — Blue</div>
+                <div class="feature-desc">Elegant Blue for Basic Level</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📕</div>
+                <div class="feature-title">Advanced — Gold</div>
+                <div class="feature-desc">Premium Gold for Advanced</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📗</div>
+                <div class="feature-title">Job Oriented — Executive</div>
+                <div class="feature-desc">Formal for Job Level</div>
+            </div>
+        </div>
+
+        <h3>📥 Certificate Features</h3>
+
+        <ul>
+            <li><strong>Name Input</strong> — अपना नाम डालें</li>
+            <li><strong>QR Verification</strong> — Scan to verify online</li>
+            <li><strong>Real Signature</strong> — Parish Marandi (Founder)</li>
+            <li><strong>4K PNG Download</strong></li>
+            <li><strong>Save as PDF</strong></li>
+            <li><strong>WhatsApp Share</strong> — With verify link</li>
+        </ul>
+
+        <h3>🔗 Verification URL Format</h3>
+        <p>हर certificate पर एक <strong>unique QR code</strong> होता है जो निम्न format के URL पर ले जाता है:</p>
+        <div class="table-wrap">
+            <table>
+                <tr><th>Field</th><th>Example</th></tr>
+                <tr><td>Base URL</td><td><code>https://hor-katha.vercel.app/verify.html</code></td></tr>
+                <tr><td>Certificate No</td><td><code>cert=HK-BAS-251009-A4F2</code></td></tr>
+                <tr><td>Name</td><td><code>name=Parish+Marandi</code></td></tr>
+                <tr><td>WPM</td><td><code>wpm=45</code></td></tr>
+                <tr><td>Accuracy</td><td><code>acc=96</code></td></tr>
+                <tr><td>Grade</td><td><code>grade=A%2B</code></td></tr>
+                <tr><td>Date</td><td><code>date=2025-10-09</code></td></tr>
+            </table>
+        </div>
+        <div class="info">
+            <strong>Full Example:</strong><br>
+            <code style="font-size: 0.75rem; word-break: break-all;">https://hor-katha.vercel.app/verify.html?cert=HK-BAS-251009-A4F2&name=Parish+Marandi&wpm=45&acc=96&grade=A%2B&date=2025-10-09</code>
+        </div>
+
+        <h3>📱 Certificate कैसे Download करें?</h3>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> Test Complete करें</div>
+        </div>
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> "🎓 Get Certificate" दबाएँ</div>
+        </div>
+        <div class="step">
+            <div class="step-title"><span class="step-number">3</span> अपना नाम डालें</div>
+        </div>
+        <div class="step">
+            <div class="step-title"><span class="step-number">4</span> "Generate Certificate" दबाएँ</div>
+        </div>
+        <div class="step">
+            <div class="step-title"><span class="step-number">5</span> "💾 Download / Share" → PNG / PDF / WhatsApp</div>
+        </div>
+
+        <!-- 11. EXPORT -->
+        <h2 id="export">11. Export &amp; Share<button class="heading-copy" data-target="export" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>🖨️ Print / Save as PDF</h3>
+        <p>Editor के text को professional PDF में convert करें:</p>
+        <ol>
+            <li>Toolbar में <strong>"🖨️ Print"</strong> button दबाएँ</li>
+            <li>Print dialog खुलेगा</li>
+            <li>Destination: <strong>"Save as PDF"</strong> select करें</li>
+            <li><strong>"Save"</strong> दबाएँ</li>
+        </ol>
+
+        <div class="tip">
+            Print output में header, footer, और formatted content सब शामिल है।
+        </div>
+
+        <h3>📄 Word Export (.doc)</h3>
+        <ol>
+            <li><strong>"📄 Word"</strong> button दबाएँ</li>
+            <li><code>.doc</code> file download होगी</li>
+            <li>MS Word या Google Docs में खोलें</li>
+        </ol>
+
+        <h3>💾 TXT Export</h3>
+        <ol>
+            <li><strong>"💾 TXT"</strong> button दबाएँ</li>
+            <li>Plain text file download होगी</li>
+            <li>किसी भी text editor में खुलेगी</li>
+        </ol>
+
+        <h3>📲 WhatsApp Share</h3>
+        <ol>
+            <li><strong>"📲 Share"</strong> button दबाएँ</li>
+            <li>WhatsApp खुलेगा</li>
+            <li>Contact select करें → Send</li>
+        </ol>
+
+        <h3>📱 QR Sync (Mobile)</h3>
+        <p>Text को QR code में convert करें और mobile पर scan करें:</p>
+        <ol>
+            <li><strong>"📱 Phone"</strong> button दबाएँ</li>
+            <li>QR code generate होगा</li>
+            <li>Mobile पर QR scan करें</li>
+            <li>Text mobile पर आ जाएगा</li>
+        </ol>
+
+        <!-- 12. PAYMENT -->
+        <h2 id="payment">12. Payment (UPI / QR)<button class="heading-copy" data-target="payment" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>💰 Payment कैसे करें?</h3>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> Buy / Trial / Support Modal खोलें</div>
+            <div class="step-body">
+                Header में <strong>"💳 Buy Key"</strong>, <strong>"🎁 ₹9 Trial"</strong>, या <strong>"💖 Support"</strong> button दबाएँ।
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> QR Code scan करें</div>
+            <div class="step-body">
+                किसी भी UPI app से (GPay, PhonePe, Paytm, BHIM) QR code scan करें।
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-title"><span class="step-number">3</span> Amount pay करें</div>
+            <div class="step-body">
+                App में amount (₹9 / ₹199 / ₹399 / ₹699 / custom) confirm करके pay करें।
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-title"><span class="step-number">4</span> Screenshot WhatsApp पर भेजें</div>
+            <div class="step-body">
+                Modal में <strong>"💬 Payment Screenshot भेजें"</strong> button दबाएँ या खुद WhatsApp पर screenshot भेजें।
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-title"><span class="step-number">5</span> License Key प्राप्त करें</div>
+            <div class="step-body">
+                Admin 24h के अंदर WhatsApp पर License Key भेज देंगे।
+            </div>
+        </div>
+
+        <h3>💳 UPI Apps Supported</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🟢</div>
+                <div class="feature-title">Google Pay</div>
+                <div class="feature-desc">UPI + QR scanning</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🟣</div>
+                <div class="feature-title">PhonePe</div>
+                <div class="feature-desc">UPI + QR scanning</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔵</div>
+                <div class="feature-title">Paytm</div>
+                <div class="feature-desc">UPI + QR scanning</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🇮🇳</div>
+                <div class="feature-title">BHIM</div>
+                <div class="feature-desc">Government UPI app</div>
+            </div>
+        </div>
+
+        <div class="tip">
+            <strong>QR scan नहीं हो रहा?</strong> UPI app में <strong>"Pay by UPI ID"</strong> option दबाएँ और manually UPI ID type करें (app में दिख रही है)।
+        </div>
+
+        <!-- 13. TRIAL & LICENSE -->
+        <h2 id="trial-license">13. Trial &amp; License<button class="heading-copy" data-target="trial-license" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>🆓 Free Mode</h3>
+        <p>Free mode में आपको मिलता है:</p>
+        <ul>
+            <li>✅ English typing</li>
+            <li>✅ Basic tools</li>
+            <li>✅ Copy, Print</li>
+        </ul>
+        <p><strong>Limited:</strong> Hindi, Santali, Ol Chiki, Kruti Dev, IME Map, Advanced tools</p>
+
+        <h3>🎁 ₹9 Trial (7 Days)</h3>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> Trial Button दबाएँ</div>
+            <div class="step-body">
+                Header में <strong>"🎁 ₹9 Trial"</strong> button दबाएँ।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> QR Scan करके ₹9 Pay करें</div>
+            <div class="step-body">
+                UPI app (GPay, PhonePe, Paytm) से QR scan करें और ₹9 भेजें।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">3</span> WhatsApp पर Screenshot भेजें</div>
+            <div class="step-body">
+                Payment screenshot WhatsApp पर भेजें।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">4</span> Trial Key प्राप्त करें</div>
+            <div class="step-body">
+                Admin आपको Trial Key भेजेंगे (Format: <code>HKT-XXXXXXX-XXXX</code>)
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">5</span> Activate करें</div>
+            <div class="step-body">
+                Trial modal में Key paste करें → <strong>"🔓 Activate Trial"</strong> दबाएँ।
+            </div>
+        </div>
+
+        <div class="tip">
+            7 दिनों तक सभी Pro features unlock — सभी 5 भाषाएँ, सभी tools, और export options।
+        </div>
+
+        <h3>💳 Pro License (Lifetime)</h3>
+
+        <div class="table-wrap">
+            <table>
+                <tr><th>Plan</th><th>Devices</th><th>Price</th><th>Best For</th></tr>
+                <tr><td><strong>P1 — Community</strong></td><td>1 PC</td><td><strong>₹199</strong></td><td>Student / Individual</td></tr>
+                <tr><td><strong>P2 — Commercial</strong></td><td>3 PCs</td><td><strong>₹399</strong></td><td>DTP Shop / Freelancer</td></tr>
+                <tr><td><strong>P3 — Enterprise</strong></td><td>5 PCs</td><td><strong>₹699</strong></td><td>School / College / Office</td></tr>
+            </table>
+        </div>
+
+        <h3>🔑 License Activation Steps</h3>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> License Button दबाएँ</div>
+            <div class="step-body">
+                Header में <strong>"🔑 Activate Pro"</strong> button दबाएँ।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> Device ID Copy करें</div>
+            <div class="step-body">
+                Modal में आपकी <strong>Device ID</strong> दिखेगी (जैसे <code>DVC-A1B2-C3D4</code>) — इसे copy करें।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">3</span> Vendor को Device ID भेजें</div>
+            <div class="step-body">
+                WhatsApp या Email पर Device ID और अपना नाम भेजें।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">4</span> License Key प्राप्त करें</div>
+            <div class="step-body">
+                Vendor आपको License Key भेजेंगे (Format: <code>HKP-P1-9999-XXXX...</code>)
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">5</span> Activate करें</div>
+            <div class="step-body">
+                License modal में अपना <strong>नाम</strong> और <strong>License Key</strong> डालें → <strong>"✅ Activate Pro Key"</strong> दबाएँ।
+            </div>
+        </div>
+
+        <div class="warning">
+            <strong>Device ID बदल गई है?</strong> Modal में <strong>"🔄 Recover करें"</strong> button दबाकर पुरानी Device ID डालें।
+        </div>
+
+        <!-- 14. PRIVACY -->
+        <h2 id="privacy">14. Privacy &amp; Security<button class="heading-copy" data-target="privacy" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>🔒 आपका Data Safe है</h3>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <div class="feature-title">AES-256 Encryption</div>
+                <div class="feature-desc">Bank-grade encryption for all sensitive data</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <div class="feature-title">ECDSA P-256</div>
+                <div class="feature-desc">License verification with digital signatures</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">3-Layer HWID</div>
+                <div class="feature-desc">Registry + File + localStorage</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚫</div>
+                <div class="feature-title">No Tracking</div>
+                <div class="feature-desc">आपकी keystrokes या files track नहीं होतीं</div>
+            </div>
+        </div>
+
+        <h3>🔐 Encryption Details</h3>
+        <div class="info">
+            <strong>Customer Names Encryption:</strong> अगर आपने app में अपना नाम register किया है, तो वह <strong>AES-256-GCM</strong> encryption के साथ सुरक्षित रहता है।
+            <br><br>
+            <strong>How it works:</strong>
+            <ul style="margin-top: 8px; margin-bottom: 0;">
+                <li>आपका नाम <strong>device-specific key</strong> से encrypt होता है</li>
+                <li>Encryption key आपके <strong>Device ID (HWID)</strong> से derive होती है</li>
+                <li>Same name different devices पर different encrypted values बनाता है</li>
+                <li><strong>Backward compat:</strong> Legacy v1 salt भी auto-decrypt होती है</li>
+            </ul>
+        </div>
+
+        <h3>🌐 Trusted External Hosts</h3>
+        <p>App केवल निम्न <strong>verified hosts</strong> को ही external browser में open करती है:</p>
+        <ul>
+            <li>✅ <code>wa.me</code>, <code>whatsapp.com</code> — WhatsApp order/share</li>
+            <li>✅ <code>formsubmit.co</code> — Email receipts</li>
+            <li>✅ <code>bosctech.in</code> — Official site</li>
+            <li>✅ <code>github.com</code> — Updates/Issues</li>
+            <li>✅ <code>hor-katha.vercel.app</code> — Verify URLs</li>
+            <li>✅ <code>api.qrserver.com</code>, <code>quickchart.io</code> — QR codes</li>
+            <li>✅ <code>cdnjs.cloudflare.com</code>, <code>cdn.jsdelivr.net</code> — Libraries</li>
+            <li>✅ <code>firebaseio.com</code>, <code>firebasedatabase.app</code> — Tracking (opt-in)</li>
+        </ul>
+        <div class="warning">
+            ⚠️ <strong>Other sites blocked by default.</strong> अगर कोई legitimate external link block हो, तो support से contact करें — हम whitelist में add कर देंगे।
+        </div>
+
+        <h3>📡 Service Worker (Offline Support)</h3>
+        <p>App <strong>Service Worker v18</strong> use करती है जो:</p>
+        <ul>
+            <li>✅ सभी core pages <strong>offline cached</strong> रखती है</li>
+            <li>✅ Network fail होने पर <strong>per-page fallback</strong> (index, manual, verify, privacy)</li>
+            <li>✅ Old caches <strong>auto-cleanup</strong> on update</li>
+            <li>✅ Offline queue के साथ <strong>max 5 retries</strong> (data loss prevention)</li>
+            <li>✅ Secret files <strong>कभी cache नहीं होतीं</strong> (config-private.local.js, .env)</li>
+        </ul>
+
+        <h3>📋 क्या Collect होता है?</h3>
+        <ul>
+            <li><strong>Anonymous Device ID</strong> — सिर्फ license verification के लिए</li>
+            <li><strong>License Key</strong> — Pro activation के लिए</li>
+            <li><strong>Timestamps</strong> — Support के लिए</li>
+        </ul>
+
+        <h3>❌ क्या Collect नहीं होता?</h3>
+        <ul>
+            <li>❌ आपकी files या documents</li>
+            <li>❌ Keystrokes या typing history</li>
+            <li>❌ Passwords या bank details</li>
+            <li>❌ Camera या microphone data</li>
+            <li>❌ Location या personal info</li>
+        </ul>
+
+        <h3>📜 Related Legal Documents</h3>
+        <p>App इस्तेमाल करने से पहले ये दोनों documents पढ़ें:</p>
+        <ul>
+            <li>🔒 <a href="privacy.html" target="_blank" rel="noopener noreferrer"><strong>Privacy Policy</strong></a> — DPDP Act 2023 compliant</li>
+            <li>📜 <a href="terms.html" target="_blank" rel="noopener noreferrer"><strong>Terms of Service</strong></a> — EULA + Consumer Protection</li>
+        </ul>
+
+        <div class="info">
+            <strong>📌 Note:</strong> App install/use करने का मतलब है कि आपने दोनों documents पढ़े और उनसे सहमत हैं।
+        </div>
+
+        <!-- 15. TROUBLESHOOTING -->
+        <h2 id="troubleshooting">15. Troubleshooting<button class="heading-copy" data-target="troubleshooting" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>🔊 Read Button से आवाज़ नहीं आ रही</h3>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> Volume Check करें</div>
+            <div class="step-body">
+                System volume और browser volume दोनों check करें।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> English Tab Active है?</div>
+            <div class="step-body">
+                Read feature सिर्फ English layout में काम करती है। Eng tab active करें।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">3</span> Voice Settings Check करें</div>
+            <div class="step-body">
+                ⚙️ button दबाएँ → कोई English voice select करें → 🎧 Test दबाएँ।
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-number">4</span> Browser Restart करें</div>
+            <div class="step-body">
+                सारे browser windows बंद करें → Task Manager में Chrome processes End Task करें → दोबारा खोलें।
+            </div>
+        </div>
+
+        <h3>⌨️ Virtual Keyboard नहीं दिख रहा</h3>
+
+        <ul>
+            <li>Browser refresh करें — <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></li>
+            <li>Browser cache clear करें — <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Delete</kbd></li>
+            <li>Different browser में try करें (Chrome या Edge)</li>
+        </ul>
+
+        <h3>📱 QR Code scan नहीं हो रहा</h3>
+
+        <ul>
+            <li><strong>Screen brightness 100%</strong> करें</li>
+            <li>Phone camera <strong>15-20 cm</strong> दूर रखें</li>
+            <li>Phone <strong>steady hold</strong> करें (2-3 sec focus)</li>
+            <li>Different UPI app try करें (GPay / PhonePe / Paytm)</li>
+            <li>Browser refresh करें — <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></li>
+            <li><strong>Manual UPI ID</strong> enter करें — UPI app में "Pay by UPI ID" option</li>
+        </ul>
+
+        <div class="tip">
+            Manual UPI ID app में modal में दिख रही है (QR के नीचे या failed QR placeholder में)।
+        </div>
+
+        <h3>💬 WhatsApp नहीं खुल रहा</h3>
+
+        <ul>
+            <li>Browser <strong>popup blocker</strong> allow करें</li>
+            <li>WhatsApp app installed है verify करें</li>
+            <li>Manual WhatsApp number save करें और message भेजें</li>
+            <li>WhatsApp Web try करें (web.whatsapp.com)</li>
+        </ul>
+
+        <h3>🔑 License Activate नहीं हो रहा</h3>
+
+        <ul>
+            <li><strong>Check 1:</strong> Name में कोई extra space तो नहीं?</li>
+            <li><strong>Check 2:</strong> License Key पूरी copy हुई? (128 chars signature)</li>
+            <li><strong>Check 3:</strong> Device ID match कर रही है?</li>
+            <li><strong>Check 4:</strong> System time सही है?</li>
+            <li><strong>Check 5:</strong> Browser cache clear करें</li>
+        </ul>
+
+        <div class="warning">
+            अगर Windows reinstall के बाद Device ID बदल गई है, तो License modal में <strong>"🔄 Recover करें"</strong> button use करें।
+        </div>
+
+        <h3>🔄 Update के बाद पुराना Version दिख रहा है</h3>
+        <p><strong>Cause:</strong> Service Worker अभी तक new version पर switch नहीं हुआ।</p>
+        <div class="step">
+            <div class="step-title"><span class="step-number">1</span> Hard Refresh करें</div>
+            <div class="step-body">
+                <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd> दबाएँ (Windows/Linux)<br>
+                <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd> दबाएँ (Mac)
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-title"><span class="step-number">2</span> Service Worker Unregister करें</div>
+            <div class="step-body">
+                DevTools खोलें (<kbd>F12</kbd>) → <strong>Application</strong> tab → <strong>Service Workers</strong> → <strong>Unregister</strong> click करें → Page reload करें।
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-title"><span class="step-number">3</span> Cache Clear करें</div>
+            <div class="step-body">
+                DevTools → <strong>Application</strong> → <strong>Storage</strong> → <strong>Clear site data</strong>.
+            </div>
+        </div>
+        <div class="tip">
+            <strong>Console check:</strong> <code>navigator.serviceWorker.controller.scriptURL</code> run करें — current SW version confirm होगी।
+        </div>
+
+        <h3>💾 Application Startup Fail (Production)</h3>
+        <div class="danger">
+            <strong>Error:</strong> "Configuration Error: NAME_ENCRYPTION_SECRET is not configured"<br><br>
+            <strong>Cause:</strong> Production build में encryption secret missing है।
+        </div>
+        <p><strong>Fix:</strong> This is a security measure — app production में unencrypted data store नहीं करता।</p>
+        <ul>
+            <li>Vendor से contact करें</li>
+            <li>Reinstall करें (proper .env के साथ)</li>
+            <li>Error Code note करें: <code>ENC_SECRET_MISSING</code></li>
+        </ul>
+
+        <h3>🎯 Typing Practice में Result नहीं दिख रहा</h3>
+
+        <ul>
+            <li>Timer पूरा होने दें या पूरा text type करें</li>
+            <li>Page refresh करें</li>
+            <li>Modal बंद करके दोबारा खोलें</li>
+        </ul>
+
+        <h3>🌐 Chrome में Hindi Voice नहीं चल रही</h3>
+
+        <p>Chrome में Microsoft "Online (Natural)" voices fail होती हैं। Solutions:</p>
+
+        <ol>
+            <li><strong>Microsoft Edge</strong> browser में app खोलें — Hindi voices वहाँ perfect चलती हैं</li>
+            <li>या Windows Settings में <strong>Local Hindi voice</strong> install करें:
+                <ul>
+                    <li>Settings → Time &amp; Language → Speech → Add voices</li>
+                    <li>Hindi (India) select करें → Install</li>
+                </ul>
+            </li>
+        </ol>
+
+        <!-- 16. FAQ -->
+        <h2 id="faq">16. Frequently Asked Questions<button class="heading-copy" data-target="faq" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ क्या app free है?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                हाँ, app का <strong>Free version</strong> उपलब्ध है जिसमें English typing और basic features हैं। हिन्दी, संताली, Ol Chiki, और advanced tools के लिए <strong>₹9 Trial (7 days)</strong> या <strong>Pro License</strong> (₹199+) चाहिए।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ कितने devices पर चलेगी?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                Plan के हिसाब से:
+                <ul>
+                    <li><strong>P1 (₹199)</strong> — 1 device</li>
+                    <li><strong>P2 (₹399)</strong> — 3 devices</li>
+                    <li><strong>P3 (₹699)</strong> — 5 devices</li>
+                </ul>
+                हर license उस specific device पर bound होती है।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ क्या offline चलेगी?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                हाँ! एक बार install/activate हो जाने के बाद app <strong>पूरी तरह offline</strong> काम करती है। सिर्फ initial license verification और PWA install के लिए internet चाहिए।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ License Key कैसे मिलेगी?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                1. App में <strong>"💳 Buy Key"</strong> button दबाएँ<br>
+                2. Plan select करें<br>
+                3. QR code scan करके payment करें<br>
+                4. Payment screenshot WhatsApp पर भेजें<br>
+                5. <strong>24 घंटे के अंदर</strong> License Key मिल जाएगी
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ QR scan नहीं हो रहा, क्या करें?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                1. Screen brightness <strong>100%</strong> करें<br>
+                2. Phone camera <strong>15-20cm</strong> दूर रखें<br>
+                3. Phone <strong>steady hold</strong> करें (2-3 sec focus)<br>
+                4. Different UPI app try करें (GPay/PhonePe/Paytm)<br>
+                5. Manual UPI ID enter करें — UPI app में "Pay by UPI ID" option<br>
+                6. Browser refresh करें — <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ WhatsApp order नहीं खुल रहा?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                1. Browser <strong>popup blocker</strong> allow करें<br>
+                2. WhatsApp app installed है verify करें<br>
+                3. Manual number save करें और WhatsApp पर message भेजें<br>
+                4. WhatsApp Web try करें (web.whatsapp.com)<br>
+                5. Screenshot भेजें और License Key मांगें
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ Certificate कैसे verify करें?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                Certificate पर <strong>QR code scan करें</strong> — <code>verify.html</code> page खुलेगा जिसमें certificate details दिखेंगी। यह online verification है और हमेशा available रहेगी।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ क्या typing practice से certificate मिलेगा?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                हाँ! Typing practice पूरी करने पर result screen आता है जिसे <strong>professional certificate</strong> में convert कर सकते हैं। Certificate में QR verification, signature, और आपका नाम होता है।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ 51 English voices में कौन सी best है?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                Recommended voices:
+                <ul>
+                    <li><strong>Microsoft David</strong> — fast, clear</li>
+                    <li><strong>Microsoft Zira</strong> — natural, warm</li>
+                    <li><strong>Google US English</strong> — premium quality (online)</li>
+                </ul>
+                ⚙️ modal में search box से "Google" or "Microsoft" type करके filter करें।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ Trial खत्म होने पर क्या होगा?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                7 दिन बाद trial automatically <strong>expire</strong> हो जाएगा और app Free mode में वापस आ जाएगी। आपका data safe रहेगा — सिर्फ Pro features lock हो जाएँगी। Trial extend नहीं हो सकता, आपको Pro License खरीदनी होगी।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ Device बदलने पर क्या करें?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                अगर Device ID बदल गई है (Windows update, reinstall):
+                <ol>
+                    <li>License modal खोलें</li>
+                    <li><strong>"🔄 Recover करें"</strong> button दबाएँ</li>
+                    <li>पुरानी Device ID डालें</li>
+                    <li>License verify हो जाएगी</li>
+                </ol>
+                अगर नई device पर चलाना है, तो WhatsApp पर contact करें।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ Read करते समय आवाज़ cut हो जाती है?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                Chrome में लंबे text के लिए 15-second limit होती है। App automatically text को chunks में तोड़ती है। अगर अभी भी cut हो रहा हो — browser restart करें या छोटे text में try करें।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ क्या मैं app modify कर सकता हूँ?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                Source code देख सकते हैं, personal use के लिए modify कर सकते हैं। लेकिन <strong>commercial reselling</strong> के लिए permission चाहिए।
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ New features कब आएँगे?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                Upcoming features:
+                <ul>
+                    <li>🍎 macOS version</li>
+                    <li>🐧 Linux version</li>
+                    <li>☁️ Cloud sync</li>
+                    <li>🎤 Hindi TTS (Edge)</li>
+                    <li>📱 Native Android app</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+                <span>❓ Support कैसे मिलेगा?</span>
+                <span class="faq-arrow">▼</span>
+            </button>
+            <div class="faq-answer">
+                Contact करें:
+                <ul>
+                    <li><strong>📱 WhatsApp:</strong> +91 91109 77117 (2-4 hours)</li>
+                    <li><strong>📧 Email:</strong> bosctechedu@gmail.com (24 hours)</li>
+                </ul>
+                Hours: Mon-Sat, 9 AM - 9 PM IST
+            </div>
+        </div>
+
+        <!-- 17. SHORTCUTS -->
+        <h2 id="shortcuts">17. Keyboard Shortcuts<button class="heading-copy" data-target="shortcuts" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <div class="table-wrap">
+            <table>
+                <tr>
+                    <th>Shortcut</th>
+                    <th>Function</th>
+                </tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>C</kbd></td><td>Copy selected text</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>V</kbd></td><td>Paste</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>X</kbd></td><td>Cut</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td>Undo</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Y</kbd></td><td>Redo</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>A</kbd></td><td>Select all</td></tr>
+                <tr><td><kbd>Esc</kbd></td><td>Stop TTS reading</td></tr>
+                <tr><td><kbd>Enter</kbd></td><td>New line</td></tr>
+                <tr><td><kbd>Backspace</kbd></td><td>Delete previous char</td></tr>
+                <tr><td><kbd>Tab</kbd></td><td>Tab space</td></tr>
+                <tr><td><kbd>Alt</kbd> + <kbd>N</kbd></td><td>ñ (Roman layout)</td></tr>
+                <tr><td><kbd>Alt</kbd> + <kbd>R</kbd></td><td>ṛ (Roman layout)</td></tr>
+                <tr><td><kbd>Alt</kbd> + <kbd>T</kbd></td><td>ṭ (Roman layout)</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></td><td>Hard refresh (cache clear)</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>C</kbd></td><td>Copy debug output (Debug tool)</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Focus search (this manual)</td></tr>
+                <tr><td><kbd>/</kbd></td><td>Focus search (this manual)</td></tr>
+                <tr><td><kbd>Ctrl</kbd> + <kbd>R</kbd> (Typing Test)</td><td>Restart typing test</td></tr>
+                <tr><td><kbd>F12</kbd></td><td>Developer Tools</td></tr>
+            </table>
+        </div>
+
+        <!-- 18. CONTACT -->
+        <h2 id="contact">18. Contact &amp; Support<button class="heading-copy" data-target="contact" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">WhatsApp</div>
+                <div class="feature-desc">
+                    <a href="https://wa.me/919110977117" target="_blank" rel="noopener noreferrer">+91 91109 77117</a><br>
+                    Response: 2-4 hours
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📧</div>
+                <div class="feature-title">Email</div>
+                <div class="feature-desc">
+                    <a href="mailto:bosctechedu@gmail.com">bosctechedu@gmail.com</a><br>
+                    Response: 24 hours
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <div class="feature-title">Website</div>
+                <div class="feature-desc">
+                    <a href="index.html">Hoṛ Katha Suite</a><br>
+                    Latest updates &amp; downloads
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">Privacy Policy</div>
+                <div class="feature-desc">
+                    <a href="privacy.html">privacy.html</a><br>
+                    Data protection info
+                </div>
+            </div>
+        </div>
+
+        <h3>⏱️ Expected Response Times</h3>
+        <div class="table-wrap">
+            <table>
+                <tr><th>Channel</th><th>Response Time</th><th>Best For</th></tr>
+                <tr>
+                    <td>📱 WhatsApp</td>
+                    <td><strong>2-4 hours</strong> (Business hours)</td>
+                    <td>Urgent license issues, payment queries</td>
+                </tr>
+                <tr>
+                    <td>📧 Email</td>
+                    <td><strong>24 hours</strong></td>
+                    <td>Detailed technical issues, feature requests</td>
+                </tr>
+                <tr>
+                    <td>💬 GitHub Issues</td>
+                    <td><strong>48-72 hours</strong></td>
+                    <td>Bug reports, documentation feedback</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>🕐 Business Hours</h3>
+        <p>
+            <strong>Monday — Saturday:</strong> 9:00 AM — 9:00 PM IST<br>
+            <strong>Sunday:</strong> WhatsApp only (delayed response)<br>
+            <strong>Public Holidays:</strong> Limited support
+        </p>
+
+        <h3>👨‍💻 Developer Info</h3>
+        <p>
+            <strong>Parish Marandi</strong><br>
+            BOSC Tech &amp; Edu<br>
+            Jharkhand, India 🇮🇳
+        </p>
+
+        <h3>⚖️ Grievance Officer (DPDP Act 2023)</h3>
+        <div class="info">
+            <strong>📋 Grievance Officer Details:</strong><br><br>
+            <strong>Name:</strong> Parish Marandi<br>
+            <strong>Designation:</strong> Grievance Officer / DPO<br>
+            <strong>Email:</strong> <a href="mailto:grievance@bosctech.in">grievance@bosctech.in</a><br>
+            <strong>Phone:</strong> +91 91109 77117<br>
+            <strong>Response Time:</strong> 30 days (DPDP Rules 2025)<br>
+            <strong>Address:</strong> BOSC Tech &amp; Edu, Jharkhand, India
+        </div>
+
+        <h3>📧 Specialized Email Addresses</h3>
+        <div class="table-wrap">
+            <table>
+                <tr><th>Purpose</th><th>Email</th></tr>
+                <tr><td>💬 Technical Support</td><td><a href="mailto:support@bosctech.in">support@bosctech.in</a></td></tr>
+                <tr><td>🔒 Privacy / Data</td><td><a href="mailto:privacy@bosctech.in">privacy@bosctech.in</a></td></tr>
+                <tr><td>💸 Refund Request</td><td><a href="mailto:refund@bosctech.in">refund@bosctech.in</a></td></tr>
+                <tr><td>⚖️ Grievance</td><td><a href="mailto:grievance@bosctech.in">grievance@bosctech.in</a></td></tr>
+                <tr><td>🛡️ Security</td><td><a href="mailto:security@bosctech.in">security@bosctech.in</a></td></tr>
+                <tr><td>📧 General</td><td><a href="mailto:bosctechedu@gmail.com">bosctechedu@gmail.com</a></td></tr>
+            </table>
+        </div>
+
+        <!-- 19. LEGAL & COMPLIANCE -->
+        <h2 id="legal">19. Legal &amp; Compliance<button class="heading-copy" data-target="legal" title="Copy link" aria-label="Copy link to section">🔗</button></h2>
+
+        <h3>⚖️ Applicable Laws</h3>
+        <p>Hoṛ Katha Suite निम्न भारतीय कानूनों के अनुसार operate करता है:</p>
+
+        <div class="table-wrap">
+            <table>
+                <tr><th>Law</th><th>What It Covers</th></tr>
+                <tr>
+                    <td><strong>IT Act 2000</strong></td>
+                    <td>Electronic contracts, digital signatures, cyber security</td>
+                </tr>
+                <tr>
+                    <td><strong>DPDP Act 2023</strong></td>
+                    <td>Digital personal data protection, user consent, DPO</td>
+                </tr>
+                <tr>
+                    <td><strong>Consumer Protection Act 2019</strong></td>
+                    <td>Product liability, refund, grievance redressal</td>
+                </tr>
+                <tr>
+                    <td><strong>CERT-In Directions 2022</strong></td>
+                    <td>Incident reporting (6 hours), log retention (180 days)</td>
+                </tr>
+                <tr>
+                    <td><strong>Indian Contract Act 1872</strong></td>
+                    <td>Terms of Service, license agreements</td>
+                </tr>
+                <tr>
+                    <td><strong>Copyright Act 1957</strong></td>
+                    <td>Source code protection, IP rights</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>📜 Your Rights (DPDP Act 2023)</h3>
+        <p>आपको ये अधिकार हैं:</p>
+        <ul>
+            <li>✅ <strong>Right to Access</strong> — अपना data देखें</li>
+            <li>✅ <strong>Right to Correction</strong> — गलत data सुधारें</li>
+            <li>✅ <strong>Right to Erasure</strong> — अपना data delete करवाएं</li>
+            <li>✅ <strong>Right to Withdraw Consent</strong> — सहमति वापस लें</li>
+            <li>✅ <strong>Right to Grievance Redressal</strong> — शिकायत दर्ज करें</li>
+            <li>✅ <strong>Right to Nominate</strong> — nominee नामित करें</li>
+        </ul>
+
+        <h3>🔄 Consent Withdrawal कैसे करें?</h3>
+        <ol class="steps">
+            <li>App → Settings → Privacy → <strong>"Withdraw Consent"</strong></li>
+            <li>Email: <code>privacy@bosctech.in</code> (Subject: "CONSENT WITHDRAWAL")</li>
+            <li>WhatsApp: <code>+91 91109 77117</code> ("STOP TRACKING")</li>
+        </ol>
+        <div class="info">
+            <strong>⏱️ Processing Time:</strong> 7 working days<br>
+            <strong>📊 Effect:</strong> Tracking बंद, Pro features lock, Free mode active
+        </div>
+
+        <h3>📅 Data Retention</h3>
+        <div class="table-wrap">
+            <table>
+                <tr><th>Data Type</th><th>Retention Period</th></tr>
+                <tr><td>Device ID / HWID</td><td>License expiry + 1 year</td></tr>
+                <tr><td>License Key</td><td>License lifetime + 2 years</td></tr>
+                <tr><td>Activation Logs</td><td>180 days (CERT-In)</td></tr>
+                <tr><td>Support Emails</td><td>3 years</td></tr>
+                <tr><td>Consent Records</td><td>7 years (legal proof)</td></tr>
+            </table>
+        </div>
+
+        <h3>🚨 Data Breach Notification</h3>
+        <div class="warning">
+            <strong>किसी भी data breach की स्थिति में हम:</strong>
+            <ul style="margin-top: 8px; margin-bottom: 0;">
+                <li><strong>6 hours:</strong> Data Protection Board + CERT-In को सूचित</li>
+                <li><strong>72 hours:</strong> Affected users को Email/SMS</li>
+                <li><strong>7 days:</strong> Public disclosure वेबसाइट पर</li>
+                <li><strong>30 days:</strong> Root cause analysis + सुधार</li>
+            </ul>
+        </div>
+
+        <h3>🏛️ Jurisdiction</h3>
+        <div class="info">
+            <strong>Governing Law:</strong> भारतीय कानून<br>
+            <strong>Exclusive Jurisdiction:</strong> Jharkhand, India<br>
+            <strong>Dispute Resolution:</strong> 5-step process (Direct → Grievance → Mediation → Arbitration → Court)
+        </div>
+
+        <h3>📜 Related Documents</h3>
+        <div class="quick-links">
+            <a href="privacy.html" class="quick-link-card">
+                <div class="quick-link-icon">🔒</div>
+                <div class="quick-link-text">
+                    <b>Privacy Policy</b>
+                    <small>DPDP Act 2023 compliant</small>
+                </div>
+            </a>
+            <a href="terms.html" class="quick-link-card">
+                <div class="quick-link-icon">📜</div>
+                <div class="quick-link-text">
+                    <b>Terms of Service</b>
+                    <small>EULA + Consumer Protection</small>
+                </div>
+            </a>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div style="font-size: 1.4rem; font-weight: 900; color: var(--primary); margin-bottom: 8px;">
+                ⚡ Hoṛ Katha Suite v3.7.4 Pro Ultra
+            </div>
+            <div>
+                Multi-Script Typing Revolution · Made with ❤️ in Jharkhand, India
+            </div>
+            <div class="footer-links">
+                <a href="index.html">🏠 App</a>
+                <a href="privacy.html">🔒 Privacy</a>
+                <a href="terms.html">📜 Terms</a>
+                <a href="https://wa.me/919110977117" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+                <a href="mailto:bosctechedu@gmail.com">📧 Email</a>
+            </div>
+            <div style="margin-top: 16px; font-size: 0.75rem; color: var(--text-muted);">
+                © 2024-2026 BOSC Tech &amp; Edu · All rights reserved<br>
+                <span style="opacity: 0.7; font-size: 0.7rem;">v3.7.4 Hardened Build</span>
+            </div>
+        </footer>
+
+    </main>
+</div>
+
+<button class="back-to-top" id="backToTop" type="button" aria-label="Back to top">↑</button>
+
+<script>
+(function() {
+    'use strict';
+
+    // ============================================================
+    // 📊 PROGRESS BAR + BACK TO TOP (rAF throttled)
+    // ============================================================
+    let _progressTicking = false;
+
+    function updateProgress() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+        const fill = document.getElementById('progressFill');
+        if (fill) fill.style.width = progress + '%';
+
+        const btn = document.getElementById('backToTop');
+        if (btn) {
+            btn.classList.toggle('show', scrollTop > 300);
+        }
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!_progressTicking) {
+            _progressTicking = true;
+            requestAnimationFrame(() => {
+                updateProgress();
+                _progressTicking = false;
+            });
+        }
+    }, { passive: true });
+    updateProgress();
+
+    // Back to top
+    const backToTopBtn = document.getElementById('backToTop');
+    if (backToTopBtn) {
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // ============================================================
+    // 🎯 ACTIVE TOC (rAF throttled)
+    // ============================================================
+    const sections = document.querySelectorAll('h2[id]');
+    const tocLinks = document.querySelectorAll('.toc a');
+    let _tocTicking = false;
+
+    function updateActiveTOC() {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            if (window.scrollY >= sectionTop) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        tocLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+        });
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!_tocTicking) {
+            _tocTicking = true;
+            requestAnimationFrame(() => {
+                updateActiveTOC();
+                _tocTicking = false;
+            });
+        }
+    }, { passive: true });
+    updateActiveTOC();
+
+    // ============================================================
+    // 📱 SIDEBAR TOGGLE
+    // ============================================================
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    function toggleSidebar(forceClose) {
+        if (!sidebar) return;
+        const shouldOpen = forceClose === true ? false : !sidebar.classList.contains('open');
+        sidebar.classList.toggle('open', shouldOpen);
+        if (sidebarOverlay) sidebarOverlay.classList.toggle('show', shouldOpen);
+        if (menuToggle) menuToggle.setAttribute('aria-expanded', String(shouldOpen));
+    }
+
+    if (menuToggle) menuToggle.addEventListener('click', () => toggleSidebar());
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', () => toggleSidebar(true));
+
+    // ESC closes sidebar on mobile
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
+            toggleSidebar(true);
+        }
+    });
+
+    tocLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 900 && sidebar && sidebar.classList.contains('open')) {
+                toggleSidebar(true);
+            }
+        });
+    });
+
+    // ============================================================
+    // 🎨 THEME TOGGLE (with prefers-color-scheme detection)
+    // ============================================================
+    const themeBtn = document.getElementById('themeToggle');
+
+    function applyTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+        if (themeBtn) themeBtn.textContent = theme === 'dark' ? '🌙' : '☀️';
+    }
+
+    function toggleTheme() {
+        const current = document.body.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        try {
+            localStorage.setItem('manual_theme', next);
+        } catch (e) {}
+    }
+
+    if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+
+    // Load saved theme OR detect from system
+    try {
+        const saved = localStorage.getItem('manual_theme');
+        if (saved) {
+            applyTheme(saved);
+        } else {
+            const prefersDark = window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark ? 'dark' : 'light');
+        }
+    } catch (e) {}
+
+    // ============================================================
+    // 🖨️ PRINT
+    // ============================================================
+    const printBtn = document.getElementById('printBtn');
+    if (printBtn) {
+        printBtn.addEventListener('click', () => {
+            window.print();
+        });
+    }
+
+    // ============================================================
+    // 📖 FAQ TOGGLE
+    // ============================================================
+    document.querySelectorAll('.faq-question').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const item = btn.parentElement;
+            const wasOpen = item.classList.toggle('open');
+            btn.setAttribute('aria-expanded', String(wasOpen));
+        });
+    });
+
+    // ============================================================
+    // 🔗 COPY-LINK BUTTONS ON HEADINGS
+    // ============================================================
+    document.querySelectorAll('.heading-copy').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const target = btn.dataset.target;
+            if (!target) return;
+
+            const url = window.location.origin + window.location.pathname + '#' + target;
+
+            const onSuccess = () => {
+                const original = btn.textContent;
+                btn.textContent = '✓';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = original;
+                    btn.classList.remove('copied');
+                }, 1500);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(onSuccess).catch(() => {});
+            } else {
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = url;
+                    ta.style.position = 'fixed';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    onSuccess();
+                } catch (err) {}
+            }
+        });
+    });
+
+    // ============================================================
+    // 🔍 SEARCH (optimized — no-op on empty, rAF-scroll)
+    // ============================================================
+    let _searchTimeout = null;
+    const searchInput = document.getElementById('searchInput');
+
+    function escapeRegex(str) {
+        return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function clearHighlights() {
+        const highlights = document.querySelectorAll('.search-highlight');
+        if (highlights.length === 0) return;
+
+        const parents = new Set();
+        highlights.forEach(el => {
+            if (el.parentNode) parents.add(el.parentNode);
+            const parent = el.parentNode;
+            if (parent) {
+                parent.replaceChild(document.createTextNode(el.textContent), el);
+            }
+        });
+        parents.forEach(p => {
+            try { p.normalize(); } catch (e) {}
+        });
+    }
+
+    function runSearch(term) {
+        const noResults = document.getElementById('noResults');
+        const noResultsTerm = document.getElementById('noResultsTerm');
+
+        const trimmed = (term || '').trim();
+
+        if (trimmed.length < 2) {
+            clearHighlights();
+            if (noResults) noResults.style.display = 'none';
+            return;
+        }
+
+        clearHighlights();
+
+        const content = document.querySelector('.content');
+        if (!content) return;
+
+        let matchCount = 0;
+        let firstMatch = null;
+
+        let regex;
+        try {
+            regex = new RegExp(escapeRegex(trimmed), 'gi');
+        } catch (e) {
+            console.warn('Invalid search term');
+            return;
+        }
+
+        const walker = document.createTreeWalker(
+            content,
+            NodeFilter.SHOW_TEXT,
+            {
+                acceptNode: (node) => {
+                    const parent = node.parentNode;
+                    if (!parent) return NodeFilter.FILTER_REJECT;
+
+                    const tag = (parent.tagName || '').toLowerCase();
+                    if (tag === 'script' || tag === 'style' || tag === 'input') {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+
+                    if (parent.classList && parent.classList.contains('search-highlight')) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+
+                    const text = node.nodeValue || '';
+                    if (!text.trim()) return NodeFilter.FILTER_REJECT;
+
+                    regex.lastIndex = 0;
+                    return regex.test(text) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                }
+            }
+        );
+
+        const nodesToProcess = [];
+        let node;
+        let safetyCounter = 0;
+        const MAX_NODES = 10000;
+
+        while ((node = walker.nextNode()) && safetyCounter < MAX_NODES) {
+            nodesToProcess.push(node);
+            safetyCounter++;
+        }
+
+        nodesToProcess.forEach(textNode => {
+            const text = textNode.nodeValue || '';
+            const parent = textNode.parentNode;
+            if (!parent) return;
+
+            regex.lastIndex = 0;
+
+            const frag = document.createDocumentFragment();
+            let lastIndex = 0;
+            let match;
+
+            while ((match = regex.exec(text)) !== null) {
+                if (match.index > lastIndex) {
+                    frag.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
+                }
+
+                const span = document.createElement('span');
+                span.className = 'search-highlight';
+                span.textContent = match[0];
+                frag.appendChild(span);
+
+                if (!firstMatch) firstMatch = span;
+                matchCount++;
+
+                lastIndex = match.index + match[0].length;
+
+                if (match[0].length === 0) {
+                    regex.lastIndex++;
+                }
+            }
+
+            if (lastIndex < text.length) {
+                frag.appendChild(document.createTextNode(text.substring(lastIndex)));
+            }
+
+            try {
+                parent.replaceChild(frag, textNode);
+            } catch (e) {}
+        });
+
+        if (matchCount > 0) {
+            if (noResults) noResults.style.display = 'none';
+            if (firstMatch) {
+                setTimeout(() => {
+                    try {
+                        firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } catch (e) {}
+                }, 100);
+            }
+        } else {
+            if (noResults && noResultsTerm) {
+                noResultsTerm.textContent = trimmed;
+                noResults.style.display = 'block';
+            }
+        }
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const term = this.value;
+            clearTimeout(_searchTimeout);
+            _searchTimeout = setTimeout(() => runSearch(term), 250);
+        });
+    }
+
+    // ============================================================
+    // ⌨️ KEYBOARD SHORTCUTS
+    // ============================================================
+    document.addEventListener('keydown', (e) => {
+        const isInputFocused = document.activeElement &&
+            (document.activeElement.tagName === 'INPUT' ||
+             document.activeElement.tagName === 'TEXTAREA');
+
+        if ((e.ctrlKey && e.key === 'k') ||
+            (e.key === '/' && !isInputFocused)) {
+            e.preventDefault();
+            if (searchInput) {
+                if (window.innerWidth <= 900 && sidebar && !sidebar.classList.contains('open')) {
+                    toggleSidebar();
+                }
+                searchInput.focus();
+                searchInput.select();
+            }
+        }
+
+        if (e.key === 'Escape' && document.activeElement === searchInput) {
+            searchInput.value = '';
+            runSearch('');
+            searchInput.blur();
+        }
+    });
+
+    // ============================================================
+    // 🔗 SMOOTH SCROLL FOR TOC LINKS
+    // ============================================================
+    tocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    const offsetTop = target.getBoundingClientRect().top + window.scrollY - 90;
+                    window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+                    if (history && history.replaceState) {
+                        try { history.replaceState(null, '', href); } catch (err) {}
+                    }
+                }
+            }
+        });
+    });
+
+    console.log('📖 Manual loaded — Hoṛ Katha Suite v3.7.4');
+    console.log('💡 Tip: Press Ctrl+K or / to search');
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <!-- ═══ SECURITY: CSP ═══ -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self' 'unsafe-inline' https://www.gstatic.com https://*.firebaseio.com https://*.firebasedatabase.app;
+                   style-src 'self' 'unsafe-inline';
+                   img-src 'self' data: https:;
+                   font-src 'self' data:;
+                   connect-src 'self' https://*.firebaseio.com https://*.firebasedatabase.app;
+                   frame-ancestors 'none';
+                   base-uri 'self';
+                   form-action 'none';">
+
+    <title>🎓 Certificate Verify — Hoṛ Katha Suite</title>
+
+    <meta name="description" content="Verify the authenticity of your Hoṛ Katha Suite Typing Certificate online.">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#16a34a">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <link rel="icon" href="assets/icon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           RESET + VARIABLES
+           ============================================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-body: #f0f9ff;
+            --bg-card: #ffffff;
+            --bg-soft: #f0fdf4;
+            --bg-error: #fef2f2;
+            --bg-warning: #fffbeb;
+            --border: #e2e8f0;
+            --primary: #16a34a;
+            --primary-dark: #15803d;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --warning-dark: #92400e;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --text-soft: #475569;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-body);
+            background-image:
+                radial-gradient(circle at 15% 20%, rgba(34, 197, 94, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(59, 130, 246, 0.06) 0%, transparent 45%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        /* ============================================================
+           CARD
+           ============================================================ */
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px 36px;
+            max-width: 640px;
+            width: 100%;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            animation: cardEnter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #16a34a, #22c55e, #4ade80);
+        }
+
+        .card.error::before {
+            background: linear-gradient(90deg, #dc2626, #ef4444, #f87171);
+        }
+
+        .card.warning::before {
+            background: linear-gradient(90deg, #d97706, #f59e0b, #fbbf24);
+        }
+
+        .card.loading::before {
+            background: linear-gradient(90deg, #0284c7, #38bdf8, #7dd3fc);
+            animation: loadingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes cardEnter {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .verify-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .verify-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+        }
+
+        .verify-icon.error {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
+        }
+
+        .verify-icon.warning {
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.35);
+        }
+
+        .verify-icon.loading {
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
+            animation: iconSpin 2s linear infinite;
+        }
+
+        @keyframes iconSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .verify-title-block {
+            flex: 1;
+            min-width: 0;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', 'Georgia', serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        h1.error { color: var(--danger); }
+        h1.warning { color: var(--warning); }
+
+        .verify-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        /* ============================================================
+           INFO ROWS
+           ============================================================ */
+        .info-row {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .info-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 800;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+            min-width: 100px;
+        }
+
+        .value {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            flex: 1;
+            min-width: 0;
+            word-break: break-word;
+        }
+
+        .value.mono {
+            font-family: 'Courier New', monospace;
+            color: #0284c7;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            background: #f0f9ff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            border: 1px solid #bae6fd;
+        }
+
+        .value.highlight {
+            color: #16a34a;
+            font-size: 1.15rem;
+        }
+
+        .value.grade-badge {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: #ffffff;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        /* ============================================================
+           VERIFIED / WARNING / ERROR STAMP
+           ============================================================ */
+        .verified-stamp {
+            background: var(--bg-soft);
+            border: 2px solid #16a34a;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .verified-stamp.error {
+            background: var(--bg-error);
+            border-color: var(--danger);
+        }
+
+        .verified-stamp.warning {
+            background: var(--bg-warning);
+            border-color: var(--warning);
+        }
+
+        .stamp-icon {
+            font-size: 2.2rem;
+            flex-shrink: 0;
+        }
+
+        .stamp-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .stamp-text b {
+            display: block;
+            font-size: 1rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .stamp-text.error b {
+            color: var(--danger);
+        }
+
+        .stamp-text.warning b {
+            color: var(--warning-dark);
+        }
+
+        .stamp-text small {
+            font-size: 0.78rem;
+            color: var(--text-soft);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* ============================================================
+           ACTION BUTTONS
+           ============================================================ */
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 900;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            font-family: inherit;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+            min-height: 44px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:focus-visible {
+            outline: 3px solid #fbbf24;
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+            flex: 1 1 140px;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 22px rgba(34, 197, 94, 0.5);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--text-soft);
+            border: 1.5px solid var(--border);
+            flex: 1 1 140px;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: var(--text);
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25d366, #22c55e);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+            flex: 1 1 140px;
+        }
+
+        .btn-whatsapp:hover {
+            box-shadow: 0 8px 22px rgba(37, 211, 102, 0.5);
+        }
+
+        /* ============================================================
+           ERROR STATE
+           ============================================================ */
+        .error-content {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .error-content .error-emoji {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+
+        .error-content h2 {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--danger);
+            margin-bottom: 8px;
+        }
+
+        .error-content p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        /* ============================================================
+           LOADING STATE
+           ============================================================ */
+        .loading-content {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .loading-content .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e0f2fe;
+            border-top-color: #0284c7;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        /* ============================================================
+           VERIFY TIMESTAMP
+           ============================================================ */
+        .verified-at {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.75rem;
+            color: var(--text-soft);
+            font-weight: 700;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .verified-at strong {
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        /* ============================================================
+           MOBILE RESPONSIVE
+           ============================================================ */
+        @media (max-width: 640px) {
+            body { padding: 16px 12px; }
+
+            .card {
+                padding: 24px 20px;
+                border-radius: 16px;
+            }
+
+            .verify-icon {
+                width: 52px;
+                height: 52px;
+                font-size: 1.6rem;
+            }
+
+            h1 { font-size: 1.3rem; }
+            .verify-subtitle { font-size: 0.78rem; }
+
+            .info-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+                padding: 12px 0;
+            }
+
+            .label {
+                min-width: auto;
+                font-size: 0.66rem;
+            }
+
+            .value {
+                font-size: 0.95rem;
+            }
+
+            .value.mono {
+                font-size: 0.85rem;
+            }
+
+            .value.grade-badge {
+                align-self: flex-start;
+            }
+
+            .verified-stamp {
+                padding: 14px 16px;
+            }
+
+            .stamp-icon { font-size: 1.8rem; }
+            .stamp-text b { font-size: 0.92rem; }
+            .stamp-text small { font-size: 0.72rem; }
+
+            .actions { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+
+        @media (max-width: 400px) {
+            .card { padding: 20px 16px; }
+            h1 { font-size: 1.15rem; }
+        }
+
+        /* ============================================================
+           REDUCED MOTION
+           ============================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            .card {
+                animation: none !important;
+            }
+            .btn:hover {
+                transform: none !important;
+            }
+            .verify-icon.loading {
+                animation: none !important;
+            }
+            .loading-content .spinner {
+                animation: none !important;
+                border-top-color: #0284c7;
+            }
+        }
+
+        /* ============================================================
+           HIGH CONTRAST
+           ============================================================ */
+        @media (prefers-contrast: high) {
+            :root {
+                --border: #000000;
+                --text: #000000;
+                --text-muted: #333333;
+            }
+
+            .card {
+                border-width: 3px;
+            }
+
+            .value.mono {
+                border-width: 2px;
+            }
+        }
+
+        /* ============================================================
+           PRINT
+           ============================================================ */
+        @media print {
+            @page {
+                margin: 15mm;
+                size: A4;
+            }
+
+            body {
+                background: #ffffff !important;
+                padding: 0;
+                display: block;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: 2px solid #000 !important;
+                border-radius: 0 !important;
+                max-width: 100%;
+                padding: 20px;
+                animation: none !important;
+            }
+
+            .card::before {
+                display: none !important;
+            }
+
+            .actions {
+                display: none !important;
+            }
+
+            .verified-at {
+                display: block !important;
+                background: #ffffff !important;
+                border: 1px solid #000 !important;
+            }
+
+            .btn {
+                display: none !important;
+            }
+
+            .footer-links {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card loading" id="card" role="main">
+    <div id="content">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Verifying certificate...</p>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🔧 RUNTIME CONFIG LOADER (FIX #3)                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--
+    Load order (FIX #3):
+      1. config-private.local.js  → Real secrets (git-ignored, optional)
+      2. config-private.js        → Fallback template (fills missing keys)
+      3. config.js                → APP_CONFIG builder (from main app)
+
+    If none load, we fall back to placeholder Firebase config
+    (safe — verification will run in offline mode).
+
+    ⚠️ Load order matters: LOCAL must come first so that its real values
+       are in __RUNTIME_CONFIG__ before the template fills missing keys.
+-->
+<!-- ═══ CRITICAL CONFIG (FIX #3 — LOCAL first, template second) ═══ -->
+<script src="js/config-private.local.js" onerror="(function(){try{console.log('ℹ️ [verify.html] config-private.local.js not present');}catch(e){}})()"></script>
+<script src="js/config-private.js" onerror="(function(){try{console.log('ℹ️ [verify.html] config-private.js not present — using fallback');}catch(e){}})()"></script>
+<script src="js/config.js" onerror="(function(){try{console.log('ℹ️ [verify.html] config.js not loaded — using fallback');}catch(e){}})()"></script>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🆕 FIX #3 — CONFIG MERGE VERIFICATION                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--
+    Verifies that the config override pattern is working correctly.
+    Shows in console whether REAL values from .local.js were loaded,
+    or if we're using fallback placeholders from the template.
+-->
+<script>
+(function verifyConfigMerge() {
+    'use strict';
+
+    try {
+        var cfg = window.__RUNTIME_CONFIG__;
+
+        if (!cfg || typeof cfg !== 'object') {
+            console.log('ℹ️ [verify.html] FIX #3: __RUNTIME_CONFIG__ not set (no config files loaded)');
+            return;
+        }
+
+        var jwk = cfg.LICENSE_PUBLIC_KEY_JWK || {};
+        var placeholder = /YOUR_|_HERE|REPLACE_|PASTE_/i;
+
+        var isReal = jwk.x && jwk.y &&
+                     jwk.x.length === 43 &&
+                     jwk.y.length === 43 &&
+                     !placeholder.test(jwk.x) &&
+                     !placeholder.test(jwk.y);
+
+        var nameSecret = cfg.NAME_ENCRYPTION_SECRET || '';
+        var nameOk = nameSecret.length >= 16 && !placeholder.test(nameSecret);
+
+        console.log('═══════════════════════════════════════════');
+        console.log('🔍 [verify.html] FIX #3 — Config Merge Check');
+        console.log('───────────────────────────────────────────');
+        console.log('  🔐 License JWK:', isReal ? '✅ Real values' : '⚠️ Placeholder');
+        console.log('  🔐 Name Secret:', nameOk ? '✅ Real value' : '⚠️ Placeholder');
+
+        if (isReal || nameOk) {
+            console.log('');
+            console.log('  ✅ Real config values loaded from config-private.local.js');
+        } else if (cfg.LICENSE_PUBLIC_KEY_JWK) {
+            console.log('');
+            console.log('  ℹ️ Using fallback placeholders (no .local.js or unconfigured)');
+            console.log('     → Firebase verification will run in offline mode');
+        }
+        console.log('═══════════════════════════════════════════');
+    } catch (e) {
+        console.warn('⚠️ [verify.html] Config merge check failed:', e.message);
+    }
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🔥 FIREBASE CONFIG RESOLUTION                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--
+    Firebase config resolution priority (STRICT ORDER):
+
+      1. window.__RUNTIME_CONFIG__ (from preload.js in Electron)
+         → Packaged app / Electron context
+
+      2. window.__RUNTIME_CONFIG__ (from config-private.local.js)
+         → Web/Dev context
+
+      3. Individual FIREBASE_* env vars
+         → From config-private.js / .env
+
+      4. Placeholder fallback
+         → Safe: verification runs in offline mode
+
+    Fields resolved:
+      • apiKey
+      • authDomain
+      • databaseURL
+      • projectId
+      • storageBucket
+      • messagingSenderId
+      • appId
+      • measurementId (optional)
+-->
+<script>
+(function resolveFirebaseConfig() {
+    'use strict';
+
+    // ═══════════════════════════════════════════════════════
+    // Placeholder-safe default
+    // ═══════════════════════════════════════════════════════
+    const PLACEHOLDER_CONFIG = {
+        apiKey: "YOUR_FIREBASE_API_KEY",
+        authDomain: "YOUR_PROJECT.firebaseapp.com",
+        databaseURL: "https://YOUR_PROJECT-default-rtdb.REGION.firebasedatabase.app",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT.firebasestorage.app",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID",
+        measurementId: "G-XXXXXXXXXX"
+    };
+
+    let resolved = null;
+    let source = 'placeholder';
+
+    // ═══════════════════════════════════════════════════════
+    // Channel 1: window.__RUNTIME_CONFIG__ (preload.js OR local.js)
+    // ═══════════════════════════════════════════════════════
+    try {
+        const rc = window.__RUNTIME_CONFIG__;
+        if (rc && typeof rc === 'object') {
+            // Try pre-assembled object first
+            if (rc.FIREBASE_CONFIG && typeof rc.FIREBASE_CONFIG === 'object') {
+                const candidate = rc.FIREBASE_CONFIG;
+                if (candidate.apiKey && candidate.databaseURL) {
+                    resolved = candidate;
+                    source = 'runtime-config-object';
+                }
+            }
+
+            // Try individual fields
+            if (!resolved && rc.FIREBASE_API_KEY && rc.FIREBASE_DATABASE_URL) {
+                resolved = {
+                    apiKey: rc.FIREBASE_API_KEY,
+                    authDomain: rc.FIREBASE_AUTH_DOMAIN || (rc.FIREBASE_PROJECT_ID + '.firebaseapp.com'),
+                    databaseURL: rc.FIREBASE_DATABASE_URL,
+                    projectId: rc.FIREBASE_PROJECT_ID,
+                    storageBucket: rc.FIREBASE_STORAGE_BUCKET || '',
+                    messagingSenderId: rc.FIREBASE_MESSAGING_SENDER_ID || '',
+                    appId: rc.FIREBASE_APP_ID || '',
+                    measurementId: rc.FIREBASE_MEASUREMENT_ID || ''
+                };
+                source = 'runtime-config-fields';
+            }
+        }
+    } catch (e) {
+        console.warn('[verify.html] __RUNTIME_CONFIG__ read failed:', e.message);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Channel 2: APP_CONFIG (from config.js)
+    // ═══════════════════════════════════════════════════════
+    if (!resolved) {
+        try {
+            const cfg = window.APP_CONFIG;
+            if (cfg && typeof cfg === 'object') {
+                // Try object form
+                if (cfg.FIREBASE_CONFIG && typeof cfg.FIREBASE_CONFIG === 'object') {
+                    const candidate = cfg.FIREBASE_CONFIG;
+                    if (candidate.apiKey && candidate.databaseURL) {
+                        resolved = candidate;
+                        source = 'app-config-object';
+                    }
+                }
+
+                // Try individual fields
+                if (!resolved && cfg.FIREBASE_API_KEY && cfg.FIREBASE_DATABASE_URL) {
+                    resolved = {
+                        apiKey: cfg.FIREBASE_API_KEY,
+                        authDomain: cfg.FIREBASE_AUTH_DOMAIN || (cfg.FIREBASE_PROJECT_ID + '.firebaseapp.com'),
+                        databaseURL: cfg.FIREBASE_DATABASE_URL,
+                        projectId: cfg.FIREBASE_PROJECT_ID,
+                        storageBucket: cfg.FIREBASE_STORAGE_BUCKET || '',
+                        messagingSenderId: cfg.FIREBASE_MESSAGING_SENDER_ID || '',
+                        appId: cfg.FIREBASE_APP_ID || '',
+                        measurementId: cfg.FIREBASE_MEASUREMENT_ID || ''
+                    };
+                    source = 'app-config-fields';
+                }
+            }
+        } catch (e) {
+            console.warn('[verify.html] APP_CONFIG read failed:', e.message);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Validate resolved config — reject placeholders
+    // ═══════════════════════════════════════════════════════
+    function isPlaceholderConfig(cfg) {
+        if (!cfg || typeof cfg !== 'object') return true;
+        const values = Object.values(cfg);
+        return values.some(v => {
+            if (!v || typeof v !== 'string') return true;
+            const upper = v.toUpperCase();
+            return upper.includes('YOUR_') ||
+                   upper.includes('YOUR-PROJECT') ||
+                   upper.includes('PLACEHOLDER') ||
+                   upper.includes('XXXXX');
+        });
+    }
+
+    if (resolved && isPlaceholderConfig(resolved)) {
+        console.log('ℹ️ [verify.html] Resolved config is placeholder — falling back');
+        resolved = null;
+        source = 'placeholder';
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Export the final config
+    // ═══════════════════════════════════════════════════════
+    window.FIREBASE_CONFIG = resolved || PLACEHOLDER_CONFIG;
+    window.FIREBASE_CONFIG_SOURCE = source;
+    window.FIREBASE_CONFIG_IS_PLACEHOLDER = !resolved;
+
+    console.log('═══════════════════════════════════════════');
+    console.log('🔥 [verify.html] Firebase Config resolved');
+    console.log('   Source:', source);
+    console.log('   Is placeholder:', !resolved);
+    if (resolved) {
+        console.log('   Project ID:', resolved.projectId || 'unknown');
+        console.log('   Database URL:', (resolved.databaseURL || '').substring(0, 60) + '...');
+    }
+    console.log('═══════════════════════════════════════════');
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🔥 FIREBASE SDK (loaded AFTER config resolution)           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+// ============================================================
+// 🛡️ SECURITY CONSTANTS
+// ============================================================
+'use strict';
+
+const VERIFY_VERSION = '4.1';
+const VERIFY_TIMEOUT_MS = 8000;
+
+// Grade whitelist
+const VALID_GRADES = ['A+', 'A', 'B', 'C', 'D'];
+
+// Certificate number format (broadened)
+const CERT_NO_REGEX = /^HK-(BAS|ADV|JOB)-\d{6}-[A-Z0-9]{4}$/i;
+
+// Name validation
+const NAME_MIN_LENGTH = 2;
+const NAME_MAX_LENGTH = 100;
+
+// WPM range
+const WPM_MIN = 0;
+const WPM_MAX = 300;
+
+// Accuracy range
+const ACC_MIN = 0;
+const ACC_MAX = 100;
+
+// Date sanity: not more than 1 day in future
+const MAX_FUTURE_DAYS = 1;
+
+// Certificate validity: not older than 5 years
+const MAX_PAST_YEARS = 5;
+
+// ============================================================
+// 🛡️ UTILITIES
+// ============================================================
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/`/g, '&#96;')
+        .replace(/\//g, '&#47;');
+}
+
+function isValidCertificateNumber(cert) {
+    if (!cert || typeof cert !== 'string') return false;
+    return CERT_NO_REGEX.test(cert.trim());
+}
+
+function safeInt(val, min, max, fallback) {
+    const n = parseInt(val, 10);
+    if (isNaN(n)) return fallback;
+    if (n < min) return min;
+    if (n > max) return max;
+    return n;
+}
+
+function isValidName(name) {
+    if (!name || typeof name !== 'string') return false;
+    const trimmed = name.trim();
+    if (trimmed.length < NAME_MIN_LENGTH) return false;
+    if (trimmed.length > NAME_MAX_LENGTH) return false;
+    if (/[\x00-\x1F\x7F]/.test(trimmed)) return false;
+    return true;
+}
+
+function isValidGrade(grade) {
+    if (!grade || typeof grade !== 'string') return false;
+    return VALID_GRADES.includes(grade.trim().toUpperCase());
+}
+
+function isValidDate(dateStr) {
+    if (!dateStr) return false;
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return false;
+
+        const now = new Date();
+
+        const futureLimit = new Date(now.getTime() + MAX_FUTURE_DAYS * 24 * 60 * 60 * 1000);
+        if (d > futureLimit) return false;
+
+        const pastLimit = new Date(now.getTime() - MAX_PAST_YEARS * 365 * 24 * 60 * 60 * 1000);
+        if (d < pastLimit) return false;
+
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return 'N/A';
+
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return 'N/A';
+
+        return d.toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+    } catch (e) {
+        return 'N/A';
+    }
+}
+
+function getVerifyTimestamp() {
+    try {
+        return new Date().toLocaleString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch (e) {
+        return new Date().toLocaleString();
+    }
+}
+
+function copyToClipboard(text, btnEl) {
+    const onSuccess = () => {
+        if (btnEl) {
+            const original = btnEl.textContent;
+            btnEl.textContent = '✅ Copied!';
+            setTimeout(() => {
+                btnEl.textContent = original;
+            }, 2000);
+        }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text)
+            .then(onSuccess)
+            .catch(() => fallbackCopy(text, onSuccess));
+    } else {
+        fallbackCopy(text, onSuccess);
+    }
+}
+
+function fallbackCopy(text, onSuccess) {
+    try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (ok && onSuccess) onSuccess();
+    } catch (e) {
+        console.warn('Copy failed:', e);
+    }
+}
+
+// ============================================================
+// 📋 PARSE + VALIDATE URL PARAMETERS
+// ============================================================
+const params = new URLSearchParams(location.search);
+
+const cert = (params.get('cert') || '').trim();
+const name = (params.get('name') || '').trim();
+const wpm = safeInt(params.get('wpm'), WPM_MIN, WPM_MAX, 0);
+const acc = safeInt(params.get('acc'), ACC_MIN, ACC_MAX, 0);
+const grade = (params.get('grade') || 'D').trim().toUpperCase().substring(0, 3);
+const date = (params.get('date') || '').trim();
+
+// ============================================================
+// 🎯 DOM ELEMENTS
+// ============================================================
+const card = document.getElementById('card');
+const content = document.getElementById('content');
+
+// ============================================================
+// ⏳ LOADING STATE
+// ============================================================
+function renderLoading(message) {
+    content.replaceChildren();
+
+    const wrap = document.createElement('div');
+    wrap.className = 'loading-content';
+
+    const spinner = document.createElement('div');
+    spinner.className = 'spinner';
+
+    const p = document.createElement('p');
+    p.textContent = message || 'Verifying certificate...';
+
+    wrap.appendChild(spinner);
+    wrap.appendChild(p);
+    content.appendChild(wrap);
+}
+
+// ============================================================
+// ❌ ERROR STATE
+// ============================================================
+function renderError(title, message) {
+    card.classList.remove('loading', 'warning');
+    card.classList.add('error');
+
+    content.replaceChildren();
+
+    const wrap = document.createElement('div');
+    wrap.className = 'error-content';
+
+    const emoji = document.createElement('div');
+    emoji.className = 'error-emoji';
+    emoji.textContent = '❌';
+
+    const h2 = document.createElement('h2');
+    h2.textContent = title;
+
+    const p = document.createElement('p');
+    p.textContent = message;
+
+    wrap.appendChild(emoji);
+    wrap.appendChild(h2);
+    wrap.appendChild(p);
+
+    // Actions
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+
+    const backBtn = document.createElement('a');
+    backBtn.className = 'btn btn-primary';
+    backBtn.href = 'index.html';
+    backBtn.textContent = '🏠 Back to App';
+
+    const waBtn = document.createElement('a');
+    waBtn.className = 'btn btn-whatsapp';
+    waBtn.href = 'https://wa.me/919110977117?text=' + encodeURIComponent('Certificate verification failed. Please help.');
+    waBtn.target = '_blank';
+    waBtn.rel = 'noopener noreferrer';
+    waBtn.textContent = '💬 Contact Support';
+
+    actions.appendChild(backBtn);
+    actions.appendChild(waBtn);
+    wrap.appendChild(actions);
+
+    // Footer
+    const footer = document.createElement('div');
+    footer.className = 'footer';
+    const footerText = document.createElement('div');
+    footerText.innerHTML = 'Verified by <a href="index.html">BOSC Tech &amp; Edu</a> · Made in India 🇮🇳';
+    footer.appendChild(footerText);
+    wrap.appendChild(footer);
+
+    content.appendChild(wrap);
+}
+
+// ============================================================
+// ⚠️ WARNING STATE (Unverified / Firebase unavailable)
+// ============================================================
+function renderWarning(title, message, details, reasonCode) {
+    card.classList.remove('loading', 'error');
+    card.classList.add('warning');
+
+    content.replaceChildren();
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'verify-header';
+
+    const icon = document.createElement('div');
+    icon.className = 'verify-icon warning';
+    icon.textContent = '⚠️';
+
+    const titleBlock = document.createElement('div');
+    titleBlock.className = 'verify-title-block';
+
+    const h1 = document.createElement('h1');
+    h1.className = 'warning';
+    h1.textContent = title;
+
+    const subtitle = document.createElement('div');
+    subtitle.className = 'verify-subtitle';
+    subtitle.textContent = 'BOSC Tech & Edu · Self-Reported Data';
+
+    titleBlock.appendChild(h1);
+    titleBlock.appendChild(subtitle);
+    header.appendChild(icon);
+    header.appendChild(titleBlock);
+    content.appendChild(header);
+
+    // Warning stamp
+    const stamp = document.createElement('div');
+    stamp.className = 'verified-stamp warning';
+
+    const stampIcon = document.createElement('div');
+    stampIcon.className = 'stamp-icon';
+    stampIcon.textContent = '⚠️';
+
+    const stampText = document.createElement('div');
+    stampText.className = 'stamp-text warning';
+
+    const stampB = document.createElement('b');
+    stampB.textContent = 'Not Authenticated';
+
+    const stampSmall = document.createElement('small');
+    stampSmall.textContent = message;
+
+    stampText.appendChild(stampB);
+    stampText.appendChild(stampSmall);
+    stamp.appendChild(stampIcon);
+    stamp.appendChild(stampText);
+    content.appendChild(stamp);
+
+    // Reason code (if provided)
+    if (reasonCode) {
+        const reasonEl = document.createElement('div');
+        reasonEl.style.cssText = 'font-size:0.72rem; color:#92400e; text-align:center; padding:6px 10px; background:#fef3c7; border-radius:6px; margin-top:8px; font-weight:700;';
+        reasonEl.textContent = 'Reason: ' + reasonCode;
+        content.appendChild(reasonEl);
+    }
+
+    // Info details
+    if (details && details.length > 0) {
+        details.forEach(row => {
+            const rowEl = document.createElement('div');
+            rowEl.className = 'info-row';
+
+            const labelEl = document.createElement('div');
+            labelEl.className = 'label';
+            labelEl.textContent = row.label;
+
+            const valueEl = document.createElement('div');
+            valueEl.className = 'value';
+
+            if (row.type === 'mono') {
+                valueEl.classList.add('mono');
+            } else if (row.type === 'highlight') {
+                valueEl.classList.add('highlight');
+            } else if (row.type === 'grade') {
+                valueEl.classList.add('grade-badge');
+            }
+
+            valueEl.textContent = row.value;
+
+            rowEl.appendChild(labelEl);
+            rowEl.appendChild(valueEl);
+            content.appendChild(rowEl);
+        });
+    }
+
+    // Actions
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+
+    const backBtn = document.createElement('a');
+    backBtn.className = 'btn btn-primary';
+    backBtn.href = 'index.html';
+    backBtn.textContent = '🏠 Back to App';
+
+    const waBtn = document.createElement('a');
+    waBtn.className = 'btn btn-whatsapp';
+    waBtn.href = 'https://wa.me/919110977117?text=' + encodeURIComponent('Please verify my certificate: ' + cert);
+    waBtn.target = '_blank';
+    waBtn.rel = 'noopener noreferrer';
+    waBtn.textContent = '💬 Contact Support';
+
+    actions.appendChild(backBtn);
+    actions.appendChild(waBtn);
+    content.appendChild(actions);
+
+    // Timestamp
+    const verifyAt = document.createElement('div');
+    verifyAt.className = 'verified-at';
+    verifyAt.innerHTML = '⚠️ Self-Reported Data · ' + escapeHtml(getVerifyTimestamp());
+    content.appendChild(verifyAt);
+
+    // Footer
+    const footer = document.createElement('div');
+    footer.className = 'footer';
+
+    const footerText = document.createElement('div');
+    footerText.innerHTML = 'Verified by <a href="index.html">BOSC Tech &amp; Edu</a> · Made in India 🇮🇳';
+    footer.appendChild(footerText);
+
+    const footerLinks = document.createElement('div');
+    footerLinks.className = 'footer-links';
+
+    const appLink = document.createElement('a');
+    appLink.href = 'index.html';
+    appLink.textContent = '🏠 App';
+
+    const privacyLink = document.createElement('a');
+    privacyLink.href = 'privacy.html';
+    privacyLink.textContent = '🔒 Privacy';
+
+    const waLink = document.createElement('a');
+    waLink.href = 'https://wa.me/919110977117';
+    waLink.target = '_blank';
+    waLink.rel = 'noopener noreferrer';
+    waLink.textContent = '💬 WhatsApp';
+
+    footerLinks.appendChild(appLink);
+    footerLinks.appendChild(privacyLink);
+    footerLinks.appendChild(waLink);
+    footer.appendChild(footerLinks);
+    content.appendChild(footer);
+}
+
+// ============================================================
+// ✅ SUCCESS STATE (Verified)
+// ============================================================
+function renderSuccess(verificationSource) {
+    card.classList.remove('loading', 'error', 'warning');
+
+    content.replaceChildren();
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'verify-header';
+
+    const icon = document.createElement('div');
+    icon.className = 'verify-icon';
+    icon.textContent = '✓';
+
+    const titleBlock = document.createElement('div');
+    titleBlock.className = 'verify-title-block';
+
+    const h1 = document.createElement('h1');
+    h1.textContent = 'Certificate Verified';
+
+    const subtitle = document.createElement('div');
+    subtitle.className = 'verify-subtitle';
+    subtitle.textContent = 'BOSC Tech & Edu · Official Verification';
+
+    titleBlock.appendChild(h1);
+    titleBlock.appendChild(subtitle);
+    header.appendChild(icon);
+    header.appendChild(titleBlock);
+    content.appendChild(header);
+
+    // Info rows
+    const rows = [
+        { label: 'Name', value: name, type: 'normal' },
+        { label: 'Certificate No', value: cert, type: 'mono' },
+        { label: 'Speed', value: wpm + ' WPM', type: 'highlight' },
+        { label: 'Accuracy', value: acc + '%', type: 'highlight' },
+        { label: 'Grade', value: grade, type: 'grade' },
+        { label: 'Date', value: formatDate(date), type: 'normal' }
+    ];
+
+    rows.forEach(row => {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'info-row';
+
+        const labelEl = document.createElement('div');
+        labelEl.className = 'label';
+        labelEl.textContent = row.label;
+
+        const valueEl = document.createElement('div');
+        valueEl.className = 'value';
+
+        if (row.type === 'mono') {
+            valueEl.classList.add('mono');
+        } else if (row.type === 'highlight') {
+            valueEl.classList.add('highlight');
+        } else if (row.type === 'grade') {
+            valueEl.classList.add('grade-badge');
+        }
+
+        valueEl.textContent = row.value;
+
+        rowEl.appendChild(labelEl);
+        rowEl.appendChild(valueEl);
+        content.appendChild(rowEl);
+    });
+
+    // Verified stamp
+    const stamp = document.createElement('div');
+    stamp.className = 'verified-stamp';
+
+    const stampIcon = document.createElement('div');
+    stampIcon.className = 'stamp-icon';
+    stampIcon.textContent = '🛡️';
+
+    const stampText = document.createElement('div');
+    stampText.className = 'stamp-text';
+
+    const stampB = document.createElement('b');
+    stampB.textContent = 'Authentic Certificate';
+
+    const stampSmall = document.createElement('small');
+    stampSmall.textContent = verificationSource === 'firebase'
+        ? 'Verified against BOSC Tech & Edu official records.'
+        : 'Certificate format verified. Signature check skipped (offline).';
+
+    stampText.appendChild(stampB);
+    stampText.appendChild(stampSmall);
+    stamp.appendChild(stampIcon);
+    stamp.appendChild(stampText);
+    content.appendChild(stamp);
+
+    // Actions
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'btn btn-secondary';
+    copyBtn.type = 'button';
+    copyBtn.textContent = '🔗 Copy Verify Link';
+    copyBtn.addEventListener('click', () => {
+        copyToClipboard(window.location.href, copyBtn);
+    });
+
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'btn btn-whatsapp';
+    shareBtn.type = 'button';
+    shareBtn.textContent = '📱 Share on WhatsApp';
+    shareBtn.addEventListener('click', () => {
+        const shareText = `🎓 *Certificate Verified*\n\n` +
+            `👤 Name: ${name}\n` +
+            `📋 Cert No: ${cert}\n` +
+            `⚡ Speed: ${wpm} WPM\n` +
+            `🎯 Accuracy: ${acc}%\n` +
+            `🏅 Grade: ${grade}\n\n` +
+            `🔗 Verify: ${window.location.href}\n\n` +
+            `— BOSC Tech & Edu`;
+        window.open(
+            'https://wa.me/?text=' + encodeURIComponent(shareText),
+            '_blank',
+            'noopener,noreferrer'
+        );
+    });
+
+    const backBtn = document.createElement('a');
+    backBtn.className = 'btn btn-primary';
+    backBtn.href = 'index.html';
+    backBtn.textContent = '🏠 Back to App';
+
+    actions.appendChild(copyBtn);
+    actions.appendChild(shareBtn);
+    actions.appendChild(backBtn);
+    content.appendChild(actions);
+
+    // Verify timestamp
+    const verifyAt = document.createElement('div');
+    verifyAt.className = 'verified-at';
+    verifyAt.innerHTML = '✅ Verified on: <strong>' + escapeHtml(getVerifyTimestamp()) + '</strong>';
+    content.appendChild(verifyAt);
+
+    // Footer
+    const footer = document.createElement('div');
+    footer.className = 'footer';
+
+    const footerText = document.createElement('div');
+    footerText.innerHTML = 'Verified by <a href="index.html">BOSC Tech &amp; Edu</a> · Made in India 🇮🇳';
+    footer.appendChild(footerText);
+
+    const footerLinks = document.createElement('div');
+    footerLinks.className = 'footer-links';
+
+    const appLink = document.createElement('a');
+    appLink.href = 'index.html';
+    appLink.textContent = '🏠 App';
+
+    const privacyLink = document.createElement('a');
+    privacyLink.href = 'privacy.html';
+    privacyLink.textContent = '🔒 Privacy';
+
+    const waLink = document.createElement('a');
+    waLink.href = 'https://wa.me/919110977117';
+    waLink.target = '_blank';
+    waLink.rel = 'noopener noreferrer';
+    waLink.textContent = '💬 WhatsApp';
+
+    footerLinks.appendChild(appLink);
+    footerLinks.appendChild(privacyLink);
+    footerLinks.appendChild(waLink);
+    footer.appendChild(footerLinks);
+    content.appendChild(footer);
+
+    document.title = '✅ Verified — ' + name + ' | Hoṛ Katha Suite';
+}
+
+// ============================================================
+// 🔥 FIREBASE VERIFICATION (best-effort)
+// ============================================================
+let _firebaseReady = false;
+
+function initFirebase() {
+    try {
+        if (typeof firebase === 'undefined') {
+            console.log('ℹ️ [verify.html] Firebase SDK not loaded');
+            return false;
+        }
+
+        const cfg = window.FIREBASE_CONFIG;
+        if (!cfg) {
+            console.log('ℹ️ [verify.html] FIREBASE_CONFIG not set');
+            return false;
+        }
+
+        // Placeholder check — already done by resolver, but double-safe
+        if (window.FIREBASE_CONFIG_IS_PLACEHOLDER) {
+            console.log('ℹ️ [verify.html] Firebase config is placeholder — offline verification only');
+            return false;
+        }
+
+        // Init
+        if (!firebase.apps || firebase.apps.length === 0) {
+            firebase.initializeApp(cfg);
+        }
+
+        _firebaseReady = true;
+        console.log('✅ [verify.html] Firebase initialized — project:', cfg.projectId);
+        return true;
+    } catch (e) {
+        console.warn('[verify.html] Firebase init failed:', e.message);
+        return false;
+    }
+}
+
+/**
+ * Best-effort verification: check if certificate exists in Firebase
+ * @returns {Promise<{verified: boolean, source: string, record: object|null}>}
+ */
+async function verifyCertificateInFirebase(certNo) {
+    if (!_firebaseReady) {
+        return { verified: false, source: 'offline', record: null };
+    }
+
+    try {
+        // Search in certificates path for matching certificate number
+        const snapshot = await Promise.race([
+            firebase.database().ref('certificates/' + certNo).once('value'),
+            new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('timeout')), VERIFY_TIMEOUT_MS)
+            )
+        ]);
+
+        const data = snapshot.val();
+
+        if (!data) {
+            return { verified: false, source: 'firebase', record: null, reason: 'not-found' };
+        }
+
+        // Verify data matches URL parameters
+        const matches =
+            data.name === name &&
+            data.wpm === wpm &&
+            data.accuracy === acc &&
+            data.grade === grade;
+
+        if (!matches) {
+            return { verified: false, source: 'firebase', record: data, reason: 'data-mismatch' };
+        }
+
+        return {
+            verified: true,
+            source: 'firebase',
+            record: data
+        };
+    } catch (e) {
+        console.warn('[verify.html] Firebase verification failed:', e.message);
+        return { verified: false, source: 'error', record: null, reason: 'network-error' };
+    }
+}
+
+// ============================================================
+// 🚀 MAIN VERIFICATION FLOW
+// ============================================================
+async function runVerification() {
+    // ═══════════════════════════════════════════════════════════
+    // STEP 1: Required fields check
+    // ═══════════════════════════════════════════════════════════
+    if (!cert || !name) {
+        renderError(
+            'Invalid Certificate Link',
+            'The verification link is missing required information. Please scan the QR code on your certificate or use the original link.'
+        );
+        return;
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // STEP 2: Certificate number format
+    // ═══════════════════════════════════════════════════════════
+    if (!isValidCertificateNumber(cert)) {
+        renderError(
+            'Invalid Certificate Number',
+            'The certificate number format is not recognized. Please verify the link and try again.'
+        );
+        return;
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // STEP 3: Name validation
+    // ═══════════════════════════════════════════════════════════
+    if (!isValidName(name)) {
+        renderError(
+            'Invalid Name',
+            'The certificate name contains invalid characters or unexpected length.'
+        );
+        return;
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // STEP 4: Grade validation
+    // ═══════════════════════════════════════════════════════════
+    if (!isValidGrade(grade)) {
+        renderError(
+            'Invalid Grade',
+            'The grade value is not recognized. Valid grades are: ' + VALID_GRADES.join(', ')
+        );
+        return;
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // STEP 5: Date validation
+    // ═══════════════════════════════════════════════════════════
+    if (!isValidDate(date)) {
+        renderError(
+            'Invalid Date',
+            'The certificate date is invalid or out of acceptable range.'
+        );
+        return;
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // STEP 6: Firebase verification (best-effort)
+    // ═══════════════════════════════════════════════════════════
+    renderLoading('Verifying certificate authenticity...');
+
+    const firebaseInit = initFirebase();
+    let verificationResult = { verified: false, source: 'offline', record: null };
+
+    if (firebaseInit) {
+        try {
+            verificationResult = await verifyCertificateInFirebase(cert);
+
+            if (verificationResult.verified) {
+                console.log('✅ Certificate verified in Firebase');
+                renderSuccess('firebase');
+                return;
+            }
+
+            if (verificationResult.source === 'firebase' && !verificationResult.verified) {
+                // Firebase responded but no matching record OR data mismatch
+                console.warn('⚠️ Certificate not found or mismatched in Firebase:', verificationResult.reason);
+
+                let message = 'This certificate format is valid, but no matching record was found in our official database.';
+                let reasonCode = 'NOT_FOUND';
+
+                if (verificationResult.reason === 'data-mismatch') {
+                    message = 'The certificate data in our records does not match the link parameters. The certificate may have been altered.';
+                    reasonCode = 'DATA_MISMATCH';
+                }
+
+                renderWarning(
+                    'Certificate Not in Records',
+                    message,
+                    [
+                        { label: 'Name', value: name, type: 'normal' },
+                        { label: 'Certificate No', value: cert, type: 'mono' },
+                        { label: 'Speed', value: wpm + ' WPM', type: 'highlight' },
+                        { label: 'Accuracy', value: acc + '%', type: 'highlight' },
+                        { label: 'Grade', value: grade, type: 'grade' },
+                        { label: 'Date', value: formatDate(date), type: 'normal' }
+                    ],
+                    reasonCode
+                );
+                return;
+            }
+
+            if (verificationResult.source === 'error') {
+                console.warn('⚠️ Firebase unreachable — offline verification');
+            }
+        } catch (e) {
+            console.warn('Firebase verification error:', e.message);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // STEP 7: Offline fallback — format-valid but unverified
+    // ═══════════════════════════════════════════════════════════
+    const offlineReason = !firebaseInit
+        ? (window.FIREBASE_CONFIG_IS_PLACEHOLDER ? 'FIREBASE_NOT_CONFIGURED' : 'FIREBASE_INIT_FAILED')
+        : 'NETWORK_ERROR';
+
+    renderWarning(
+        'Format Valid (Not Verified)',
+        'Certificate format is valid but could not be cross-verified against our official records. ' +
+        'This may be due to network issues or the certificate being self-reported.',
+        [
+            { label: 'Name', value: name, type: 'normal' },
+            { label: 'Certificate No', value: cert, type: 'mono' },
+            { label: 'Speed', value: wpm + ' WPM', type: 'highlight' },
+            { label: 'Accuracy', value: acc + '%', type: 'highlight' },
+            { label: 'Grade', value: grade, type: 'grade' },
+            { label: 'Date', value: formatDate(date), type: 'normal' }
+        ],
+        offlineReason
+    );
+}
+
+// ============================================================
+// 🚀 RUN
+// ============================================================
+(function init() {
+    // Small delay to let Firebase SDK load
+    setTimeout(runVerification, 100);
+})();
+
+// ============================================================
+// 📋 STARTUP LOG
+// ============================================================
+console.log('═══════════════════════════════════════════');
+console.log('✅ verify.html loaded — v' + VERIFY_VERSION);
+console.log('   📋 Cert No:', cert || '(none)');
+console.log('   👤 Name:', name || '(none)');
+console.log('   ⚡ WPM:', wpm, '| 🎯 Acc:', acc + '%');
+console.log('   🏅 Grade:', grade, '| 📅 Date:', date);
+console.log('   🔥 Firebase SDK:', typeof firebase !== 'undefined' ? 'loaded' : 'missing');
+console.log('   🔥 Firebase config source:', window.FIREBASE_CONFIG_SOURCE || 'unknown');
+console.log('   🔥 Is placeholder:', window.FIREBASE_CONFIG_IS_PLACEHOLDER === true ? 'YES (offline mode)' : 'NO (live mode)');
+console.log('═══════════════════════════════════════════');
+</script>
+
+</body>
+</html>
