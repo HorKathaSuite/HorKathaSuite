@@ -83,5 +83,5 @@ Click the **"Fork"** button on GitHub to create your copy.
 ### 2. Clone Your Fork
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/hor-katha-suite.git
-cd hor-katha-suite
+git clone https://github.com/HorKathaSuite/HorKathaSuite.git
+cd HorKathaSuite
