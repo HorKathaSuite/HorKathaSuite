@@ -763,14 +763,7 @@ async function _doGenerateHwid() {
         (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'unknown',
         navigator.language || 'en',
         navigator.languages ? navigator.languages.join(',') : '',
-        navigator.userAgent || '',
-        Date.now(),
-        Math.random(),
-        Math.random(),
-        performance.now ? performance.now() : 0,
-        crypto.getRandomValues
-            ? Array.from(crypto.getRandomValues(new Uint8Array(8))).join('')
-            : ''
+        navigator.userAgent || ''
     ].join('|');
 
     let newHwid = null;
@@ -800,12 +793,19 @@ async function _doGenerateHwid() {
     const [p1, p2] = newHwid.replace('DVC-', '').split('-');
     if (p1 === p2 || /^(.)\1{3}$/.test(p1) || /^(.)\1{3}$/.test(p2)
         || p1 === 'DCDC' || p2 === 'DCDC') {
-        console.warn('[HWID] ⚠️ Repetitive detected — regenerating');
-        const rand = () => Math.floor(Math.random() * 65536).toString(16).padStart(4, '0').toUpperCase();
-        let f1 = rand(), f2 = rand();
-        while (f1 === f2) f2 = rand();
-        newHwid = `DVC-${f1}-${f2}`;
-        generationSource = 'random-regen';
+        console.warn('[HWID] ⚠️ Repetitive detected — re-hashing with salt');
+        // ✅ FIX: Random ki jagah static salt se dobara hash karo
+        try {
+            const enc = new TextEncoder();
+            const saltedSignals = signals + '|SALT-V1';
+            const hashBuf2 = await crypto.subtle.digest('SHA-256', enc.encode('HW-V3|' + saltedSignals));
+            const hashHex2 = Array.from(new Uint8Array(hashBuf2)).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+            newHwid = `DVC-${hashHex2.substring(0, 4)}-${hashHex2.substring(4, 8)}`;
+            generationSource = 'crypto-subtle-salted';
+        } catch(e) {
+            newHwid = _generateFallbackHwid(signals + '|SALT-V1');
+            generationSource = 'fallback-salted';
+        }
     }
 
     console.log('[HWID] ✅ Final:', newHwid, '| Source:', generationSource);
@@ -836,16 +836,12 @@ async function _doGenerateHwid() {
 }
 
 // ============================================================
-// 📱 FALLBACK HWID — 4-way hash mixing
+// 📱 FALLBACK HWID — Static Hash (No Random, No Time)
 // ============================================================
 function _generateFallbackHwid(seed) {
     try {
         const parts = [
             String(seed || ''),
-            String(Date.now()),
-            String(Math.random()),
-            String(Math.random()),
-            String(performance.now ? performance.now() : 0),
             navigator.userAgent || '',
             navigator.language || '',
             navigator.platform || '',
@@ -857,7 +853,7 @@ function _generateFallbackHwid(seed) {
             new Date().getTimezoneOffset()
         ];
 
-        const str = parts.join('|') + '|HorKatha-v3-' + Date.now();
+        const str = parts.join('|') + '|HorKatha-Fallback-v3';
 
         let h1 = 0x811c9dc5, h2 = 0x1000193, h3 = 0x9e3779b9, h4 = 0x1b873593;
         for (let i = 0; i < str.length; i++) {
@@ -883,22 +879,15 @@ function _generateFallbackHwid(seed) {
 
         const part1 = combined.substring(0, 4);
         const part2 = combined.substring(4, 8);
-
-        const isRepetitive = /^(.)\1+$/.test(part1) || /^(.)\1+$/.test(part2)
-            || part1 === part2;
-        const uniqueChars = new Set(part1 + part2).size;
-
-        if (isRepetitive || uniqueChars < 5 || part1 === 'DCDC') {
-            const rand = () => Math.floor(Math.random() * 65536).toString(16).padStart(4, '0').toUpperCase();
-            let f1 = rand(), f2 = rand();
-            while (f1 === f2) f2 = rand();
-            return `DVC-${f1}-${f2}`;
+        
+        // Safe fallback if parts are repetitive
+        if (part1 === part2 || part1 === 'DCDC' || part2 === 'DCDC') {
+             return `DVC-${part1}-${part2.substring(0,3)}A`; // static tweak instead of random
         }
+
         return `DVC-${part1}-${part2}`;
     } catch (e) {
-        console.error('[HWID] Fallback failed:', e.message);
-        const rand = () => Math.floor(Math.random() * 65536).toString(16).padStart(4, '0').toUpperCase();
-        return `DVC-${rand()}-${rand()}`;
+        return 'DVC-0000-0000'; // Absolute static fallback
     }
 }
 
