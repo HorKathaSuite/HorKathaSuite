@@ -1,17 +1,14 @@
 // ============================================================
-// 🔄 SERVICE WORKER — Cache + Offline Support (v20)
+// 🔄 SERVICE WORKER — Cache + Offline Support (v21)
 // BOSC Tech & Edu · Hoṛ Katha Suite v3.7.4 Pro Ultra
 // ============================================================
-// ✅ v20 — PERFORMANCE & RELIABILITY FIXES:
-//    • 🆕 SW_VERSION bumped 19 → 20 (force cache refresh)
-//    • 🆕 REMOVED: ./js/qrcode.min.js from ASSETS_TO_CACHE
-//             Reason: Redundant QR library. We now exclusively use
-//                     the faster ./js/qr-offline.js
-//    • 🆕 FIXED: Navigation fallback logic now uses `.endsWith()`
-//             Reason: `.includes()` could fail if URL had query strings
-//                     (e.g., /manual.html?ref=pwa). `.endsWith()` is safer.
-//                     Also handles extensionless URLs like `/manual`.
-//    • RETAINED: All previous fixes (terms.html cache, secret exclusion)
+// ✅ v21 — CRITICAL VERSION BUMP:
+//    • 🆕 SW_VERSION bumped 20 → 21
+//             Reason: index.html में fixes apply हुए (aria-selected,
+//                     payment checkbox, trial days placeholder).
+//                     Without bump, users को stale cached HTML मिलेगा।
+//    • 🔄 यह bump old cache (v20) को force delete करेगा,
+//             और fresh index.html सभी users को मिलेगा।
 // ============================================================
 
 // ⚠️ IMPORTANT: Bump this on EVERY significant change to:
@@ -19,7 +16,7 @@
 //    • Any JS logic (even if not cached)
 //    • Any HTML/CSS in this project
 //    Without bumping, users will keep old cached versions!
-const SW_VERSION = '20';
+const SW_VERSION = '21';
 
 const CACHE_NAME = `hor-katha-v374-cache-v${SW_VERSION}`;
 const CACHE_PREFIX = 'hor-katha-v374-cache-';
@@ -629,7 +626,7 @@ self.addEventListener('fetch', (event) => {
                         cached = await caches.match(event.request, { ignoreSearch: true });
                         if (cached && cached.ok) return cached;
 
-                        // ✅ FIXED: Per-page fallback using endsWith for reliability
+                        // ✅ Per-page fallback using endsWith for reliability
                         const pathname = url.pathname || '';
                         let fallbackPath = './index.html';
 

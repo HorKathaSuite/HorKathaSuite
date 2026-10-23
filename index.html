@@ -10,12 +10,11 @@
     <meta name="description" content="Multi-script typing suite for Santali, Hindi, English with Kruti Dev, Ol Chiki, and Typing Practice.">
     <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f0f2f5" media="(prefers-color-scheme: light)">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
-    <!-- ═══ SECURITY: CSP (v3.7.4.91 — preview-safe + XSS-hardened) ═══ -->
+    <!-- ═══ SECURITY: CSP ═══ -->
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self' local-asset:;
                    script-src 'self' local-asset: 'unsafe-inline'
@@ -48,38 +47,12 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="assets/icon.ico">
 
-    <!-- ═══════════════════════════════════════════════════════════ -->
-    <!-- ═══ CRITICAL CONFIG (LOAD ORDER MATTERS — FIX #3) ═══       -->
-    <!-- ═══════════════════════════════════════════════════════════ -->
-    <!-- 1. Load LOCAL first (real values override) -->
+    <!-- ═══ CRITICAL CONFIG (LOAD ORDER MATTERS) ═══ -->
     <script src="js/config-private.local.js" onerror="(function(){try{console.log('ℹ️ [index.html] config-private.local.js not present — will use fallback template');}catch(e){}})()"></script>
-
-    <!-- 2. Load TEMPLATE second (fills only missing keys with placeholders) -->
     <script src="js/config-private.js"></script>
-
-    <!-- 3. Load config.js (reads merged __RUNTIME_CONFIG__ → builds APP_CONFIG) -->
     <script src="js/config.js"></script>
 
-    <!-- ═══ CONFIG SANITY CHECK ═══ -->
-    <script>
-    (function() {
-        'use strict';
-        try {
-            if (window.APP_CONFIG &&
-                window.APP_CONFIG.VERSION &&
-                window.APP_CONFIG.LICENSE_PUBLIC_KEY_JWK) {
-                console.log('✅ [index.html] config.js loaded — version:', window.APP_CONFIG.VERSION);
-                return;
-            }
-            console.warn('⚠️ [index.html] config.js missing or incomplete — using inline fallback');
-            window.APP_CONFIG = window.APP_CONFIG || {};
-        } catch (e) {
-            console.error('❌ [index.html] Config check failed:', e);
-        }
-    })();
-    </script>
-
-    <!-- ═══ CONFIG MERGE VERIFICATION (FIX #3 DEBUG) ═══ -->
+    <!-- ═══ CONFIG VERIFICATION (consolidated) ═══ -->
     <script>
     (function() {
         'use strict';
@@ -87,25 +60,25 @@
             var cfg = window.__RUNTIME_CONFIG__ || {};
             var jwk = cfg.LICENSE_PUBLIC_KEY_JWK || {};
             var placeholder = /YOUR_|_HERE|REPLACE_|PASTE_/i;
-
             var isReal = jwk.x && jwk.y &&
-                         jwk.x.length === 43 &&
-                         jwk.y.length === 43 &&
-                         !placeholder.test(jwk.x) &&
-                         !placeholder.test(jwk.y);
+                         jwk.x.length === 43 && jwk.y.length === 43 &&
+                         !placeholder.test(jwk.x) && !placeholder.test(jwk.y);
 
-            if (isReal) {
-                console.log('✅ [index.html] FIX #3: Real config values loaded from .local.js');
-            } else if (typeof window.__RUNTIME_CONFIG__ !== 'undefined') {
-                console.log('ℹ️ [index.html] FIX #3: Using fallback placeholders (no .local.js or unconfigured)');
+            if (window.APP_CONFIG && window.APP_CONFIG.VERSION && isReal) {
+                console.log('✅ [index.html] Config loaded — version:', window.APP_CONFIG.VERSION, '| real keys');
+            } else {
+                if (typeof window.__RUNTIME_CONFIG__ !== 'undefined') {
+                    console.log('ℹ️ [index.html] Config loaded — using fallback placeholders');
+                }
+                window.APP_CONFIG = window.APP_CONFIG || {};
             }
         } catch (e) {
-            console.warn('⚠️ [index.html] Config merge check failed:', e.message);
+            console.warn('⚠️ [index.html] Config check failed:', e.message);
         }
     })();
     </script>
 
-    <!-- ═══ PROTOCOL CHECK (browser-only mode) ═══ -->
+    <!-- ═══ PROTOCOL CHECK ═══ -->
     <script>
     (function() {
         'use strict';
@@ -156,7 +129,27 @@
             border: 0;
         }
 
-        .bmr-plan > span { display: block; }
+        /* ═══ TOUCH / TAP OPTIMIZATION ═══ */
+        .tool-btn,
+        .btn-action,
+        .btn-pwa-install,
+        .btn-donate-action,
+        .btn-buy-action,
+        .btn-license-action,
+        .btn-trial-action,
+        .btn-kb-mode-action,
+        .tab-pill,
+        .modal-btn,
+        .focus-back-btn,
+        .focus-bar-btn,
+        .btn-exit-typing {
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+        }
+
         .bmr-plan > .bmr-plan-icon {
             display: flex;
             align-items: center;
@@ -697,10 +690,10 @@
         }
 
         .flash-message.flash-security .flash-header {
-            background: linear-gradient(135deg, #064e3b 0%, #10b981 100%);
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
         }
         .flash-message.flash-security .flash-progress-bar {
-            background: linear-gradient(90deg, #059669, #10b981);
+            background: linear-gradient(90deg, #0f766e, #14b8a6);
         }
 
         .flash-message.flash-languages .flash-header {
@@ -785,7 +778,6 @@
             .flash-lang-chip { padding: 8px 2px; font-size: 0.62rem; }
         }
 
-        /* Hide version badge on very small screens */
         @media (max-width: 400px) {
             .version-badge { display: none !important; }
         }
@@ -811,10 +803,8 @@
 
 <h1 class="sr-only">Hoṛ/होड़ Katha Suite — Multi-Script Typing Tool</h1>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- 🌟 SPLASH SCREEN                                                -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<div id="appSplash" role="status" aria-live="polite" aria-label="Application loading">
+<!-- ═══ SPLASH SCREEN ═══ -->
+<div id="appSplash" role="status" aria-busy="true" aria-label="Application loading">
     <div class="splash-bg-layer"></div>
     <svg class="splash-circuit-bg" viewBox="0 0 1000 1500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <defs>
@@ -957,9 +947,7 @@
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- 🌟 SPLASH SCRIPT                                                -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══ SPLASH SCRIPT ═══ -->
 <script>
 (function() {
     'use strict';
@@ -1032,9 +1020,7 @@
 })();
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- 🚀 MAIN APP                                                     -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══ MAIN APP ═══ -->
 <div id="flashContainer"></div>
 
 <div class="progress-overlay" id="progressOverlay" style="display: none;">
@@ -1049,9 +1035,7 @@
 
 <main id="mainApp" class="app-card">
 
-    <!-- ═══════════════════════════════════════════════════════════ -->
-    <!-- 📌 HEADER BAR — FULLY RESPONSIVE (priority-based)           -->
-    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- ═══ HEADER BAR ═══ -->
     <div class="header-bar">
         <div class="brand-title-group">
             <img src="assets/icon.ico" alt="App Icon" class="app-brand-avatar" onerror="this.style.display='none'">
@@ -1064,7 +1048,6 @@
             </div>
         </div>
 
-        <!-- Greeting + Trial Counter -->
         <div class="header-mid-info" id="headerMidInfo">
             <span class="greeting-text" id="greetingText">नमस्ते!</span>
             <span class="greeting-sep" id="greetingSep">•</span>
@@ -1072,15 +1055,12 @@
         </div>
 
         <div class="top-settings-bar">
-            <!-- 🟠 P1: Tablet and up -->
             <button class="btn-kb-mode-action priority-1" id="btn-kb-choice" onmousedown="event.preventDefault()" onclick="toggleKeyboardPreference()" title="Keyboard: App Virtual">App Virtual: ⌨️</button>
 
             <button id="pwa-install-btn" class="btn-pwa-install priority-1" onmousedown="event.preventDefault()" onclick="installPWA()" title="Install as PWA app">📲 <span class="btn-label">Install</span></button>
 
-            <!-- 🟡 P2: Desktop and up -->
             <button class="tool-btn priority-2" onmousedown="event.preventDefault()" onclick="openPreviewModal()" title="Live Preview">📱 <span class="btn-label">Preview</span></button>
 
-            <!-- 🔴 P0: Always visible -->
             <button class="btn-donate-action btn-icon-only priority-0" id="btn-donate-top" onmousedown="event.preventDefault()" onclick="openDonateModal()" title="Support / Donate" aria-label="Support">💖</button>
 
             <button class="btn-buy-action btn-icon-only priority-0" id="btn-buy-top" onmousedown="event.preventDefault()" onclick="openBuyModal()" title="Buy Pro License" aria-label="Buy Pro License">💳</button>
@@ -1089,28 +1069,22 @@
 
             <button class="btn-trial-action btn-trial-top btn-icon-only priority-0" id="btn-trial-top" onmousedown="event.preventDefault()" onclick="openTrialActivationModal()" aria-label="Activate ₹9 trial" title="₹9 Trial — 7 Days">🎁</button>
 
-            <!-- 🟡 P2: Desktop and up -->
             <button class="tool-btn priority-2" id="btn-privacy" onmousedown="event.preventDefault()" onclick="window.open('privacy.html','_blank','noopener,noreferrer')" title="Privacy Policy">🔒 <span class="btn-label">Privacy</span></button>
 
-            <!-- 🆕 TERMS BUTTON (NEW) -->
             <button class="tool-btn priority-2" id="btn-terms" onmousedown="event.preventDefault()" onclick="window.open('terms.html','_blank','noopener,noreferrer')" title="Terms of Service">📜 <span class="btn-label">Terms</span></button>
 
             <button class="tool-btn priority-2" onmousedown="event.preventDefault()" onclick="window.open('manual.html','_blank','noopener,noreferrer')" style="background:#7c3aed;color:#fff;border-color:#a855f7;" title="User Manual">📖 <span class="btn-label">Manual</span></button>
 
-            <!-- 🔴 P0: Always visible -->
             <button class="tool-btn btn-icon-only priority-0" id="btn-sound-toggle" onmousedown="event.preventDefault()" onclick="toggleClickSound()" title="Sound: ON" aria-label="Toggle sound">🔊</button>
 
-            <!-- 🟡 P2: Desktop and up -->
             <button class="tool-btn btn-icon-only priority-2" id="btn-hover-voice" onmousedown="event.preventDefault()" onclick="toggleHoverVoice()" title="Hover Voice: OFF" aria-label="Toggle hover voice">🗣️</button>
 
-            <!-- 🟠 P1: Tablet and up -->
             <button class="tool-btn btn-icon-only priority-1" id="btn-voice-toggle" onmousedown="event.preventDefault()" onclick="toggleVoiceOutput()" title="TTS: ON" aria-label="Toggle TTS">🎧</button>
 
             <button class="tool-btn btn-icon-only priority-1" id="btn-numpad-toggle" onmousedown="event.preventDefault()" onclick="toggleNumpad()" title="Numpad: OFF" aria-label="Toggle numpad">🔢</button>
 
             <button class="tool-btn btn-icon-only priority-1" id="btn-zen-mode" onmousedown="event.preventDefault()" onclick="toggleZenMode()" title="Zen Mode: OFF" aria-label="Toggle zen mode">🧘</button>
 
-            <!-- 🔴 P0: Always visible — THEME BUTTON -->
             <button class="tool-btn btn-icon-only priority-0" id="btn-theme-toggle" onmousedown="event.preventDefault()" onclick="toggleTheme()" title="Theme: Dark" aria-label="Toggle theme">🌙</button>
         </div>
     </div>
@@ -1135,13 +1109,13 @@
     </div>
 
     <!-- ═══ STATUS STRIP ═══ -->
-    <div class="status-strip" id="statusStrip">
+    <div class="status-strip" id="statusStrip" role="status" aria-live="polite" aria-atomic="false">
         <div class="lang-switcher-group" role="tablist" aria-label="Language selection">
-            <button id="tab-roman" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('roman')" role="tab">Santali (R)</button>
-            <button id="tab-santali-dev" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('santali-dev')" role="tab">Santali (D)</button>
-            <button id="tab-olchiki" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('olchiki')" role="tab">ओ़लचिकी</button>
-            <button id="tab-hindi-dev" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('hindi-dev')" role="tab">हिन्दी</button>
-            <button id="tab-english" class="tab-pill active" onmousedown="event.preventDefault()" onclick="switchLanguage('english')" role="tab">Eng</button>
+            <button id="tab-roman" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('roman')" role="tab" aria-selected="false">Santali (R)</button>
+            <button id="tab-santali-dev" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('santali-dev')" role="tab" aria-selected="false">Santali (D)</button>
+            <button id="tab-olchiki" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('olchiki')" role="tab" aria-selected="false">ओ़लचिकी</button>
+            <button id="tab-hindi-dev" class="tab-pill" onmousedown="event.preventDefault()" onclick="switchLanguage('hindi-dev')" role="tab" aria-selected="false">हिन्दी</button>
+            <button id="tab-english" class="tab-pill active" onmousedown="event.preventDefault()" onclick="switchLanguage('english')" role="tab" aria-selected="true">Eng</button>
         </div>
 
         <div class="status-chip" id="statusMode"><span class="pulse-dot orange"></span><span>Free Mode</span></div>
@@ -1205,7 +1179,7 @@
                 <button class="tool-btn" id="btn-phonetic-toggle" onmousedown="event.preventDefault()" onclick="togglePhoneticTranslit()">✨ Translit</button>
             </div>
             <div class="tool-subgroup">
-                <span id="draftStatusBadge" style="font-size:0.6rem; color:#10b981; font-weight:800;">✅ Saved</span>
+                <span id="draftStatusBadge" role="status" aria-live="polite" style="font-size:0.6rem; color:#10b981; font-weight:800;">✅ Saved</span>
                 <button class="tool-btn" id="btn-mic" onmousedown="event.preventDefault()" onclick="toggleSpeechRecognition()" aria-label="Toggle microphone">🎤 Mic</button>
                 <button class="tool-btn" id="btn-read" onmousedown="event.preventDefault()" onclick="speakText()" aria-label="Read text aloud">🗣️ Read</button>
                 <button class="tool-btn" onmousedown="event.preventDefault()" onclick="openVoiceSettingsModal()" title="Voice Settings" style="background:#0284c7;color:#fff;border-color:#0284c7;font-weight:900;" aria-label="Voice settings">⚙️</button>
@@ -1269,7 +1243,7 @@
 </main>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- 🪟 MODALS (सभी modals वैसे ही हैं, कोई बदलाव नहीं)             -->
+<!-- MODALS                                                          -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
 
 <!-- Vocab Manager -->
@@ -1458,8 +1432,8 @@
             <div class="bmr-plans">
                 <div class="bmr-plans-heading">अपनी जरूरत के अनुसार प्लान चुनें</div>
 
-                <label class="bm-plan bmr-plan" id="cardPlanTrial" onclick="selectTrialPlan()" style="border-color: #a855f7; background: linear-gradient(180deg, #ffffff 0%, #faf5ff 100%);">
-                    <input type="radio" name="licPlan" id="planTrial">
+                <label class="bm-plan bmr-plan" id="cardPlanTrial" style="border-color: #a855f7; background: linear-gradient(180deg, #ffffff 0%, #faf5ff 100%);">
+                    <input type="radio" name="licPlan" id="planTrial" onchange="selectTrialPlan()">
                     <span class="bmr-plan-icon" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">🎁</span>
                     <span class="bmr-plan-info">
                         <span class="bmr-plan-title">(0) ₹9 Trial — 7 Days Full Access</span>
@@ -1472,8 +1446,8 @@
                     </span>
                 </label>
 
-                <label class="bm-plan bmr-plan active-plan" id="cardPlan1" onclick="selectPlan(199, 'P1 — Community (₹199)', 'cardPlan1')">
-                    <input type="radio" name="licPlan" id="plan1" checked>
+                <label class="bm-plan bmr-plan active-plan" id="cardPlan1">
+                    <input type="radio" name="licPlan" id="plan1" checked onchange="selectPlan(199, 'P1 — Community (₹199)', 'cardPlan1')">
                     <span class="bmr-plan-icon" style="background:#0284c7;">👤</span>
                     <span class="bmr-plan-info">
                         <span class="bmr-plan-title">(1) P1 — Community Single PC</span>
@@ -1487,8 +1461,8 @@
                     </span>
                 </label>
 
-                <label class="bm-plan bmr-plan" id="cardPlan2" onclick="selectPlan(399, 'P2 — Commercial (₹399)', 'cardPlan2')">
-                    <input type="radio" name="licPlan" id="plan2">
+                <label class="bm-plan bmr-plan" id="cardPlan2">
+                    <input type="radio" name="licPlan" id="plan2" onchange="selectPlan(399, 'P2 — Commercial (₹399)', 'cardPlan2')">
                     <span class="bmr-plan-icon" style="background:#f59e0b;">🖨️</span>
                     <span class="bmr-plan-info">
                         <span class="bmr-plan-title">(2) P2 — Commercial / DTP Cafe ⭐</span>
@@ -1502,8 +1476,8 @@
                     </span>
                 </label>
 
-                <label class="bm-plan bmr-plan" id="cardPlan3" onclick="selectPlan(699, 'P3 — Enterprise (₹699)', 'cardPlan3')">
-                    <input type="radio" name="licPlan" id="plan3">
+                <label class="bm-plan bmr-plan" id="cardPlan3">
+                    <input type="radio" name="licPlan" id="plan3" onchange="selectPlan(699, 'P3 — Enterprise (₹699)', 'cardPlan3')">
                     <span class="bmr-plan-icon" style="background:#075985;">🏢</span>
                     <span class="bmr-plan-info">
                         <span class="bmr-plan-title">(3) P3 — Enterprise Lifetime &amp; Updates</span>
@@ -1524,7 +1498,7 @@
                 <div class="bmr-brands">GPay · PhonePe · Paytm</div>
                 <div class="bmr-selected" id="selectedPlanLabel">Selected: ₹199 Plan</div>
                 <label class="bmr-checkbox">
-                    <input type="checkbox" id="paymentConfirmCheck">
+                    <input type="checkbox" id="paymentConfirmCheck" onchange="document.getElementById('btnPaymentDone').disabled = !this.checked">
                     <span>मैंने UPI से payment कर दिया है और screenshot WhatsApp पर भेजूंगा</span>
                 </label>
                 <button id="btnPaymentDone" onclick="onPaymentCompleted()" disabled class="bmr-confirm">
@@ -1658,12 +1632,12 @@
 
         <div class="lcn-body" style="text-align: center;">
             <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
-                <div style="font-size: 3rem; font-weight: 900; color: #92400e; line-height: 1;" id="trialDaysRemaining">7</div>
+                <div style="font-size: 3rem; font-weight: 900; color: #92400e; line-height: 1;" id="trialDaysRemaining">--</div>
                 <div style="font-size: 0.85rem; font-weight: 800; color: #78350f; margin-top: 4px;">DAYS REMAINING</div>
             </div>
 
             <div id="trialStatusText" style="font-size: 0.85rem; font-weight: 700; color: #16a34a; margin-bottom: 16px; line-height: 1.5;">
-                🎁 You have 7 days left in your trial.
+                ⏳ Checking trial status...
             </div>
 
             <div style="background: #f0fdf4; border: 1.5px solid #16a34a; border-radius: 10px; padding: 14px; margin-bottom: 16px;">
@@ -1738,7 +1712,7 @@
                     id="trialKeyInput"
                     class="trm-key-input"
                     placeholder="HKT-XXXXXXX-XXXX"
-                    maxlength="16"
+                    maxlength="20"
                     autocomplete="off"
                     autocorrect="off"
                     autocapitalize="off"
@@ -2013,10 +1987,7 @@
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- 📦 SCRIPTS                                                      -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
-
+<!-- ═══ SCRIPTS ═══ -->
 <script src="js/keymaps.js"></script>
 <script src="js/crypto-utils.js"></script>
 <script src="js/security.js"></script>
@@ -2031,16 +2002,11 @@
 <script src="js/privacy.js" defer></script>
 <script src="js/app.js" defer></script>
 <script src="js/typing-test.js" defer></script>
-
-<!-- ✅ FIX: Removed duplicate qrcode.min.js -->
 <script src="js/qr-offline.js" defer></script>
-
 <script src="js/certificate.js" defer></script>
 <script src="js/print-generator.js" defer></script>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- 🔧 EDITOR EMPTY-STATE FIX                                       -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══ EDITOR EMPTY-STATE FIX ═══ -->
 <script>
 (function() {
     'use strict';
@@ -2091,25 +2057,23 @@
 })();
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- 🎯 UI ENHANCEMENTS                                              -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══ UI ENHANCEMENTS (consolidated) ═══ -->
 <script>
-(function setupRippleEffect() {
+(function setupUIEnhancements() {
     'use strict';
+
+    // Ripple effect
     document.addEventListener('click', function(e) {
         const target = e.target.closest('.tool-btn, .btn-action, .btn-pwa-install, .btn-donate-action, .btn-buy-action, .btn-license-action, .btn-trial-action, .btn-kb-mode-action, .tab-pill, .modal-btn, .focus-back-btn, .focus-bar-btn');
         if (!target || target.disabled) return;
         target.classList.add('click-ripple', 'rippling');
         setTimeout(() => target.classList.remove('rippling'), 600);
     }, { passive: true });
-})();
 
-(function setupCapsuleScroll() {
-    'use strict';
-    function attach() {
+    // Capsule horizontal scroll
+    function attachCapsuleScroll() {
         const capsule = document.getElementById('actionBtnsCapsule');
-        if (!capsule) { setTimeout(attach, 300); return; }
+        if (!capsule) { setTimeout(attachCapsuleScroll, 300); return; }
         capsule.addEventListener('wheel', function(e) {
             if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
                 e.preventDefault();
@@ -2117,8 +2081,25 @@
             }
         }, { passive: false });
     }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach);
-    else attach();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attachCapsuleScroll);
+    } else {
+        attachCapsuleScroll();
+    }
+})();
+
+// Keep aria-selected in sync on tabs
+(function syncTabAria() {
+    'use strict';
+    function syncTabs() {
+        document.querySelectorAll('[role="tab"]').forEach(function(tab) {
+            tab.setAttribute('aria-selected', tab.classList.contains('active') ? 'true' : 'false');
+        });
+    }
+    document.querySelectorAll('[role="tab"]').forEach(function(tab) {
+        new MutationObserver(syncTabs).observe(tab, { attributes: true, attributeFilter: ['class'] });
+    });
+    syncTabs();
 })();
 </script>
 
