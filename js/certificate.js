@@ -669,7 +669,8 @@ const CertificateSystem = {
     shareWhatsApp() {
         if (!this.currentData) return;
         const d = this.currentData;
-        const msg = `🎓 *TYPING CERTIFICATE ACHIEVED*\n\n👤 *Name:* ${d.studentName}\n🏆 *Category:* ${d.categoryName}\n📖 *Lesson:* ${d.lessonName}\n\n━━━━━━━━━━━━━━━━━━━━\n⚡ *Speed:* ${d.wpm} WPM\n🎯 *Accuracy:* ${d.accuracy}%\n🏅 *Grade:* ${d.grade}\n━━━━━━━━━━━━━━━━━━━━\n\n📋 *Certificate No:* ${d.certificateNo}\n\n🔗 *Verify Online:*\n${this.getVerifyUrl()}\n\n🔒 Verified by *BOSC Tech & Edu*\n📱 Hoṛ Katha Suite v3.7.4`;
+        const _ver = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.VERSION) ? APP_CONFIG.VERSION : '3.7.4';
+        const msg = `🎓 *TYPING CERTIFICATE ACHIEVED*\n\n👤 *Name:* ${d.studentName}\n🏆 *Category:* ${d.categoryName}\n📖 *Lesson:* ${d.lessonName}\n\n━━━━━━━━━━━━━━━━━━━━\n⚡ *Speed:* ${d.wpm} WPM\n🎯 *Accuracy:* ${d.accuracy}%\n🏅 *Grade:* ${d.grade}\n━━━━━━━━━━━━━━━━━━━━\n\n📋 *Certificate No:* ${d.certificateNo}\n\n🔗 *Verify Online:*\n${this.getVerifyUrl()}\n\n🔒 Verified by *BOSC Tech & Edu*\n📱 Hoṛ Katha Suite v${_ver}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
     },
 
