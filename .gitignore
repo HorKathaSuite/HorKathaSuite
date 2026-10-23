@@ -4,18 +4,19 @@
 # ═══════════════════════════════════════════════════════════
 
 # ═══════════════════════════════════════════════════════════
-# 🔐 SECRETS (CRITICAL — NEVER COMMIT)
+# 🔐 SECRETS & ADMIN FOLDERS (NEVER COMMIT)
 # ═══════════════════════════════════════════════════════════
-.env
-.env.packaged
-.env.local
-.env.production
-.env.development
-.env.staging
-.env.test
-.env.*.local
 
-# ─── Private Key (License Signing — CRITICAL!) ───
+# --- Admin Folders (Normal, Emoji, and Wildcard for 100% safety) ---
+admin-tools/
+admin-secure/
+*admin-tools/
+*admin-secure/
+🔐admin-tools/
+🔒admin-secure/
+🔓admin-secure/
+
+# --- Private Keys (License Signing — CRITICAL!) ---
 admin/private-key.json
 admin/*.pem
 admin/*.key
@@ -26,25 +27,31 @@ admin/*-secret.*
 *PrivateKey*.json
 BOSCTech-PrivateKey-*.json
 
-# ─── Secure Admin Folders (Added from previous setup) ───
-admin-tools/
-admin-secure/
+# --- Environment Variables ---
+.env
+.env.packaged
+.env.local
+.env.production
+.env.development
+.env.staging
+.env.test
+.env.*.local
 
-# ─── Config with Secrets ───
+# --- Config with Secrets (JS Folder) ---
 js/config-private.js
 js/config-private.prod.js
 js/config-private.local.js
 js/config-private.local.local.js
-admin/firebase-config.local.js
 js/config-private.js.backup
 js/config-*.local.js
 js/secrets.js
 js/credentials.js
+admin/firebase-config.local.js
 
-# IMPORTANT: Keep the example file for other developers
+# IMPORTANT: Allow the example file for other developers
 !js/config-private.local.example.js
 
-# ─── Root-level sensitive ───
+# --- Root-level sensitive ---
 *.key
 *.pem
 *.p12
@@ -168,17 +175,13 @@ test-results/
 .netlify/
 
 # ═══════════════════════════════════════════════════════════
-# 📊 TEMP FILES
+# 📊 TEMP FILES & BACKUPS
 # ═══════════════════════════════════════════════════════════
 *.tmp
 *.temp
 *.pid
 *.seed
 *.pid.lock
-
-# ═══════════════════════════════════════════════════════════
-# 🔒 BACKUP FILES
-# ═══════════════════════════════════════════════════════════
 *.bak
 *.backup
 *.old
