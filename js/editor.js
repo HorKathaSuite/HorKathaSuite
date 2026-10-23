@@ -2,12 +2,12 @@
 // ✏️ EDITOR — Fast Input + Working Formatting
 // BOSC Tech & Edu · Hoṛ Katha Suite v3.7.4 Pro Ultra
 // ============================================================
-// ✅ v3.7.4.68 — PRODUCTION READY:
+// ✅ v3.7.4.68 — PRODUCTION READY + MOBILE IME FIXED:
 //    • FIXED: Enter key — native browser (single newline)
 //    • FIXED: Backspace — native command (prevents DOM breaking)
 //    • FIXED: Tab — native browser
 //    • FIXED: Double character insertion
-//    • RETAINED: All v3.7.4.62 features
+//    • ✅ NEW FIX: Mobile IME typing (Hindi/Chinese) allowed
 // ============================================================
 
 // ============================================================
@@ -413,12 +413,10 @@ function doBackspace() {
 
     try {
         // ✅ Native command handles text nodes, <br>, and formatting tags perfectly
-        // This is much safer than manually manipulating DOM text nodes.
         document.execCommand('delete', false, null);
     } catch (e) {
         console.warn('Backspace execCommand failed:', e.message);
         
-        // Absolute fallback if execCommand is completely unsupported
         try {
             const range = sel.getRangeAt(0);
             if (!range.collapsed) {
@@ -606,7 +604,7 @@ function handleTextShortcode() {
 }
 
 // ============================================================
-// ⌨️ GLOBAL KEYDOWN HANDLER — v3.7.4.68
+// ⌨️ GLOBAL KEYDOWN HANDLER — ✅ FIXED FOR MOBILE IME
 // ✅ Enter, Backspace: preventDefault + manual handle
 // ✅ Other keys: native
 // ============================================================
@@ -616,19 +614,20 @@ document.addEventListener('keydown', function(e) {
 
     if (document.activeElement !== editor) return;
 
+    // ✅ NEW FIX: Allow IME composition (Hindi/Chinese mobile keyboards)
+    // When typing with native IME, keys fire as 229 or isComposing is true.
+    // If we intercept them, the native keyboard breaks.
+    if (e.isComposing || e.keyCode === 229) {
+        return; 
+    }
+
     // ─── Skip if system keyboard mode ───
-    // ✅ FIX #9: Check shortcodes BEFORE space/enter insert
-    // Old code: setTimeout(10ms) → space inserted natively first
-    //   → text became "/jh " → regex /(\/[a-z]{2,5})$/ failed
-    //   → "/jh" stayed as text, no conversion
-    // New: check shortcode NOW, preventDefault if matched
     if (window.keyboardMode === 'system' || document.body.classList.contains('system-keyboard-active')) {
         if (e.key === ' ' || e.key === 'Enter') {
             const wasShortcode = handleTextShortcode();
             if (wasShortcode) {
                 e.preventDefault();
                 e.stopPropagation();
-                // Re-add space if non-english (mimics old behavior)
                 if (e.key === ' ' && window.currentLayout !== 'english') {
                     setTimeout(() => {
                         if (typeof addCharWithPhonics === 'function') {
@@ -639,7 +638,7 @@ document.addEventListener('keydown', function(e) {
                 return;
             }
         }
-        return;
+        return; // Let native keyboard handle everything else
     }
 
     // ─── Alt+Key shortcuts ───
@@ -1420,7 +1419,6 @@ window.EditorDebug = {
 
         const original = editor.innerHTML;
 
-        // Test 1: Single char delete
         editor.innerHTML = 'ABCDE';
         const sel = window.getSelection();
         const range = document.createRange();
@@ -1434,7 +1432,6 @@ window.EditorDebug = {
         console.log('  AFTER:  "' + editor.innerText + '"');
         console.log('  Result:', editor.innerText === 'ABCD' ? '✅ PASS (1 char deleted)' : '❌ FAIL');
 
-        // Restore
         editor.innerHTML = original;
         console.log('═══════════════════════════════════════════');
     },
@@ -1514,7 +1511,7 @@ console.log('   ⏎  Enter: NATIVE browser (single newline)');
 console.log('   ⌫  Backspace: Native execCommand (HTML safe)');
 console.log('   ✅ FIXED: Enter double newline');
 console.log('   ✅ FIXED: Backspace DOM breaking on rich text');
-console.log('   ✅ All v3.7.4.62 features retained');
+console.log('   ✅ FIXED: Mobile IME typing (Hindi/Chinese) allowed');
 console.log('   🧪 EditorDebug.testBackspace() available');
 console.log('   🧪 EditorDebug.selfTest() available');
 console.log('═══════════════════════════════════════════');

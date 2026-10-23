@@ -793,22 +793,6 @@
     // ============================================================
     // ✅ FIX #7: STRICT GENERATION CONTRACT
     // ============================================================
-    // This function renders the mapping guide panel.
-    //
-    // @param {number} generation — Explicit generation number.
-    //   Must be KB._mappingGeneration at time of capture.
-    //
-    //   Behavior:
-    //     • If matches current → render
-    //     • If stale (older) → skip silently (that's the point!)
-    //     • If undefined → WARN + use current (backward compat)
-    //
-    // Why require generation?
-    //   Retry timers from an OLD switchLanguage() call need to be
-    //   skipped if a NEW switchLanguage() has since occurred. The
-    //   generation number is the "epoch" that makes this detection
-    //   possible. Without it, stale timers would re-render old data.
-    // ============================================================
     function renderMappingGuide(generation) {
         // ─── Strict contract: require explicit generation ───
         const isExplicit = (generation !== undefined && generation !== null);
@@ -870,12 +854,6 @@
     // ============================================================
     // ✅ FIX #7: TIMER TRACKING HELPERS
     // ============================================================
-    // Retry timers need to be tracked so they can be cancelled if
-    // a new switchLanguage() invalidates them. But they ALSO need
-    // to remove themselves after firing, otherwise the array grows
-    // indefinitely (memory leak).
-    // ============================================================
-
     function _trackRetryTimer(timerId) {
         if (timerId === null || timerId === undefined) return;
         KB._mappingRetryTimers.push(timerId);
@@ -896,16 +874,8 @@
     // ============================================================
     // ✅ FIX #7: CLEAR MAPPING RETRIES
     // ============================================================
-    // Called at the START of each switchLanguage() to:
-    //   1. Bump generation (invalidates all pending timers)
-    //   2. Cancel all pending timers (they'd skip anyway, but
-    //      cancelling is cheaper than letting them fire)
-    //   3. Clear tracking array
-    // ============================================================
     function _clearMappingRetries() {
         // ─── Bump generation FIRST ───
-        // (any timer firing between here and clearTimeout() will
-        //  detect stale generation and skip — race-safe)
         KB._mappingGeneration++;
 
         const pendingCount = KB._mappingRetryTimers.length;
@@ -954,8 +924,6 @@
         } catch (e) {}
 
         // ❌ Priority 4 REMOVED (v3.7.4.88 — SECURITY FIX)
-        // localStorage fallback was exploitable — do NOT re-add.
-
         return false;
     }
 
@@ -1040,7 +1008,6 @@
             updateSuggestionBar();
 
             // ─── Schedule retries (with self-cleanup) ───
-            // ✅ FIX #7: Timer removes itself from array after firing
             MAPPING_RETRY_DELAYS.forEach(delay => {
                 const timer = setTimeout(() => {
                     // ✅ FIX #7: Self-cleanup FIRST
@@ -1137,7 +1104,8 @@
                 btn.classList.remove('system-mode');
             }
 
-            if (editor) editor.setAttribute('inputmode', 'none');
+            // ✅ FIX: 'none' ko 'text' kar diya taaki mobile IME kabhi block na ho
+            if (editor) editor.setAttribute('inputmode', 'text');
             if (statusText) statusText.style.display = 'none';
         }
 
@@ -1507,9 +1475,6 @@
             console.log('═══════════════════════════════════════════');
         },
 
-        // ============================================================
-        // ✅ FIX #7: Test that retry timers clean up properly
-        // ============================================================
         testMemoryLeak: () => {
             console.log('═══════════════════════════════════════════');
             console.log('🧪 RETRY TIMER MEMORY LEAK TEST (FIX #7)');
@@ -1519,15 +1484,13 @@
             console.log('  Initial pending timers:', initialCount);
             console.log('');
 
-            // Trigger 5 rapid switches
             console.log('  Triggering 5 rapid switchLanguage() calls...');
             const langs = ['english', 'hindi-dev', 'english', 'olchiki', 'english'];
 
             langs.forEach((lang, i) => {
                 setTimeout(() => {
-                    // Only switch if has access
                     if (lang === 'english' || _getProAccess()) {
-                        KB.currentLayout = 'english'; // force to allow
+                        KB.currentLayout = 'english';
                         switchLanguage(lang);
                     } else {
                         console.log(`  [${i}] Skipped ${lang} (no pro access)`);
@@ -1535,7 +1498,6 @@
                 }, i * 50);
             });
 
-            // Check after all timers should have fired
             setTimeout(() => {
                 const finalCount = KB._mappingRetryTimers.length;
 
@@ -1571,9 +1533,6 @@
             console.log('═══════════════════════════════════════════');
         },
 
-        // ============================================================
-        // ✅ FIX #7: Test stale render detection
-        // ============================================================
         testStaleRender: () => {
             console.log('═══════════════════════════════════════════');
             console.log('🧪 STALE RENDER DETECTION TEST');
@@ -1582,25 +1541,21 @@
             const currentGen = KB._mappingGeneration;
             console.log('  Current generation:', currentGen);
 
-            // 1) Valid generation — should render
             console.log('');
             console.log('  Test 1: Render with current gen (' + currentGen + ')');
             renderMappingGuide(currentGen);
             console.log('    ✅ Rendered (see log above)');
 
-            // 2) Stale generation — should skip
             console.log('');
             console.log('  Test 2: Render with stale gen (' + (currentGen - 1) + ')');
             renderMappingGuide(currentGen - 1);
             console.log('    ✅ Skipped (see log above)');
 
-            // 3) Future generation — should skip
             console.log('');
             console.log('  Test 3: Render with future gen (' + (currentGen + 5) + ')');
             renderMappingGuide(currentGen + 5);
             console.log('    ✅ Skipped (see log above)');
 
-            // 4) No generation — should warn + use current
             console.log('');
             console.log('  Test 4: Render with NO gen (should warn + render)');
             renderMappingGuide();
@@ -1706,7 +1661,6 @@
                 updateSuggestionBar: typeof updateSuggestionBar === 'function',
                 openVocabManagerModal: typeof openVocabManagerModal === 'function',
                 _flushVocab: typeof _flushVocab === 'function',
-                // ✅ FIX #7: New helpers
                 _trackRetryTimer: typeof _trackRetryTimer === 'function',
                 _untrackRetryTimer: typeof _untrackRetryTimer === 'function',
                 getPendingRetryCount: typeof getPendingRetryCount === 'function'
@@ -1765,7 +1719,6 @@
 
     _ready(initialRender, 100);
 
-    // Fallback retry if keyboard empty
     setTimeout(() => {
         const kb = document.getElementById('keyboard');
         if (kb && kb.children.length === 0) {
