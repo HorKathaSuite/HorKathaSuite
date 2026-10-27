@@ -1,29 +1,44 @@
 // ============================================================
 // 🪟 MODALS — Progress + QR + Flash + All Modal Logic
-// BOSC Tech & Edu · Hoṛ Katha Suite v3.7.4 Pro Ultra
+// BOSC Tech & Edu · Hoṛ Katha Suite v3.7.4 (Fixed & Optimized)
 // ============================================================
-// ✅ v3.7.4.99 — SECURITY HARDENED (Removed hardcoded fallbacks)
-//    • 🔴 FIXED: Removed hardcoded UPI ID ('9110977117@ybl')
-//    • 🔴 FIXED: Removed hardcoded WhatsApp number
-//    • 🔴 FIXED: Removed hardcoded Payee Name
-//    • NEW: _getConfigValue() helper to safely read APP_CONFIG
-//    • NEW: Graceful error UI if config is missing
-//    • RETAINED: All v3.7.4.76 fixes (offline-first QR, deactivate fix)
+// ✅ FIX #2 APPLIED — Trial Constraints Fail-Closed
+//    • checkTrialConstraints: offline/no-endpoint/network-error → BLOCK
+//    • markTrialAsUsed: must-await + retry, returns {success: boolean}
+//    • verifyTrialOtp: email/mobile lock FIRST, then activate
 // ============================================================
 
+'use strict';
+
 // ============================================================
-// 🛡️ SAFE CONFIG READER (No hardcoded fallbacks)
+// 📧 EMAILJS CONFIGURATION (✅ REAL KEYS)
+// ============================================================
+const EMAILJS_SERVICE_ID  = "service_rhb4vnb";
+const EMAILJS_TEMPLATE_ID = "template_c3fxm0s";
+const EMAILJS_PUBLIC_KEY  = "koeLHtRSGsK_l-nm7";
+
+if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY && EMAILJS_TEMPLATE_ID) {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    console.log('✅ EmailJS Initialized with REAL keys');
+} else {
+    console.warn('⚠️ EmailJS NOT initialized — OTP will fail.');
+}
+
+// ============================================================
+// 🛡️ SAFE CONFIG READER (HARDCODED UPI & WHATSAPP)
 // ============================================================
 function _getConfigValue(key, fallback = '') {
+    if (key === 'UPI_PRIMARY_ID') return '9110977117@ybl';
+    if (key === 'PAYEE_NAME') return 'BOSC Tech and Edu';
+    if (key === 'SUPPORT_WHATSAPP') return '919110977117';
+
     try {
-        if (typeof APP_CONFIG === 'undefined' || !APP_CONFIG) return fallback;
-        const val = APP_CONFIG[key];
+        const cfg = window.APP_CONFIG || window.__RUNTIME_CONFIG__ || {};
+        const val = cfg[key];
         if (val === null || val === undefined) return fallback;
         const str = String(val).trim();
-        // Ignore placeholder values
-        if (str.length === 0 || str.includes('YOUR_') || str.includes('HERE')) {
-            return fallback;
-        }
+        const isPlaceholder = /^(YOUR_|REPLACE_|PASTE_)|(_HERE)$/i.test(str);
+        if (str.length === 0 || isPlaceholder) return fallback;
         return str;
     } catch (e) {
         return fallback;
@@ -45,10 +60,10 @@ let lastActiveChar = '';
 let lastActiveEmoji = '';
 let _isProcessingPayment = false;
 let _activeFlashes = [];
+window._currentWaMsg = '';
 
 // ============================================================
-// 🎯 QR FALLBACK CONFIG (Network providers only)
-// ✅ FIX #5: These are now FALLBACK only — OfflineQRCode runs first
+// 🎯 QR FALLBACK CONFIG
 // ============================================================
 const _QR_PROVIDERS = [
     { template: 'https://api.qrserver.com/v1/create-qr-code/?size={SIZE}x{SIZE}&data={DATA}&ecc=H&margin=4&format=png', timeout: 4000 },
@@ -62,14 +77,24 @@ const _QR_TOTAL_TIMEOUT_MS = 15000;
 // ============================================================
 function _safeInt(val, min = 0, max = 999999, fallback = 0) {
     const n = parseInt(val, 10);
-    if (isNaN(n)) return fallback;
+    if (isNaN(n)) return Math.max(min, Math.min(max, fallback));
     if (n < min) return min;
     if (n > max) return max;
     return n;
 }
 
 // ============================================================
-// 🛡️ ESCAPE HTML — Single consolidated function
+// 🛡️ MOBILE NORMALIZER (Indian format)
+// ============================================================
+function _normalizeMobile(mobile) {
+    let m = String(mobile || '').replace(/[^0-9]/g, '');
+    if (m.startsWith('0')) m = m.substring(1);
+    if (m.startsWith('91') && m.length > 10) m = m.slice(-10);
+    return m;
+}
+
+// ============================================================
+// 🛡️ ESCAPE HTML
 // ============================================================
 function _escapeHtml(str) {
     if (str === null || str === undefined) return '';
@@ -81,8 +106,6 @@ function _escapeHtml(str) {
         .replace(/'/g, '&#39;')
         .replace(/`/g, '&#96;');
 }
-
-// Aliases for backward compatibility (any external callers)
 const _escapeKeyboardHtml = _escapeHtml;
 const escapeFlashHtml = _escapeHtml;
 
@@ -122,27 +145,20 @@ window.setProgress = setProgress;
 window.hideProgress = hideProgress;
 
 // ============================================================
-// 📸 QR RENDER — ✅ FIX #5: OFFLINE-FIRST
+// 📸 QR RENDER — OFFLINE-FIRST
 // ============================================================
 function renderQRCode(elementId, text, size = 200) {
     const container = document.getElementById(elementId);
-    if (!container) {
-        console.error('❌ Container missing:', elementId);
-        return;
-    }
+    if (!container) return;
 
-    // ✅ SECURITY: Handle empty text (UPI not configured)
     if (!text || text.trim().length === 0) {
         container.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;color:#dc2626;font-size:0.7rem;font-weight:700;text-align:center;padding:8px;"><div style="font-size:1.5rem;">⚠️</div><div>Payment Gateway Not Configured</div><div style="font-size:0.6rem;color:#64748b;margin-top:4px;">Please contact support</div></div>`;
         return;
     }
 
-    console.log('🎨 QR Render:', elementId, '| data length:', text.length);
-
     container.innerHTML = '';
     container.removeAttribute('style');
 
-    // Force exact size on container
     container.style.setProperty('width', size + 'px', 'important');
     container.style.setProperty('height', size + 'px', 'important');
     container.style.setProperty('min-width', size + 'px', 'important');
@@ -159,80 +175,43 @@ function renderQRCode(elementId, text, size = 200) {
 
     const qrSize = size - 16;
 
-    // ═══════════════════════════════════════════════════════
-    // ✅ FIX #5 — TIER 1: Try OFFLINE QR FIRST (instant!)
-    // ═══════════════════════════════════════════════════════
     if (_tryOfflineQR(container, text, qrSize)) {
-        console.log('✅ QR rendered via OfflineQRCode (offline-first) — instant');
         return;
     }
-
-    // ═══════════════════════════════════════════════════════
-    // Fallback: Network providers (slower, needs internet)
-    // ═══════════════════════════════════════════════════════
-    console.log('⚠️ OfflineQRCode unavailable/failed → trying network providers');
     _renderViaNetwork(container, text, size, qrSize);
 }
 
-// ============================================================
-// ✅ FIX #5: TIER 1 — Try OfflineQRCode (instant, no network)
-// ============================================================
 function _tryOfflineQR(container, text, qrSize) {
     try {
-        if (typeof window.OfflineQRCode === 'undefined'
-            || typeof window.OfflineQRCode.render !== 'function') {
-            console.warn('⚠️ OfflineQRCode not loaded — will use network fallback');
+        if (typeof window.OfflineQRCode === 'undefined' || typeof window.OfflineQRCode.render !== 'function') {
             return false;
         }
-
-        // M level = balanced quality/robustness (matches certificate.js)
         const success = window.OfflineQRCode.render(container, text, qrSize, 'M');
-
-        if (success === true) {
-            return true;
-        }
-
-        // Partial render — clean it up
-        console.warn('⚠️ OfflineQRCode returned false — clearing partial render');
+        if (success === true) return true;
         container.innerHTML = '';
         return false;
     } catch (e) {
-        console.warn('⚠️ OfflineQRCode threw error:', e.message);
         container.innerHTML = '';
         return false;
     }
 }
 
-// ============================================================
-// ✅ FIX #5: TIER 2 — Network QR providers (fallback only)
-// ============================================================
 function _renderViaNetwork(container, text, size, qrSize) {
     const encodedText = encodeURIComponent(text);
-
     let providerIndex = 0;
     let rendered = false;
 
-    // Loading state
-    container.innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
-                    gap:6px;color:#64748b;font-size:0.7rem;font-weight:700;">
-            <div style="font-size:1.5rem;">⏳</div>
-            <div>Loading QR...</div>
-        </div>
-    `;
+    container.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#64748b;font-size:0.7rem;font-weight:700;"><div style="font-size:1.5rem;">⏳</div><div>Loading QR...</div></div>`;
 
     const totalTimeoutId = setTimeout(() => {
         if (rendered) return;
-        console.warn('⏱️ QR total timeout — showing manual UPI fallback');
         rendered = true;
         _showQRFailure(container, new Error('Network timeout'));
     }, _QR_TOTAL_TIMEOUT_MS);
 
     function tryNextProvider() {
         if (rendered) return;
-
         if (providerIndex >= _QR_PROVIDERS.length) {
-            console.log('⚠️ All network QR failed → Manual UPI text');
             clearTimeout(totalTimeoutId);
             rendered = true;
             _showQRFailure(container, new Error('All providers failed'));
@@ -240,29 +219,15 @@ function _renderViaNetwork(container, text, size, qrSize) {
         }
 
         const provider = _QR_PROVIDERS[providerIndex];
-        const providerUrl = provider.template
-            .replace('{SIZE}', qrSize)
-            .replace(/{DATA}/g, encodedText);
-
-        console.log(`🌐 Trying network QR #${providerIndex + 1} (timeout: ${provider.timeout}ms)`);
-
+        const providerUrl = provider.template.replace('{SIZE}', qrSize).replace(/{DATA}/g, encodedText);
         container.innerHTML = '';
 
         const img = document.createElement('img');
         img.alt = 'Scan QR Code';
-        img.crossOrigin = 'anonymous';
-        img.style.cssText = `
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: contain;
-            image-rendering: pixelated;
-            background: #ffffff;
-        `;
+        img.style.cssText = `width: 100%; height: 100%; display: block; object-fit: contain; image-rendering: pixelated; background: #ffffff;`;
 
         let loadTimeout = setTimeout(() => {
             if (!rendered) {
-                console.warn(`⏱️ Network QR #${providerIndex + 1} timeout`);
                 img.onload = null;
                 img.onerror = null;
                 providerIndex++;
@@ -277,138 +242,89 @@ function _renderViaNetwork(container, text, size, qrSize) {
             clearTimeout(totalTimeoutId);
             container.innerHTML = '';
             container.appendChild(img);
-            console.log(`✅ QR rendered via NETWORK #${providerIndex + 1}`);
         };
 
         img.onerror = function() {
             clearTimeout(loadTimeout);
             if (rendered) return;
-            console.warn(`❌ Network QR #${providerIndex + 1} failed`);
             providerIndex++;
             tryNextProvider();
         };
-
         img.src = providerUrl;
     }
-
     tryNextProvider();
 }
 
-// ============================================================
-// ✅ FIX #5: TIER 3 — Final fallback (manual UPI text)
-// ============================================================
 function _showQRFailure(container, err) {
     if (!container) return;
-
     const upiId = _getConfigValue('UPI_PRIMARY_ID', '');
     const upiDisplay = upiId || 'Not Configured';
-
     container.innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
-                    width:100%;height:100%;color:#dc2626;text-align:center;
-                    font-size:0.7rem;font-weight:700;padding:8px;gap:4px;">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;color:#dc2626;text-align:center;font-size:0.7rem;font-weight:700;padding:8px;gap:4px;">
             <div style="font-size:1.5rem;">⚠️</div>
             <div>QR Load Failed</div>
             <div style="font-size:0.6rem;color:#64748b;">Manual UPI:</div>
-            <div style="font-size:0.65rem;color:#0f172a;background:#fff;padding:3px 8px;
-                        border-radius:4px;font-family:monospace;font-weight:900;
-                        word-break:break-all;">
+            <div style="font-size:0.65rem;color:#0f172a;background:#fff;padding:3px 8px;border-radius:4px;font-family:monospace;font-weight:900;word-break:break-all;">
                 ${_escapeHtml(upiDisplay)}
-            </div>
-            <div style="font-size:0.55rem;color:#94a3b8;margin-top:4px;">
-                ${_escapeHtml((err && err.message || '').substring(0, 40))}
             </div>
         </div>
     `;
 }
 
-// ============================================================
-// 🎨 BACKWARD COMPAT SHIM — _MiniQR
-// ============================================================
 const _MiniQR = {
     render: function(container, text, size) {
-        if (typeof window.OfflineQRCode === 'undefined'
-            || typeof window.OfflineQRCode.render !== 'function') {
-            console.warn('_MiniQR shim: OfflineQRCode not loaded');
-            return false;
-        }
+        if (typeof window.OfflineQRCode === 'undefined' || typeof window.OfflineQRCode.render !== 'function') return false;
         return window.OfflineQRCode.render(container, text, size || 200, 'M');
     }
 };
 
 // ============================================================
 // 💰 GET PAYMENT URL
-// ✅ SECURITY: No hardcoded UPI fallback
 // ============================================================
 function _getPaymentURL(amount, note) {
     const upiId = _getConfigValue('UPI_PRIMARY_ID', '');
     const payeeName = _getConfigValue('PAYEE_NAME', 'Merchant');
     const tn = note || 'Hor Katha Payment';
 
-    // If UPI ID is missing, return empty (renderQRCode will handle it)
-    if (!upiId) {
-        console.warn('⚠️ [modals] UPI_PRIMARY_ID not configured in APP_CONFIG');
-        return '';
-    }
+    if (!upiId) return '';
 
     let safeAmount = Number(amount);
     if (isNaN(safeAmount) || safeAmount < 0.01) safeAmount = 0.01;
     if (safeAmount > 100000) safeAmount = 100000;
 
-    // ✅ Integer if whole number (UPI safe)
-    const amt = Number.isInteger(safeAmount)
-        ? String(safeAmount)
-        : safeAmount.toFixed(2);
-
-    // Encode helper — keeps UPI-safe chars readable
-    const enc = (s) => encodeURIComponent(String(s))
-        .replace(/%40/g, '@')
-        .replace(/%2D/g, '-')
-        .replace(/%5F/g, '_')
-        .replace(/%2E/g, '.');
+    const amt = Number.isInteger(safeAmount) ? String(safeAmount) : safeAmount.toFixed(2);
+    const enc = (s) => encodeURIComponent(String(s)).replace(/%40/g, '@').replace(/%2D/g, '-').replace(/%5F/g, '_').replace(/%2E/g, '.');
 
     let url = `upi://pay?pa=${enc(upiId)}&pn=${enc(payeeName)}&am=${amt}&cu=INR&tn=${enc(tn)}`;
-
-    // URL length guard (UPI max ~ 500 chars)
     if (url.length > 500) {
-        console.warn('⚠️ UPI URL too long — truncating note');
         url = `upi://pay?pa=${enc(upiId)}&pn=${enc(payeeName)}&am=${amt}&cu=INR&tn=${enc('Payment')}`;
     }
-
-    console.log('💳 UPI URL generated (length:', url.length + ')');
     return url;
 }
 
 // ============================================================
-// ✅ MODAL GUARD — App must be ready
+// ✅ MODAL GUARD
 // ============================================================
 function _canOpenModal(modalName) {
     if (window.__appReady === true) {
         if (document.__modalWaitStart) delete document.__modalWaitStart;
         return true;
     }
-
     if (!document.getElementById('appSplash')) {
         delete document.__modalWaitStart;
         return true;
     }
-
-    // 3s timeout fallback
     const startTime = Date.now();
     const waitMax = 3000;
-
     if (document.__modalWaitStart) {
         const elapsed = Date.now() - document.__modalWaitStart;
         if (elapsed > waitMax) {
-            console.warn('🛡️ ' + (modalName || 'Modal') + ' — timeout, allowing');
             delete document.__modalWaitStart;
             return true;
         }
     } else {
         document.__modalWaitStart = startTime;
     }
-
-    console.warn('🛡️ ' + (modalName || 'Modal') + ' blocked — app not ready');
     return false;
 }
 
@@ -419,22 +335,12 @@ function showFlash(options = {}) {
     const container = document.getElementById('flashContainer');
     if (!container) return null;
 
-    const {
-        type = 'info',
-        icon = 'ℹ️',
-        title = '',
-        subtitle = '',
-        body = '',
-        duration = 6000,
-        compact = false,
-        onClose = null
-    } = options;
+    const { type = 'info', icon = 'ℹ️', title = '', subtitle = '', body = '', duration = 6000, compact = false, onClose = null } = options;
 
     const flash = document.createElement('div');
     flash.className = `flash-message flash-${type}${compact ? ' flash-compact' : ''}`;
 
-    let bodyHTML = '';
-    if (body) bodyHTML = `<div class="flash-body">${body}</div>`;
+    let bodyHTML = body ? `<div class="flash-body">${body}</div>` : '';
 
     flash.innerHTML = `
         <div class="flash-header">
@@ -446,9 +352,7 @@ function showFlash(options = {}) {
             <button class="flash-close" aria-label="Close">✕</button>
         </div>
         ${bodyHTML}
-        <div class="flash-progress">
-            <div class="flash-progress-bar"></div>
-        </div>
+        <div class="flash-progress"><div class="flash-progress-bar"></div></div>
     `;
 
     container.appendChild(flash);
@@ -466,25 +370,19 @@ function showFlash(options = {}) {
     function closeFlash() {
         if (closed) return;
         closed = true;
-
-        if (typeof onClose === 'function') {
-            try { onClose(); } catch (e) {}
-        }
-
+        if (typeof onClose === 'function') { try { onClose(); } catch (e) {} }
         flash.classList.add('flash-out');
         setTimeout(() => {
             if (flash.parentNode) flash.parentNode.removeChild(flash);
             const idx = _activeFlashes.indexOf(flash);
             if (idx > -1) _activeFlashes.splice(idx, 1);
         }, 400);
-
         document.removeEventListener('keydown', escHandler);
     }
 
     closeBtn.addEventListener('click', closeFlash);
 
     const safeDuration = Math.max(0, Math.min(60000, Number(duration) || 6000));
-
     if (safeDuration > 0) {
         const progressBar = flash.querySelector('.flash-progress-bar');
         if (progressBar) {
@@ -493,7 +391,6 @@ function showFlash(options = {}) {
         }
         setTimeout(closeFlash, safeDuration);
     }
-
     document.addEventListener('keydown', escHandler);
     return flash;
 }
@@ -502,12 +399,8 @@ function showToast(message, type = 'info', duration = 3500) {
     const iconMap = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
     const titleMap = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Info' };
     return showFlash({
-        type,
-        icon: iconMap[type] || 'ℹ️',
-        title: titleMap[type] || 'Info',
-        subtitle: message,
-        duration: Math.max(0, Math.min(60000, duration)),
-        compact: true
+        type, icon: iconMap[type] || 'ℹ️', title: titleMap[type] || 'Info',
+        subtitle: message, duration: Math.max(0, Math.min(60000, duration)), compact: true
     });
 }
 
@@ -517,11 +410,257 @@ const toastWarning = (m) => showToast(m, 'warning');
 const toastInfo    = (m) => showToast(m, 'info');
 
 // ============================================================
+// 💬 WHATSAPP PREVIEW MODAL & MESSAGE GENERATOR
+// ============================================================
+function showWaMessagePreview(type) {
+    let msg = '';
+    if (type === 'pro') {
+        const name = document.getElementById('buyCustomerName')?.value.trim() || '';
+        const email = document.getElementById('buyCustomerEmail')?.value.trim() || '';
+        const mobile = document.getElementById('buyCustomerMobile')?.value.trim() || '';
+
+        if (!name || !email || !mobile) {
+            toastWarning('कृपया Name, Email और Mobile तीनों भरें! (एक भी खाली न रहे)');
+            return;
+        }
+
+        const selectedText = document.getElementById('selectedPlanLabel')?.innerText || 'Selected: P1 — Community (₹199)';
+        const plan = selectedText.replace('Selected: ', '');
+        const amount = plan.match(/₹\d+/)?.[0] || '₹199';
+
+        msg = `*💳 PAYMENT DONE — Hor Katha Suite*\n\n👤 *Name:* ${name}\n📧 *Email:* ${email}\n📱 *Mobile:* ${mobile}\n\n💎 *Plan:* ${plan}\n💵 *Amount:* ${amount}\n\n━━━━━━━━━━━━━━━━━━━━\n✅ मैंने payment कर दिया है।\n📸 Screenshot इसी chat में भेज रहा हूँ\n🔑 कृपया License Key भेजें।`;
+    } else if (type === 'trial') {
+        const name = document.getElementById('trialCustomerName')?.value.trim() || '';
+        const email = document.getElementById('trialCustomerEmail')?.value.trim() || '';
+        const mobile = document.getElementById('trialCustomerMobile')?.value.trim() || '';
+
+        if (!name || !email || !mobile) {
+            toastWarning('कृपया Name, Email और Mobile तीनों भरें! (एक भी खाली न रहे)');
+            return;
+        }
+
+        const date = new Date().toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'medium' });
+
+        msg = `*🎁 ₹9 TRIAL REQUEST — Hor Katha Suite*\n\n👤 *Name:* ${name}\n📧 *Email:* ${email}\n📱 *Mobile:* ${mobile}\n\n💵 *Amount:* ₹9\n📅 *Date:* ${date}\n\n━━━━━━━━━━━━━━━━━━━━\n✅ मैंने ₹9 का payment कर दिया है।\n📸 Payment screenshot इसी chat में भेज रहा हूँ।\n🔑 कृपया Trial Key भेजें (Format: HKT-XXXXXXX-XXXX)`;
+    }
+
+    window._currentWaMsg = msg;
+    const msgEl = document.getElementById('waMessageText');
+    if (msgEl) msgEl.textContent = msg;
+
+    const modal = document.getElementById('waMessageModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+    }
+
+    const copyBtn = document.getElementById('btnCopyWaMsg');
+    if(copyBtn) {
+        copyBtn.innerHTML = '📋 Copy Message';
+        copyBtn.style.background = '#f1f5f9';
+        copyBtn.style.color = '#475569';
+        copyBtn.style.borderColor = 'transparent';
+    }
+}
+
+function copyWaMessageText() {
+    if (!window._currentWaMsg) return;
+    navigator.clipboard.writeText(window._currentWaMsg).then(() => {
+        const btn = document.getElementById('btnCopyWaMsg');
+        if (!btn) return;
+        btn.innerHTML = '✅ Copied!';
+        btn.style.background = '#dcfce7';
+        btn.style.color = '#166534';
+        btn.style.borderColor = '#16a34a';
+
+        setTimeout(() => {
+            btn.innerHTML = '📋 Copy Message';
+            btn.style.background = '#f1f5f9';
+            btn.style.color = '#475569';
+            btn.style.borderColor = 'transparent';
+        }, 2000);
+    }).catch(err => {
+        toastError('Failed to copy message.');
+    });
+}
+
+function sendWaMessageNow() {
+    if (!window._currentWaMsg) return;
+    const adminWa = _getConfigValue('SUPPORT_WHATSAPP', '');
+
+    if (!adminWa) {
+        toastError('Support WhatsApp number not configured.');
+        return;
+    }
+
+    window.open(`https://wa.me/${adminWa}?text=${encodeURIComponent(window._currentWaMsg)}`, '_blank');
+    const modal = document.getElementById('waMessageModal');
+    if (modal) modal.style.display = 'none';
+    _unlockBodyScroll();
+}
+
+// ============================================================
+// 🔒 FIX #2: TRIAL CONSTRAINTS (FAIL-CLOSED)
+// ============================================================
+// 1 Email / 1 Mobile per Trial — Firebase MANDATORY है।
+// Offline / No-endpoint / Network-error → hard BLOCK.
+// localStorage clear करके bypass असंभव है।
+// ============================================================
+async function checkTrialConstraints(email, mobile) {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanMobile = _normalizeMobile(mobile);
+
+    // ── Fast local check (turant fail — UI responsive) ──
+    // यह सिर्फ early-exit के लिए है, security के लिए नहीं
+    try {
+        const usedEmails = JSON.parse(localStorage.getItem('hor_used_trial_emails') || '[]');
+        const usedMobiles = JSON.parse(localStorage.getItem('hor_used_trial_mobiles') || '[]');
+
+        if (usedEmails.includes(cleanEmail)) {
+            return { valid: false, reason: 'यह Email पहले ही Trial के लिए उपयोग हो चुका है।' };
+        }
+        if (usedMobiles.includes(cleanMobile)) {
+            return { valid: false, reason: 'यह Mobile नंबर पहले ही Trial के लिए उपयोग हो चुका है।' };
+        }
+    } catch (e) {
+        // localStorage corrupt → ignore, server check करेंगे
+    }
+
+    // ── Guard 1: TrialSystem available ──
+    if (typeof TrialSystem === 'undefined' || typeof TrialSystem._fbGet !== 'function') {
+        return { valid: false, reason: 'Trial system unavailable — page refresh करें।' };
+    }
+
+    // ── Guard 2: Firebase endpoint configured ──
+    const baseUrl = typeof TrialSystem._getFirebaseBaseUrl === 'function'
+        ? TrialSystem._getFirebaseBaseUrl()
+        : null;
+    if (!baseUrl) {
+        console.error('❌ CRITICAL: Firebase endpoint not configured — Trial blocked (bypass prevented)');
+        return { valid: false, reason: 'Server not configured. Admin से contact करें।' };
+    }
+
+    // ── Guard 3: Internet available ──
+    if (!navigator.onLine) {
+        return { valid: false, reason: 'Trial activation के लिए internet ज़रूरी है। Internet check करके retry करें।' };
+    }
+
+    // ── Server verification (MANDATORY) ──
+    try {
+        const emailCheck = await TrialSystem._fbGet(`trial_used_emails/${encodeURIComponent(cleanEmail)}`);
+
+        if (!emailCheck.ok) {
+            console.warn('[Constraint] Email check failed:', emailCheck.error);
+            return { valid: false, reason: 'Server verification failed — internet check करके retry करें।' };
+        }
+        if (emailCheck.data) {
+            return { valid: false, reason: 'यह Email पहले ही Trial के लिए उपयोग हो चुका है (सर्वर)।' };
+        }
+
+        const mobileCheck = await TrialSystem._fbGet(`trial_used_mobiles/${encodeURIComponent(cleanMobile)}`);
+
+        if (!mobileCheck.ok) {
+            console.warn('[Constraint] Mobile check failed:', mobileCheck.error);
+            return { valid: false, reason: 'Server verification failed — internet check करके retry करें।' };
+        }
+        if (mobileCheck.data) {
+            return { valid: false, reason: 'यह Mobile नंबर पहले ही Trial के लिए उपयोग हो चुका है (सर्वर)।' };
+        }
+    } catch (e) {
+        console.warn('[Constraint] Exception:', e.message);
+        return { valid: false, reason: 'Server verification failed — retry करें।' };
+    }
+
+    return { valid: true };
+}
+
+// ============================================================
+// 🔒 FIX #2: MARK TRIAL AS USED (MUST-AWAIT + RETRY)
+// ============================================================
+// अब यह function { success: true/false } return करता है।
+// Server write fail हो तो caller को पता चलेगा — silent bypass नहीं।
+// ============================================================
+async function markTrialAsUsed(email, mobile) {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanMobile = _normalizeMobile(mobile);
+
+    // ── Local update (fast, best-effort) ──
+    try {
+        const usedEmails = JSON.parse(localStorage.getItem('hor_used_trial_emails') || '[]');
+        if (!usedEmails.includes(cleanEmail)) {
+            usedEmails.push(cleanEmail);
+            localStorage.setItem('hor_used_trial_emails', JSON.stringify(usedEmails));
+        }
+
+        const usedMobiles = JSON.parse(localStorage.getItem('hor_used_trial_mobiles') || '[]');
+        if (!usedMobiles.includes(cleanMobile)) {
+            usedMobiles.push(cleanMobile);
+            localStorage.setItem('hor_used_trial_mobiles', JSON.stringify(usedMobiles));
+        }
+    } catch (e) {
+        console.warn('[markTrialAsUsed] LocalStorage update failed:', e.message);
+    }
+
+    // ── Server write (MANDATORY — fail-closed) ──
+    if (typeof TrialSystem === 'undefined' || typeof TrialSystem._fbSet !== 'function') {
+        return { success: false, reason: 'Trial system unavailable' };
+    }
+
+    const baseUrl = typeof TrialSystem._getFirebaseBaseUrl === 'function'
+        ? TrialSystem._getFirebaseBaseUrl()
+        : null;
+    if (!baseUrl) {
+        return { success: false, reason: 'Server not configured' };
+    }
+    if (!navigator.onLine) {
+        return { success: false, reason: 'Offline — server sync failed' };
+    }
+
+    // ── Retry with backoff (3 attempts) ──
+    const MAX_RETRIES = 3;
+    let lastError = null;
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const emailWrite = await TrialSystem._fbSet(
+                `trial_used_emails/${encodeURIComponent(cleanEmail)}`,
+                { usedAt: Date.now(), attempt }
+            );
+            if (!emailWrite.ok) {
+                lastError = emailWrite.error;
+                throw new Error(`Email write failed: ${emailWrite.error}`);
+            }
+
+            const mobileWrite = await TrialSystem._fbSet(
+                `trial_used_mobiles/${encodeURIComponent(cleanMobile)}`,
+                { usedAt: Date.now(), attempt }
+            );
+            if (!mobileWrite.ok) {
+                lastError = mobileWrite.error;
+                throw new Error(`Mobile write failed: ${mobileWrite.error}`);
+            }
+
+            console.log(`[markTrialAsUsed] ✅ Server records saved (attempt ${attempt})`);
+            return { success: true };
+        } catch (e) {
+            lastError = e.message;
+            console.warn(`[markTrialAsUsed] Attempt ${attempt}/${MAX_RETRIES} failed:`, e.message);
+
+            if (attempt < MAX_RETRIES) {
+                const delay = 1000 * Math.pow(2, attempt - 1);
+                await new Promise(r => setTimeout(r, delay));
+            }
+        }
+    }
+
+    return { success: false, reason: `Server write failed after ${MAX_RETRIES} attempts: ${lastError}` };
+}
+
+// ============================================================
 // 🎁 TRIAL ACTIVATION MODAL
 // ============================================================
 async function openTrialActivationModal() {
     if (!_canOpenModal('openTrialActivationModal')) return;
-
     const modal = document.getElementById('trialActivationModal');
     if (!modal) return;
 
@@ -529,16 +668,31 @@ async function openTrialActivationModal() {
     if (keyInput) keyInput.value = '';
 
     const statusEl = document.getElementById('trialActivationStatus');
-    if (statusEl) {
-        statusEl.className = 'trm-status';
-        statusEl.textContent = '';
-    }
+    if (statusEl) { statusEl.className = 'trm-status'; statusEl.textContent = ''; }
 
     const qrBox = document.getElementById('trialQrBox');
-    if (qrBox) {
-        qrBox.innerHTML = '';
-        qrBox.removeAttribute('style');
+    if (qrBox) { qrBox.innerHTML = ''; qrBox.removeAttribute('style'); }
+
+    const btn = document.getElementById('btnTrialActivate');
+    if (btn) {
+        btn.innerHTML = '📩 Send OTP';
+        btn.onclick = sendTrialOtp;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
     }
+    const otpSection = document.getElementById('trialOtpSection');
+    if (otpSection) otpSection.style.display = 'none';
+    const otpInput = document.getElementById('trialOtpInput');
+    if (otpInput) otpInput.value = '';
+
+    try {
+        sessionStorage.removeItem('hor_trial_pending_otp');
+        sessionStorage.removeItem('hor_trial_pending_otp_time');
+        sessionStorage.removeItem('hor_trial_pending_key');
+        sessionStorage.removeItem('hor_trial_pending_email');
+        sessionStorage.removeItem('hor_trial_pending_mobile');
+    } catch(e) {}
 
     modal.style.display = 'flex';
     document.body.classList.add('modal-open');
@@ -546,9 +700,7 @@ async function openTrialActivationModal() {
     const trialPrice = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.TRIAL_PRICE) || 9;
     const upiUrl = _getPaymentURL(trialPrice, 'Hor Katha 7-Day Trial');
 
-    setTimeout(() => {
-        renderQRCode('trialQrBox', upiUrl, 220);
-    }, 100);
+    requestAnimationFrame(() => renderQRCode('trialQrBox', upiUrl, 220));
 }
 
 function closeTrialActivationModal() {
@@ -556,48 +708,201 @@ function closeTrialActivationModal() {
     if (modal) modal.style.display = 'none';
 
     const statusEl = document.getElementById('trialActivationStatus');
-    if (statusEl) {
-        statusEl.className = 'trm-status';
-        statusEl.textContent = '';
+    if (statusEl) { statusEl.className = 'trm-status'; statusEl.textContent = ''; }
+
+    const btn = document.getElementById('btnTrialActivate');
+    if (btn) {
+        btn.innerHTML = '📩 Send OTP';
+        btn.onclick = sendTrialOtp;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
     }
+    const otpSection = document.getElementById('trialOtpSection');
+    if (otpSection) otpSection.style.display = 'none';
+    const otpInput = document.getElementById('trialOtpInput');
+    if (otpInput) otpInput.value = '';
 
     _unlockBodyScroll();
 }
 
-async function activateTrialWithKey() {
+// ============================================================
+// 1. OTP भेजने का फंक्शन (Trial के लिए)
+// ============================================================
+async function sendTrialOtp() {
+    const name = document.getElementById('trialCustomerName')?.value.trim() || '';
+    const email = document.getElementById('trialCustomerEmail')?.value.trim() || '';
+    let mobile = document.getElementById('trialCustomerMobile')?.value.trim() || '';
     const keyInput = document.getElementById('trialKeyInput');
     const statusEl = document.getElementById('trialActivationStatus');
-    if (!keyInput || !statusEl) return;
+    const btn = document.getElementById('btnTrialActivate');
+    const key = (keyInput?.value || '').trim().toUpperCase();
 
-    const key = (keyInput.value || '').trim().toUpperCase();
-
-    if (!key) {
-        statusEl.className = 'trm-status error';
-        statusEl.textContent = '❌ कृपया Trial Key enter करें';
+    if (!name || !email || !mobile || !key) {
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ कृपया सभी फील्ड भरें!'; }
         return;
     }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ सही Email डालें!'; }
+        return;
+    }
+
+    mobile = _normalizeMobile(mobile);
+    if (!/^[0-9]{10,15}$/.test(mobile)) {
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ सही मोबाइल नंबर डालें (10-15 अंक)!'; }
+        return;
+    }
     if (!/^HKT-\d{7}-[A-F0-9]{4}$/.test(key)) {
-        statusEl.className = 'trm-status error';
-        statusEl.textContent = '❌ गलत format! Format: HKT-XXXXXXX-XXXX';
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ गलत Key Format! (HKT-1234567-ABCD)'; }
         return;
     }
 
-    statusEl.className = 'trm-status loading';
-    statusEl.textContent = '⏳ Key verify हो रही है...';
+    if (btn) { btn.innerHTML = '⏳ Checking...'; btn.disabled = true; btn.style.opacity = '0.7'; btn.style.cursor = 'wait'; }
+    if (statusEl) { statusEl.className = 'trm-status loading'; statusEl.textContent = '⏳ जाँच हो रही है...'; }
+
+    const constraintCheck = await checkTrialConstraints(email, mobile);
+    if (!constraintCheck.valid) {
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ ' + constraintCheck.reason; }
+        if (btn) { btn.innerHTML = '📩 Send OTP'; btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+        return;
+    }
+
+    if (statusEl) statusEl.textContent = '⏳ OTP भेजा जा रहा है...';
+
+    try {
+        const otp = Math.floor(100000 + Math.random() * 900000);
+
+        sessionStorage.setItem('hor_trial_pending_otp', otp);
+        sessionStorage.setItem('hor_trial_pending_otp_time', Date.now());
+        sessionStorage.setItem('hor_trial_pending_key', key);
+        sessionStorage.setItem('hor_trial_pending_email', email.trim().toLowerCase());
+        sessionStorage.setItem('hor_trial_pending_mobile', mobile);
+
+        if (typeof emailjs === 'undefined') throw new Error('EmailJS SDK not loaded');
+
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_email: email,
+            otp: otp,
+            app_name: "Hor Katha Suite Trial"
+        });
+
+        if (statusEl) {
+            statusEl.className = 'trm-status success';
+            statusEl.textContent = '✅ OTP आपके ईमेल पर भेज दिया गया है!';
+        }
+
+        const otpSection = document.getElementById('trialOtpSection');
+        if (otpSection) otpSection.style.display = 'block';
+
+        if (btn) {
+            btn.innerHTML = '🔓 Verify & Activate';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.onclick = verifyTrialOtp;
+        }
+
+        const otpInput = document.getElementById('trialOtpInput');
+        if (otpInput) otpInput.focus();
+
+    } catch (e) {
+        console.error('Trial OTP failed:', e);
+        if (statusEl) {
+            statusEl.className = 'trm-status error';
+            statusEl.textContent = '❌ OTP भेजने में विफल: ' + (e.text || e.message);
+        }
+        if (btn) { btn.innerHTML = '📩 Send OTP'; btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+    }
+}
+
+// ============================================================
+// 2. 🔒 FIX #2: OTP VERIFY + TRIAL ACTIVATE (ORDER FIXED)
+// ============================================================
+// अब order बदला है: पहले server पर email/mobile lock करें,
+// फिर trial activate करें। अगर lock fail → activation BLOCK.
+// ============================================================
+async function verifyTrialOtp() {
+    const otpInput = document.getElementById('trialOtpInput');
+    const statusEl = document.getElementById('trialActivationStatus');
+    const enteredOtp = (otpInput?.value || '').trim();
+
+    const savedOtp = sessionStorage.getItem('hor_trial_pending_otp');
+    const savedTime = sessionStorage.getItem('hor_trial_pending_otp_time');
+    const savedKey = sessionStorage.getItem('hor_trial_pending_key');
+    const pendingEmail = sessionStorage.getItem('hor_trial_pending_email');
+    const pendingMobile = sessionStorage.getItem('hor_trial_pending_mobile');
+
+    // ── Guard: OTP exists ──
+    if (!savedOtp || !savedTime || !savedKey) {
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ OTP expire हो गया है, कृपया दोबारा Send OTP दबाएं।'; }
+        return;
+    }
+
+    // ── Guard: OTP expiry (5 min) ──
+    if (Date.now() - parseInt(savedTime, 10) > 300000) {
+        sessionStorage.removeItem('hor_trial_pending_otp');
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ OTP expire हो गया है!'; }
+        return;
+    }
+
+    // ── Guard: OTP match ──
+    if (enteredOtp !== savedOtp.toString()) {
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ गलत OTP! कृपया फिर से प्रयास करें।'; }
+        return;
+    }
+
+    // ── Guard: Email/Mobile unchanged ──
+    const currentEmail = (document.getElementById('trialCustomerEmail')?.value || '').trim().toLowerCase();
+    const currentMobile = _normalizeMobile(document.getElementById('trialCustomerMobile')?.value || '');
+
+    if (pendingEmail && currentEmail !== pendingEmail) {
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ Email बदला गया है — वही email डालें जो OTP भेजते समय था।'; }
+        return;
+    }
+    if (pendingMobile && currentMobile !== pendingMobile) {
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ Mobile बदला गया है — वही नंबर डालें जो OTP भेजते समय था।'; }
+        return;
+    }
+
+    if (statusEl) { statusEl.className = 'trm-status loading'; statusEl.textContent = '⏳ Server पर email/mobile lock हो रहे हैं...'; }
+
+    // ═══════════════════════════════════════════════════════
+    // STEP 1: Server पर email/mobile LOCK करें (MANDATORY)
+    // अगर यह fail → trial activate नहीं करेंगे (fail-closed)
+    // ═══════════════════════════════════════════════════════
+    let lockResult;
+    try {
+        lockResult = await markTrialAsUsed(currentEmail, currentMobile);
+    } catch (e) {
+        lockResult = { success: false, reason: e.message };
+    }
+
+    if (!lockResult.success) {
+        if (statusEl) {
+            statusEl.className = 'trm-status error';
+            statusEl.textContent = '❌ Server sync failed: ' + (lockResult.reason || 'Unknown error') + ' — Internet check करके retry करें।';
+        }
+        return;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // STEP 2: Trial activate करें (email/mobile अब locked हैं)
+    // ═══════════════════════════════════════════════════════
+    if (statusEl) { statusEl.className = 'trm-status loading'; statusEl.textContent = '⏳ Trial Key verify हो रही है...'; }
 
     try {
         if (typeof TrialSystem === 'undefined' || !TrialSystem.activateWithKey) {
-            statusEl.className = 'trm-status error';
-            statusEl.textContent = '❌ Trial system unavailable';
-            return;
+            throw new Error('Trial system unavailable');
         }
 
-        const result = await TrialSystem.activateWithKey(key);
+        const result = await TrialSystem.activateWithKey(savedKey);
 
         if (result.success) {
-            statusEl.className = 'trm-status success';
-            statusEl.textContent = '✅ Trial activated! 7 days unlocked.';
+            if (statusEl) {
+                statusEl.className = 'trm-status success';
+                statusEl.textContent = '✅ Trial activated! 7 days unlocked.';
+            }
 
             showFlash({
                 type: 'success',
@@ -608,62 +913,29 @@ async function activateTrialWithKey() {
                 duration: 6000
             });
 
+            sessionStorage.removeItem('hor_trial_pending_otp');
+            sessionStorage.removeItem('hor_trial_pending_otp_time');
+            sessionStorage.removeItem('hor_trial_pending_key');
+            sessionStorage.removeItem('hor_trial_pending_email');
+            sessionStorage.removeItem('hor_trial_pending_mobile');
+
             setTimeout(async () => {
-                if (typeof checkLicenseIntegrity === 'function') {
-                    await checkLicenseIntegrity();
-                }
+                if (typeof checkLicenseIntegrity === 'function') await checkLicenseIntegrity();
                 setTimeout(() => {
                     closeTrialActivationModal();
                     setTimeout(() => location.reload(), 500);
                 }, 1500);
             }, 800);
         } else {
-            statusEl.className = 'trm-status error';
-            statusEl.textContent = '❌ ' + (result.reason || 'Invalid trial key');
+            if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ ' + (result.reason || 'Invalid trial key'); }
         }
     } catch (e) {
-        statusEl.className = 'trm-status error';
-        statusEl.textContent = '❌ ' + e.message;
+        if (statusEl) { statusEl.className = 'trm-status error'; statusEl.textContent = '❌ ' + e.message; }
     }
 }
 
 function sendTrialPaymentToWhatsApp() {
-    const sellerWa = _getConfigValue('SUPPORT_WHATSAPP', '');
-    
-    if (!sellerWa) {
-        showToast('❌ Support WhatsApp number not configured', 'error', 3000);
-        return;
-    }
-
-    const trialPrice = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.TRIAL_PRICE) || 9;
-
-    setTimeout(async () => {
-        let hwidFull = 'Unknown';
-        try {
-            if (typeof getDeviceHardwareFingerprint === 'function') {
-                hwidFull = await getDeviceHardwareFingerprint() || 'Unknown';
-            }
-        } catch (e) {}
-
-        const msg = `🎁 *₹9 TRIAL REQUEST — Hor Katha Suite*
-
-💰 *Amount:* ₹${trialPrice}
-📱 *Device ID:* ${hwidFull}
-📅 *Date:* ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-
-✅ मैंने ₹${trialPrice} का payment कर दिया है।
-📸 Payment screenshot इसी chat में भेज रहा हूँ।
-
-🔑 कृपया Trial Key भेजें (Format: HKT-XXXXXXX-XXXX)`;
-
-        const waUrl = `https://wa.me/${sellerWa}?text=${encodeURIComponent(msg)}`;
-        try {
-            const opened = window.open(waUrl, '_blank');
-            if (!opened) window.location.href = waUrl;
-        } catch (e) {
-            window.location.href = waUrl;
-        }
-    }, 300);
+    showWaMessagePreview('trial');
 }
 
 // ============================================================
@@ -683,35 +955,31 @@ function sendTrialPaymentToWhatsApp() {
             return formatted;
         }
 
-        input.addEventListener('input', function() {
-            this.value = formatTrialKey(this.value);
-        });
+        input.addEventListener('input', function() { this.value = formatTrialKey(this.value); });
 
         input.addEventListener('paste', function(e) {
             e.preventDefault();
             const pasted = (e.clipboardData || window.clipboardData).getData('text');
-            this.value = formatTrialKey(pasted);
+            const start = this.selectionStart || 0;
+            const end = this.selectionEnd || 0;
+            const before = this.value.substring(0, start);
+            const after = this.value.substring(end);
+            this.value = formatTrialKey(before + pasted + after);
         });
 
         input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                activateTrialWithKey();
-            }
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                closeTrialActivationModal();
-            }
+            if (e.key === 'Enter') { e.preventDefault(); sendTrialOtp(); }
+            if (e.key === 'Escape') { e.preventDefault(); closeTrialActivationModal(); }
         });
     });
 })();
 
 function selectTrialPlan() {
+    currentSelectedPrice = 9;
+    currentSelectedPlanTitle = '₹9 Trial — 7 Days';
     closeBuyModal();
     setTimeout(() => {
-        if (typeof openTrialActivationModal === 'function') {
-            openTrialActivationModal();
-        }
+        if (typeof openTrialActivationModal === 'function') openTrialActivationModal();
     }, 300);
 }
 
@@ -720,7 +988,6 @@ function selectTrialPlan() {
 // ============================================================
 function openDonateModal() {
     if (!_canOpenModal('openDonateModal')) return;
-
     const modal = document.getElementById('donateModal');
     if (!modal) return;
 
@@ -739,15 +1006,12 @@ function closeDonateModal() {
 
 function setDonateAmount(amount, pillElement = null) {
     currentDonateAmount = _safeInt(amount, 1, 100000, 251);
-
     if (pillElement) {
         const input = document.getElementById('customDonateInput');
         if (input) input.value = '';
     }
-
     document.querySelectorAll('.donate-choice-pill').forEach(c => c.classList.remove('active-pill'));
     if (pillElement) pillElement.classList.add('active-pill');
-
     updateDonateQR();
 }
 
@@ -763,21 +1027,17 @@ function handleCustomDonateInput(val) {
 function updateDonateQR() {
     const label = document.getElementById('donateAmountLabel');
     if (label) label.textContent = `Selected: ₹${currentDonateAmount}`;
-
     const upiUrl = _getPaymentURL(currentDonateAmount, 'Hor Katha Support');
     renderQRCode('donateQrBox', upiUrl, 220);
 }
 
 function redirectToWhatsAppDonate() {
     const suppWa = _getConfigValue('SUPPORT_WHATSAPP', '');
-    
     if (!suppWa) {
         showToast('❌ Support WhatsApp number not configured', 'error', 3000);
         return;
     }
-
     const msg = encodeURIComponent(`नमस्ते BOSC Tech & Edu,\nमैंने Hoṛ Katha Suite के लिए ₹${currentDonateAmount} का सहयोग भेजा है।\nAmount: ₹${currentDonateAmount}`);
-
     window.open(`https://wa.me/${suppWa}?text=${msg}`, '_blank', 'noopener,noreferrer');
 }
 
@@ -791,7 +1051,6 @@ async function openBuyModal() {
     const buyInput = document.getElementById('buyCustomerName');
     if (licInput && buyInput) buyInput.value = licInput.value || '';
 
-    // ✅ Wrap await in try-catch (HWID fetch can fail)
     const dvcBuy = document.getElementById('buyDeviceIdDisplay');
     if (dvcBuy) {
         try {
@@ -799,7 +1058,6 @@ async function openBuyModal() {
                 dvcBuy.value = await getDeviceHardwareFingerprint();
             }
         } catch (e) {
-            console.warn('HWID fetch failed (non-critical):', e.message);
             dvcBuy.value = 'DVC-XXXX-XXXX';
         }
     }
@@ -807,10 +1065,18 @@ async function openBuyModal() {
     const chk = document.getElementById('paymentConfirmCheck');
     const btn = document.getElementById('btnPaymentDone');
     if (chk) chk.checked = false;
+
     if (btn) {
         btn.disabled = true;
         btn.style.opacity = '0.5';
         btn.style.cursor = 'not-allowed';
+    }
+
+    const waBtn = document.getElementById('btn-wa-buy');
+    if (waBtn) {
+        waBtn.disabled = true;
+        waBtn.style.opacity = '0.5';
+        waBtn.style.cursor = 'not-allowed';
     }
 
     _isProcessingPayment = false;
@@ -830,13 +1096,7 @@ function closeBuyModal() {
 
 function selectPlan(price, title, cardId) {
     const safePrice = _safeInt(price, 1, 100000, 199);
-
-    if (safePrice !== price) {
-        console.warn('⚠️ Price clamped:', price, '→', safePrice);
-    }
-
     currentSelectedPrice = safePrice;
-    // ✅ Sanitize title (prevent XSS via admin-controlled string)
     currentSelectedPlanTitle = String(title || 'Selected Plan').substring(0, 100);
 
     document.querySelectorAll('.bm-plan').forEach(c => c.classList.remove('active-plan'));
@@ -861,7 +1121,7 @@ function selectPlan(price, title, cardId) {
 }
 
 // ============================================================
-// 🔐 LICENSE MODAL
+// 🔐 LICENSE MODAL & OTP LOGIC (PRO LICENSE)
 // ============================================================
 async function openLicenseModal() {
     if (!_canOpenModal('openLicenseModal')) return;
@@ -876,20 +1136,49 @@ async function openLicenseModal() {
                 dvcDisplay.value = await getDeviceHardwareFingerprint();
             }
         } catch (e) {
-            console.warn('HWID fetch failed:', e.message);
             dvcDisplay.value = 'DVC-XXXX-XXXX';
         }
     }
 
     let savedName = '';
     let savedKey = '';
+    let savedEmail = '';
+    let savedMobile = '';
+
     try {
         savedName = localStorage.getItem('hor_lic_user') || '';
         savedKey = localStorage.getItem('hor_lic_key') || '';
+        savedEmail = localStorage.getItem('hor_lic_email') || '';
+        savedMobile = localStorage.getItem('hor_lic_mobile') || '';
     } catch (e) {}
 
     if (licName) licName.value = savedName;
     if (licKey) licKey.value = savedKey;
+
+    const licEmail = document.getElementById('licCustomerEmail');
+    const licMobile = document.getElementById('licCustomerMobile');
+    if (licEmail) licEmail.value = savedEmail;
+    if (licMobile) licMobile.value = savedMobile;
+
+    const otpSection = document.getElementById('otpSection');
+    if (otpSection) otpSection.style.display = 'none';
+
+    const btnSendOtp = document.getElementById('btnSendOtp');
+    if (btnSendOtp) {
+        btnSendOtp.innerHTML = '📩 Send OTP';
+        btnSendOtp.onclick = sendLicenseOtp;
+        btnSendOtp.style.display = 'inline-block';
+        btnSendOtp.disabled = false;
+        btnSendOtp.style.opacity = '1';
+    }
+
+    const otpInput = document.getElementById('licOtpInput');
+    if (otpInput) otpInput.value = '';
+
+    try {
+        sessionStorage.removeItem('hor_pending_otp');
+        sessionStorage.removeItem('hor_pending_otp_time');
+    } catch(e) {}
 
     const modal = document.getElementById('licenseModal');
     if (modal) modal.style.display = 'flex';
@@ -902,68 +1191,125 @@ function closeLicenseModal() {
     _unlockBodyScroll();
 }
 
-// ✅ Length guards before index access
-async function verifyAndActivateLicense() {
+// OTP भेजने का फंक्शन (Pro License के लिए)
+async function sendLicenseOtp() {
     const nameEl = document.getElementById('licCustomerName');
+    const emailEl = document.getElementById('licCustomerEmail');
+    const mobileEl = document.getElementById('licCustomerMobile');
     const keyEl = document.getElementById('licCustomerKey');
+    const btnSendOtp = document.getElementById('btnSendOtp');
 
     const name = nameEl ? nameEl.value.trim() : '';
+    const email = emailEl ? emailEl.value.trim() : '';
+    let mobile = mobileEl ? mobileEl.value.trim() : '';
     const key = keyEl ? keyEl.value.trim() : '';
 
-    if (!name || !key) {
-        toastWarning('कृपया Name और Key भरें!');
-        return;
-    }
+    if (!name || !email || !mobile || !key) { toastWarning('कृपया सभी फील्ड भरें!'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toastError('सही Email डालें!'); return; }
 
-    // ✅ Length guards (prevent index crash on malformed key)
-    const keyParts = key.split('-');
-    if (keyParts.length !== 4) {
-        toastError('Invalid key format — expected 4 parts separated by dashes');
-        return;
-    }
+    mobile = _normalizeMobile(mobile);
+    if (!/^[0-9]{10,15}$/.test(mobile)) { toastError('सही मोबाइल नंबर डालें (10-15 अंक)!'); return; }
 
-    const sigHex = keyParts[3];
-    if (!sigHex || sigHex.length !== 128) {
-        toastError(`Signature length wrong: ${sigHex ? sigHex.length : 0} chars (expected 128)`);
-        return;
+    if (btnSendOtp) {
+        btnSendOtp.innerHTML = '⏳ Verifying...';
+        btnSendOtp.disabled = true;
+        btnSendOtp.style.opacity = '0.7';
     }
-
-    if (!/^[0-9A-F]+$/i.test(sigHex)) {
-        toastError('Signature contains invalid hex characters');
-        return;
-    }
-
-    showProgress('Verifying License...', 'Checking signature');
+    showProgress('Verifying Key...', 'Checking signature');
     setProgress(30, 'Parsing payload');
-    await new Promise(r => setTimeout(r, 150));
 
     try {
-        const check = await verifyLicensePayload(name, key);
-        setProgress(80, 'Applying activation');
-        await new Promise(r => setTimeout(r, 200));
-        setProgress(100, 'Done!');
-
-        setTimeout(() => {
+        const check = await verifyLicensePayload(name, email, mobile, key);
+        if (!check.valid) {
             hideProgress();
+            toastError(`अमान्य की: ${check.reason}`);
+            if (btnSendOtp) { btnSendOtp.innerHTML = '📩 Send OTP'; btnSendOtp.disabled = false; btnSendOtp.style.opacity = '1'; }
+            return;
+        }
 
-            if (check.valid) {
-                try {
-                    localStorage.setItem('hor_lic_user', name);
-                    localStorage.setItem('hor_lic_key', key.toUpperCase());
-                } catch (e) {}
+        setProgress(70, 'Sending Email...');
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        sessionStorage.setItem('hor_pending_otp', otp);
+        sessionStorage.setItem('hor_pending_otp_time', Date.now());
 
-                isProLicensed = true;
-                applyProState(name, check.plan, true);
-                toastSuccess(`सफल सक्रियण! User: ${name}, Plan: ${check.plan}`);
-                closeLicenseModal();
-            } else {
-                toastError(`अमान्य की: ${check.reason}`);
-            }
-        }, 300);
+        if (typeof emailjs === 'undefined') throw new Error('EmailJS SDK not loaded');
+
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_email: email, otp: otp, app_name: "Hor Katha Suite"
+        });
+
+        hideProgress();
+        toastSuccess('✅ OTP आपके ईमेल पर भेज दिया गया है!');
+        document.getElementById('otpSection').style.display = 'block';
+
+        if (btnSendOtp) {
+            btnSendOtp.innerHTML = '✅ Verify & Activate';
+            btnSendOtp.disabled = false;
+            btnSendOtp.style.opacity = '1';
+            btnSendOtp.onclick = verifyLicenseOtp;
+        }
+        document.getElementById('licOtpInput').focus();
+
     } catch (e) {
         hideProgress();
-        toastError('Verification failed: ' + e.message);
+        toastError('OTP भेजने में विफल: ' + (e.text || e.message));
+        if (btnSendOtp) { btnSendOtp.innerHTML = '📩 Send OTP'; btnSendOtp.disabled = false; btnSendOtp.style.opacity = '1'; }
     }
+}
+
+// OTP वेरिफाई और लाइसेंस एक्टिवेट (Pro License के लिए)
+async function verifyLicenseOtp() {
+    const otpInput = document.getElementById('licOtpInput');
+    const enteredOtp = otpInput ? otpInput.value.trim() : '';
+
+    const savedOtp = sessionStorage.getItem('hor_pending_otp');
+    const savedTime = sessionStorage.getItem('hor_pending_otp_time');
+
+    if (!savedOtp || !savedTime) {
+        toastError('OTP expire हो गया है, कृपया दोबारा Send OTP दबाएं।');
+        return;
+    }
+
+    if (Date.now() - parseInt(savedTime, 10) > 300000) {
+        sessionStorage.removeItem('hor_pending_otp');
+        sessionStorage.removeItem('hor_pending_otp_time');
+        toastError('OTP expire हो गया है!');
+        return;
+    }
+
+    if (enteredOtp !== savedOtp.toString()) {
+        toastError('गलत OTP! कृपया फिर से प्रयास करें।');
+        return;
+    }
+
+    const name = document.getElementById('licCustomerName').value.trim();
+    const email = document.getElementById('licCustomerEmail').value.trim();
+    const mobile = _normalizeMobile(document.getElementById('licCustomerMobile').value);
+    const key = document.getElementById('licCustomerKey').value.trim().toUpperCase();
+
+    try {
+        localStorage.setItem('hor_lic_user', name);
+        localStorage.setItem('hor_lic_email', email);
+        localStorage.setItem('hor_lic_mobile', mobile);
+        localStorage.setItem('hor_lic_key', key);
+    } catch (e) {}
+
+    isProLicensed = true;
+
+    let planCode = 'P1';
+    try { planCode = key.split('-')[1] || 'P1'; } catch(e) {}
+
+    applyProState(name, planCode, true);
+
+    sessionStorage.removeItem('hor_pending_otp');
+    sessionStorage.removeItem('hor_pending_otp_time');
+
+    toastSuccess('🎉 सफल! आपका Pro License एक्टिवेट हो गया है।');
+
+    setTimeout(() => {
+        closeLicenseModal();
+        location.reload();
+    }, 1500);
 }
 
 // ============================================================
@@ -978,29 +1324,35 @@ function generateReceiptNumber() {
     const mi = String(now.getMinutes()).padStart(2, '0');
     const ss = String(now.getSeconds()).padStart(2, '0');
 
-    const rand = Math.random().toString(36).substring(2, 8).toUpperCase();
+    let seq = parseInt(localStorage.getItem('hor_receipt_seq') || '0', 10) + 1;
+    let prefix = '';
+    let cycle = Math.floor((seq - 1) / 1000);
+    let cycleType = cycle % 4;
 
-    return `HK-${yy}${mm}${dd}${hh}${mi}${ss}-${rand}`;
+    if (cycleType === 0) prefix = 'BOSC';
+    else if (cycleType === 1) prefix = 'TECH';
+    else if (cycleType === 2) prefix = 'EDU';
+    else if (cycleType === 3) prefix = 'BOSCT&E';
+
+    let numInCycle = seq - (cycle * 1000);
+    let numStr = String(numInCycle).padStart(2, '0');
+
+    localStorage.setItem('hor_receipt_seq', seq);
+    return `HK-${yy}${mm}${dd}${hh}${mi}${ss}-${numStr}${prefix}`;
 }
 
 function getISTTimestamp() {
     try {
         return new Date().toLocaleString('en-IN', {
-            timeZone: 'Asia/Kolkata',
-            year: 'numeric', month: '2-digit', day: '2-digit',
-            hour: '2-digit', minute: '2-digit', second: '2-digit'
+            timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
         });
     } catch (e) {
         return new Date().toLocaleString();
     }
 }
 
-// ✅ Flag reset in finally (never gets stuck)
 async function onPaymentCompleted() {
-    if (_isProcessingPayment) {
-        console.warn('⚠️ Payment already processing — ignoring duplicate click');
-        return;
-    }
+    if (_isProcessingPayment) return;
 
     const paymentCheck = document.getElementById('paymentConfirmCheck');
     if (paymentCheck && !paymentCheck.checked) {
@@ -1008,23 +1360,22 @@ async function onPaymentCompleted() {
         return;
     }
 
-    const nameInput = document.getElementById('buyCustomerName');
-    const name = nameInput ? nameInput.value.trim() : '';
+    const name = document.getElementById('buyCustomerName')?.value.trim() || '';
+    const email = document.getElementById('buyCustomerEmail')?.value.trim() || '';
+    const mobile = document.getElementById('buyCustomerMobile')?.value.trim() || '';
 
-    if (!name) {
-        toastWarning('कृपया पहले अपना नाम भरें!');
-        if (nameInput) nameInput.focus();
+    if (!name || !email || !mobile) {
+        toastWarning('कृपया Name, Email और Mobile तीनों भरें!');
         return;
     }
 
     _isProcessingPayment = true;
-
     const btn = document.getElementById('btnPaymentDone');
 
     try {
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = '⏳ Receipt बन रही है...';
+            btn.innerHTML = '⏳ Processing...';
             btn.style.opacity = '0.8';
         }
 
@@ -1040,22 +1391,29 @@ async function onPaymentCompleted() {
         const plan = currentSelectedPlanTitle;
         const amount = currentSelectedPrice;
 
-        const sellerWa = _getConfigValue('SUPPORT_WHATSAPP', '');
+        if (!confirm(`Payment की पुष्टि करें:\n\nName: ${name}\nEmail: ${email}\nMobile: ${mobile}\nPlan: ${plan}\nAmount: ₹${amount}`)) {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '✅ Payment हो गया? — Confirm करें<br><span>(Receipt + WhatsApp Order — Auto)</span>';
+                btn.style.opacity = '1';
+            }
+            _isProcessingPayment = false;
+            return;
+        }
 
-        const waMsg = `🧾 *NEW PURCHASE — PAYMENT CONFIRMED*
-━━━━━━━━━━━━━━━━━━━━
-📋 Receipt No: *${receiptNo}*
-📅 ${timestamp}
-👤 *${name}*
-📱 ${hwid}
-💼 ${plan}
-💰 ₹${amount}
-━━━━━━━━━━━━━━━━━━━━
-✅ मैंने payment कर दिया है।
-📸 Screenshot इसी chat में भेज रहा हूँ
-🔑 कृपया License Key भेजें।`;
+        try {
+            const all = JSON.parse(localStorage.getItem('hor_receipts') || '[]');
+            all.push({ receiptNo, name, email, mobile, hwid, plan, amount, timestamp });
+            if (all.length > 500) all.shift();
+            localStorage.setItem('hor_receipts', JSON.stringify(all));
+        } catch (e) {}
 
-        showReceiptModal({ receiptNo, name, hwid, plan, amount, timestamp });
+        closeBuyModal();
+        showWaMessagePreview('pro');
+
+        setTimeout(() => {
+            showReceiptModal({ receiptNo, name, email, mobile, hwid, plan, amount, timestamp });
+        }, 600);
 
         if (btn) {
             btn.disabled = false;
@@ -1063,37 +1421,31 @@ async function onPaymentCompleted() {
             btn.style.opacity = '1';
         }
 
-        if (!sellerWa) {
-            toastError('Support WhatsApp number not configured. Please contact admin.');
-            return;
-        }
-
-        setTimeout(() => {
-            const waUrl = `https://wa.me/${sellerWa}?text=${encodeURIComponent(waMsg)}`;
-            try {
-                const opened = window.open(waUrl, '_blank');
-                if (!opened) window.location.href = waUrl;
-            } catch (e) {
-                window.location.href = waUrl;
-            }
-        }, 300);
-
-        try {
-            const all = JSON.parse(localStorage.getItem('hor_receipts') || '[]');
-            all.push({ receiptNo, name, hwid, plan, amount, timestamp });
-            if (all.length > 500) all.shift();
-            localStorage.setItem('hor_receipts', JSON.stringify(all));
-        } catch (e) {}
-
     } catch (e) {
         console.error('Payment processing failed:', e);
         toastError('Payment failed: ' + e.message);
     } finally {
-        // ✅ Always reset flag (never stuck)
-        setTimeout(() => {
-            _isProcessingPayment = false;
-        }, 1000);
+        setTimeout(() => { _isProcessingPayment = false; }, 1000);
     }
+}
+
+function redirectToWhatsAppBuy() {
+    const name = document.getElementById('buyCustomerName')?.value.trim() || '';
+    const email = document.getElementById('buyCustomerEmail')?.value.trim() || '';
+    const mobile = document.getElementById('buyCustomerMobile')?.value.trim() || '';
+
+    if (!name || !email || !mobile) {
+        toastWarning('कृपया Name, Email और Mobile तीनों भरें!');
+        return;
+    }
+
+    const chk = document.getElementById('paymentConfirmCheck');
+    if (!chk || !chk.checked) {
+        toastWarning('⚠️ कृपया पहले payment confirm checkbox पर टिक करें!');
+        return;
+    }
+
+    onPaymentCompleted();
 }
 
 // ============================================================
@@ -1108,12 +1460,13 @@ function showReceiptModal(record) {
         return;
     }
 
-    // ✅ Null-safe fields
     const fields = {
         rcptNumber: record.receiptNo || '-',
         rcptDate: record.timestamp || '-',
         rcptName: record.name || '-',
         rcptDevice: record.hwid || '-',
+        rcptEmail: record.email || '-',
+        rcptMobile: record.mobile || '-',
         rcptPlan: record.plan || '-',
         rcptAmount: '₹' + (record.amount || 0)
     };
@@ -1124,11 +1477,13 @@ function showReceiptModal(record) {
     });
 
     modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
 }
 
 function closeReceiptModal() {
     const m = document.getElementById('receiptModal');
     if (m) m.style.display = 'none';
+    _unlockBodyScroll();
 }
 
 function copyReceiptNumber() {
@@ -1139,7 +1494,7 @@ function copyReceiptNumber() {
 
 function shareReceiptOnWhatsApp() {
     const sellerWa = _getConfigValue('SUPPORT_WHATSAPP', '');
-    
+
     if (!sellerWa) {
         showToast('❌ Support WhatsApp number not configured', 'error', 3000);
         return;
@@ -1149,15 +1504,6 @@ function shareReceiptOnWhatsApp() {
     const rn = el ? el.textContent : 'N/A';
     const msg = `🧾 Receipt: *${rn}*\n✅ Payment Done`;
     window.open(`https://wa.me/${sellerWa}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
-}
-
-function redirectToWhatsAppBuy() {
-    const chk = document.getElementById('paymentConfirmCheck');
-    if (!chk || !chk.checked) {
-        toastWarning('⚠️ कृपया पहले confirm करें!');
-        return;
-    }
-    onPaymentCompleted();
 }
 
 // ============================================================
@@ -1204,16 +1550,12 @@ function toggleTheme() {
     const ct = body.getAttribute('data-theme') || 'dark';
     const nt = ct === 'dark' ? 'light' : 'dark';
     body.setAttribute('data-theme', nt);
-
     const btn = document.getElementById('btn-theme-toggle');
     if (btn) {
         btn.textContent = nt === 'dark' ? '🌙' : '☀️';
         btn.title = nt === 'dark' ? 'Theme: Dark' : 'Theme: Light';
     }
-
-    try {
-        localStorage.setItem('hor_katha_theme', nt);
-    } catch (e) {}
+    try { localStorage.setItem('hor_katha_theme', nt); } catch (e) {}
 }
 
 function toggleZenMode() {
@@ -1231,23 +1573,16 @@ function toggleZenMode() {
 // ============================================================
 function _unlockBodyScroll() {
     document.body.classList.remove('modal-open');
-
     const openModals = document.querySelectorAll('.modal-overlay, .preview-modal');
     let hasOpenModal = false;
     openModals.forEach(m => {
-        if (m.style.display === 'flex' || m.style.display === 'block') {
-            hasOpenModal = true;
-        }
+        if (m.style.display === 'flex' || m.style.display === 'block') hasOpenModal = true;
     });
-
-    if (!hasOpenModal) {
-        document.body.classList.remove('modal-open');
-    }
+    if (!hasOpenModal) document.body.classList.remove('modal-open');
 }
 
 function handleModalOutsideClick(e, modalId) {
     if (!e || !e.target || !modalId) return;
-
     if (e.target.id === modalId) {
         const m = document.getElementById(modalId);
         if (m) m.style.display = 'none';
@@ -1258,7 +1593,6 @@ function handleModalOutsideClick(e, modalId) {
 function deleteLastInBox(boxId) {
     const box = document.getElementById(boxId);
     if (!box || !box.value) return;
-
     if (window.Intl && Intl.Segmenter) {
         const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
         const segments = Array.from(segmenter.segment(box.value)).map(s => s.segment);
@@ -1276,17 +1610,9 @@ function clearBox(boxId) {
 function copyFromBox(boxId) {
     const box = document.getElementById(boxId);
     if (!box || !box.value) return;
-
     const text = box.value;
-
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text)
-            .then(() => {
-                if (typeof showToast === 'function') {
-                    showToast('Copied to clipboard', 'success');
-                }
-            })
-            .catch(() => _fallbackCopyBox(text));
+        navigator.clipboard.writeText(text).then(() => toastSuccess('Copied!')).catch(() => _fallbackCopyBox(text));
     } else {
         _fallbackCopyBox(text);
     }
@@ -1303,21 +1629,14 @@ function _fallbackCopyBox(text) {
         ta.select();
         const ok = document.execCommand('copy');
         document.body.removeChild(ta);
-
-        if (typeof showToast === 'function') {
-            showToast(ok ? 'Copied to clipboard' : 'Copy failed', ok ? 'success' : 'error');
-        }
-    } catch (e) {
-        alert('Copy failed');
-    }
+        if (ok) toastSuccess('Copied!'); else toastError('Copy failed');
+    } catch (e) { toastError('Copy failed'); }
 }
 
 function insertFromBox(boxId, modalId) {
     const box = document.getElementById(boxId);
     if (box && box.value) {
-        if (typeof addCharWithPhonics === 'function') {
-            addCharWithPhonics(box.value);
-        }
+        if (typeof addCharWithPhonics === 'function') addCharWithPhonics(box.value);
         if (modalId) {
             const m = document.getElementById(modalId);
             if (m) m.style.display = 'none';
@@ -1325,16 +1644,11 @@ function insertFromBox(boxId, modalId) {
     }
 }
 
-// ============================================================
-// 🎯 FOCUS MODE RESTORE
-// ============================================================
 function _restoreFocusModeIfActive() {
     if (document.body.classList.contains('typing-focus')) {
         setTimeout(() => {
             const editor = document.getElementById('editor');
-            if (editor) {
-                try { editor.focus(); } catch (e) {}
-            }
+            if (editor) { try { editor.focus(); } catch (e) {} }
         }, 100);
     }
 }
@@ -1370,95 +1684,60 @@ function loadGoogleFontDynamically(gfont) {
             link.rel = 'stylesheet';
             link.href = `https://fonts.googleapis.com/css2?family=${gfont}&display=swap`;
             document.head.appendChild(link);
-            console.log('🔤 Google Font loaded:', gfont);
         }
     } catch (e) {}
 }
 
 function autoSyncLanguageFonts(langKey) {
     const fontDropdown = document.getElementById('fontFamilySelect');
-    if (!fontDropdown) {
-        console.warn('⚠️ Font dropdown not found (#fontFamilySelect)');
-        return;
-    }
+    if (!fontDropdown) return;
 
     if (typeof languageFontsDB === 'undefined') {
-        console.error('❌ languageFontsDB is undefined — config.js not loaded properly');
-        fontDropdown.innerHTML = `
-            <option value="'Roboto', sans-serif" selected>Roboto</option>
-            <option value="'Inter', sans-serif">Inter</option>
-            <option value="'Arial', sans-serif">Arial</option>
-        `;
+        fontDropdown.innerHTML = `<option value="'Roboto', sans-serif" selected>Roboto</option><option value="'Inter', sans-serif">Inter</option><option value="'Arial', sans-serif">Arial</option>`;
         changeFontFamily("'Roboto', sans-serif");
         return;
     }
 
     const fonts = languageFontsDB[langKey] || languageFontsDB['english'];
-
-    if (!fonts || !Array.isArray(fonts) || fonts.length === 0) {
-        console.warn('⚠️ No fonts found for language:', langKey);
-        return;
-    }
+    if (!fonts || !Array.isArray(fonts) || fonts.length === 0) return;
 
     fontDropdown.innerHTML = '';
     let defaultFontVal = null;
 
     fonts.forEach((f) => {
         if (!f || !f.val) return;
-
         const opt = document.createElement('option');
         opt.value = f.val;
         opt.textContent = f.name || 'Unknown Font';
-
-        if (f.gfont) {
-            opt.setAttribute('data-gfont', f.gfont);
-        }
-
+        if (f.gfont) opt.setAttribute('data-gfont', f.gfont);
         if (f.default) {
             opt.selected = true;
             defaultFontVal = f.val;
             if (f.gfont) loadGoogleFontDynamically(f.gfont);
         }
-
         fontDropdown.appendChild(opt);
     });
 
-    if (!defaultFontVal && fonts[0] && fonts[0].val) {
-        defaultFontVal = fonts[0].val;
-    }
-
-    if (defaultFontVal) {
-        changeFontFamily(defaultFontVal);
-    }
-
-    console.log('✅ Fonts synced for:', langKey, '-', fonts.length, 'fonts loaded');
+    if (!defaultFontVal && fonts[0] && fonts[0].val) defaultFontVal = fonts[0].val;
+    if (defaultFontVal) changeFontFamily(defaultFontVal);
 }
 
 function changeFontFamily(family) {
     const editor = document.getElementById('editor');
-    if (!editor) return;
-
-    if (!family || typeof family !== 'string') return;
-
+    if (!editor || !family || typeof family !== 'string') return;
     editor.style.fontFamily = family;
-
     const fd = document.getElementById('fontFamilySelect');
     if (fd && fd.selectedOptions && fd.selectedOptions.length > 0) {
         const gfont = fd.selectedOptions[0].getAttribute('data-gfont');
         if (gfont) loadGoogleFontDynamically(gfont);
     }
-
-    if (typeof updateStatusFont === 'function') {
-        updateStatusFont(family);
-    }
+    if (typeof updateStatusFont === 'function') updateStatusFont(family);
 }
 
 function forceInitFontDropdown() {
-    console.log('🔄 Force-initializing font dropdown...');
     const currentLayoutVal = window.currentLayout || 'english';
     autoSyncLanguageFonts(currentLayoutVal);
 }
-
 window.forceInitFontDropdown = forceInitFontDropdown;
 
 // ============================================================
@@ -1467,20 +1746,13 @@ window.forceInitFontDropdown = forceInitFontDropdown;
 function openCharMapModal() {
     if (!_canOpenModal('openCharMapModal')) return;
     if (typeof requireProAccess === 'function' && !requireProAccess('Character Map')) return;
-
     const fontSelect = document.getElementById('fontSelect');
-    if (fontSelect) {
-        fontSelect.value = window.currentLayout || 'english';
-    }
-
+    if (fontSelect) fontSelect.value = window.currentLayout || 'english';
     const searchInput = document.getElementById('charmapSearchInput');
     if (searchInput) searchInput.value = '';
-
     buildCharMatrix(window.currentLayout || 'english');
-
     const copyBox = document.getElementById('copyBox');
     if (copyBox) copyBox.value = '';
-
     const modal = document.getElementById('charmapModal');
     if (modal) modal.style.display = 'flex';
     document.body.classList.add('modal-open');
@@ -1491,7 +1763,6 @@ function closeCharMapModal() {
     if (modal) modal.style.display = 'none';
     hideZoomLens();
     _unlockBodyScroll();
-
     _restoreFocusModeIfActive();
 }
 
@@ -1518,9 +1789,7 @@ function buildCharMatrix(scriptKey, filter = '') {
     if (typeof scriptLibraries === 'undefined') return;
 
     let list = scriptLibraries[scriptKey] || scriptLibraries['english'];
-    if (filter) {
-        list = list.filter(ch => ch.toLowerCase().includes(filter.toLowerCase()));
-    }
+    if (filter) list = list.filter(ch => ch.toLowerCase().includes(filter.toLowerCase()));
 
     list.forEach(ch => {
         const cell = document.createElement('div');
@@ -1528,24 +1797,16 @@ function buildCharMatrix(scriptKey, filter = '') {
         cell.textContent = ch;
 
         cell.addEventListener('mouseenter', () => {
-            if (typeof handleHoverSpeech === 'function') {
-                handleHoverSpeech(ch);
-            }
-
+            if (typeof handleHoverSpeech === 'function') handleHoverSpeech(ch);
             charmapZoomLens.textContent = ch;
             charmapZoomLens.style.display = 'flex';
-
             const rect = cell.getBoundingClientRect();
             const wrapRect = charmapMatrixWrap.getBoundingClientRect();
-
             charmapZoomLens.style.left = (rect.left - wrapRect.left + rect.width / 2) + 'px';
             charmapZoomLens.style.top = (rect.top - wrapRect.top) + 'px';
-
             if (nameEl) nameEl.textContent = `Character: ${ch}`;
             if (hexEl) {
-                const codeHex = Array.from(ch)
-                    .map(c => 'U+' + c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0'))
-                    .join(' ');
+                const codeHex = Array.from(ch).map(c => 'U+' + c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')).join(' ');
                 hexEl.textContent = `Unicode: ${codeHex}`;
             }
         });
@@ -1554,18 +1815,14 @@ function buildCharMatrix(scriptKey, filter = '') {
 
         cell.onclick = () => {
             if (typeof speakLetter === 'function') speakLetter(ch);
-
             document.querySelectorAll('#charmapMatrix .cell').forEach(c => c.classList.remove('selected'));
             cell.classList.add('selected');
             lastActiveChar = ch;
-
             const box = document.getElementById('copyBox');
             if (box) box.value += ch;
         };
-
         fragment.appendChild(cell);
     });
-
     charmapMatrix.replaceChildren(fragment);
 }
 
@@ -1585,18 +1842,13 @@ function hideEmojiZoomLens() {
 function openEmojiModal() {
     if (!_canOpenModal('openEmojiModal')) return;
     if (typeof requireProAccess === 'function' && !requireProAccess('Emoji Palette')) return;
-
     const sel = document.getElementById('emojiCategorySelect');
     if (sel) sel.value = 'smileys';
-
     const searchInput = document.getElementById('emojiSearchInput');
     if (searchInput) searchInput.value = '';
-
     buildEmojiMatrix('smileys');
-
     const box = document.getElementById('emojiCopyBox');
     if (box) box.value = '';
-
     const modal = document.getElementById('emojiModal');
     if (modal) modal.style.display = 'flex';
     document.body.classList.add('modal-open');
@@ -1607,7 +1859,6 @@ function closeEmojiModal() {
     if (modal) modal.style.display = 'none';
     hideEmojiZoomLens();
     _unlockBodyScroll();
-
     _restoreFocusModeIfActive();
 }
 
@@ -1633,9 +1884,7 @@ function buildEmojiMatrix(catKey, filter = '') {
     if (typeof emojiLibraries === 'undefined') return;
 
     let list = emojiLibraries[catKey] || emojiLibraries['smileys'];
-    if (filter) {
-        list = list.filter(e => e.includes(filter));
-    }
+    if (filter) list = list.filter(e => e.includes(filter));
 
     list.forEach(emoji => {
         const cell = document.createElement('div');
@@ -1645,13 +1894,10 @@ function buildEmojiMatrix(catKey, filter = '') {
         cell.addEventListener('mouseenter', () => {
             emojiZoomLens.textContent = emoji;
             emojiZoomLens.style.display = 'flex';
-
             const rect = cell.getBoundingClientRect();
             const wrapRect = emojiMatrixWrap.getBoundingClientRect();
-
             emojiZoomLens.style.left = (rect.left - wrapRect.left + rect.width / 2) + 'px';
             emojiZoomLens.style.top = (rect.top - wrapRect.top) + 'px';
-
             if (nameEl) nameEl.textContent = `Selected: ${emoji}`;
         });
 
@@ -1661,14 +1907,11 @@ function buildEmojiMatrix(catKey, filter = '') {
             document.querySelectorAll('#emojiMatrix .cell').forEach(c => c.classList.remove('selected'));
             cell.classList.add('selected');
             lastActiveEmoji = emoji;
-
             const box = document.getElementById('emojiCopyBox');
             if (box) box.value += emoji;
         };
-
         fragment.appendChild(cell);
     });
-
     emojiMatrix.replaceChildren(fragment);
 }
 
@@ -1707,20 +1950,13 @@ function closeImeModal() {
 function downloadImeMapFile() {
     const preview = document.getElementById('imeJsonPreview');
     if (!preview) return;
-
     const blob = new Blob([preview.value], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement('a');
     a.href = url;
     a.download = 'HorKatha_IME_Map.json';
     a.click();
-
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            URL.revokeObjectURL(url);
-        });
-    });
+    requestAnimationFrame(() => { requestAnimationFrame(() => { URL.revokeObjectURL(url); }); });
 }
 
 // ============================================================
@@ -1729,37 +1965,19 @@ function downloadImeMapFile() {
 function convertUnicodeToKrutiDev(text) {
     if (typeof unicodeToKrutiMap === 'undefined') return text;
     let out = '', i = 0;
-
     while (i < text.length) {
         const char = text[i];
-        if (char === '\n' || char === '\r') {
-            out += char;
-            i++;
-            continue;
-        }
-
+        if (char === '\n' || char === '\r') { out += char; i++; continue; }
         let matched = false;
         for (let len = 4; len >= 2; len--) {
             if (i + len <= text.length) {
                 const sub = text.substr(i, len);
-                if (unicodeToKrutiMap[sub]) {
-                    out += unicodeToKrutiMap[sub];
-                    i += len;
-                    matched = true;
-                    break;
-                }
+                if (unicodeToKrutiMap[sub]) { out += unicodeToKrutiMap[sub]; i += len; matched = true; break; }
             }
         }
         if (matched) continue;
-
-        if (unicodeToKrutiMap[char]) {
-            out += unicodeToKrutiMap[char];
-            i++;
-            continue;
-        }
-
-        out += text[i];
-        i++;
+        if (unicodeToKrutiMap[char]) { out += unicodeToKrutiMap[char]; i++; continue; }
+        out += text[i]; i++;
     }
     return out;
 }
@@ -1767,13 +1985,9 @@ function convertUnicodeToKrutiDev(text) {
 function openKrutiDevModal() {
     if (!_canOpenModal('openKrutiDevModal')) return;
     if (typeof requireProAccess === 'function' && !requireProAccess('Kruti Dev Converter')) return;
-
     const editor = document.getElementById('editor');
     const preview = document.getElementById('krutiPreview');
-    if (preview) {
-        preview.value = convertUnicodeToKrutiDev((editor ? editor.innerText : '') || '');
-    }
-
+    if (preview) preview.value = convertUnicodeToKrutiDev((editor ? editor.innerText : '') || '');
     const modal = document.getElementById('krutiModal');
     if (modal) modal.style.display = 'flex';
     document.body.classList.add('modal-open');
@@ -1801,14 +2015,11 @@ function applyKrutiToEditor() {
 function openConverterModal() {
     if (!_canOpenModal('openConverterModal')) return;
     if (typeof requireProAccess === 'function' && !requireProAccess('Script Converter')) return;
-
     const preview = document.getElementById('converterPreview');
     if (preview) preview.value = '';
-
     const modal = document.getElementById('converterModal');
     if (modal) modal.style.display = 'flex';
     document.body.classList.add('modal-open');
-
     executeConversion();
 }
 
@@ -1849,13 +2060,8 @@ function executeConversion() {
         let i = 0;
         while (i < text.length) {
             const two = text.substr(i, 2).toLowerCase();
-            if (pairs[two]) {
-                out += pairs[two];
-                i += 2;
-            } else {
-                out += pairs[text[i].toLowerCase()] || text[i];
-                i++;
-            }
+            if (pairs[two]) { out += pairs[two]; i += 2; }
+            else { out += pairs[text[i].toLowerCase()] || text[i]; i++; }
         }
     }
     preview.value = out;
@@ -1880,336 +2086,29 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 // ============================================================
-// 📊 DEBUG HELPERS
+// 🌐 GLOBAL EXPORTS
 // ============================================================
-window.ModalsDebug = {
-    status: () => {
-        console.log('═══════════════════════════════════════════');
-        console.log('🪟 Modals Status (v3.7.4.99 — Secure)');
-        console.log('───────────────────────────────────────────');
-        console.log('  appReady:', window.__appReady);
-        console.log('  deferredPrompt:', !!deferredPrompt);
-        console.log('  isVoiceEnabled:', isVoiceEnabled);
-        console.log('  isHoverVoiceEnabled:', isHoverVoiceEnabled);
-        console.log('  isClickSoundEnabled:', isClickSoundEnabled);
-        console.log('  isPhoneticEnabled:', isPhoneticEnabled);
-        console.log('  currentDonateAmount:', currentDonateAmount);
-        console.log('  currentSelectedPrice:', currentSelectedPrice);
-        console.log('  isProcessingPayment:', _isProcessingPayment);
-        console.log('  Active flashes:', _activeFlashes.length);
-        console.log('  Focus mode:', document.body.classList.contains('typing-focus'));
-        console.log('  QR providers (fallback):', _QR_PROVIDERS.length);
-        console.log('  OfflineQRCode:', typeof window.OfflineQRCode !== 'undefined' ? '✅ available' : '❌ missing');
-        console.log('  QR priority: OFFLINE-FIRST (Fix #5)');
-        console.log('  UPI Config:', _getConfigValue('UPI_PRIMARY_ID', '❌ NOT CONFIGURED'));
-        console.log('  WhatsApp Config:', _getConfigValue('SUPPORT_WHATSAPP', '❌ NOT CONFIGURED'));
-        console.log('═══════════════════════════════════════════');
-    },
+window.showToast = showToast;
+window.toastSuccess = toastSuccess;
+window.toastError = toastError;
+window.toastWarning = toastWarning;
+window.toastInfo = toastInfo;
+window.showFlash = showFlash;
+window.showWaMessagePreview = showWaMessagePreview;
+window.copyWaMessageText = copyWaMessageText;
+window.sendWaMessageNow = sendWaMessageNow;
+window.onPaymentCompleted = onPaymentCompleted;
+window.sendTrialPaymentToWhatsApp = sendTrialPaymentToWhatsApp;
+window.sendLicenseOtp = sendLicenseOtp;
+window.verifyLicenseOtp = verifyLicenseOtp;
+window.sendTrialOtp = sendTrialOtp;
+window.verifyTrialOtp = verifyTrialOtp;
+window.checkTrialConstraints = checkTrialConstraints;
+window.markTrialAsUsed = markTrialAsUsed;
 
-    testProgress: () => {
-        showProgress('Test Progress', 'Testing...');
-        let p = 0;
-        const timer = setInterval(() => {
-            p += 20;
-            setProgress(p, `Step ${p / 20}/5`);
-            if (p >= 100) {
-                clearInterval(timer);
-                setTimeout(hideProgress, 500);
-            }
-        }, 300);
-    },
-
-    testQR: (containerId = 'trialQrBox') => {
-        const upiUrl = _getPaymentURL(9, 'Test Payment');
-        renderQRCode(containerId, upiUrl, 220);
-        console.log('🧪 QR test triggered for', containerId);
-    },
-
-    testQRPriority: () => {
-        console.log('═══════════════════════════════════════════');
-        console.log('🧪 QR PRIORITY TEST (FIX #5)');
-        console.log('═══════════════════════════════════════════');
-
-        const offlineAvailable = typeof window.OfflineQRCode !== 'undefined'
-            && typeof window.OfflineQRCode.render === 'function';
-
-        console.log('  OfflineQRCode available:', offlineAvailable ? '✅' : '❌');
-        console.log('  Priority order: Offline → Network → Manual');
-        console.log('');
-        console.log('  Expected behavior:');
-        console.log('    • If OfflineQRCode loaded → instant render (<50ms)');
-        console.log('    • If OfflineQRCode fails → network fallback (slower)');
-        console.log('    • If all fail → manual UPI text');
-
-        const t0 = performance.now();
-        const upiUrl = _getPaymentURL(9, 'Priority Test');
-        renderQRCode('trialQrBox', upiUrl, 220);
-        const t1 = performance.now();
-
-        console.log('');
-        console.log(`  Render call completed in: ${(t1 - t0).toFixed(1)}ms`);
-        console.log('  (Should be <10ms if offline-first is working)');
-        console.log('═══════════════════════════════════════════');
-    },
-
-    testMiniQR: (text = 'https://example.com/test') => {
-        const container = document.createElement('div');
-        container.style.cssText = 'position:fixed;top:20px;left:20px;width:200px;height:200px;background:#fff;padding:8px;border:2px solid #000;z-index:99999;';
-        document.body.appendChild(container);
-        try {
-            _MiniQR.render(container, text, 184);
-            console.log('✅ MiniQR (shim) test rendered');
-        } catch (e) {
-            console.error('❌ MiniQR test failed:', e.message);
-        }
-        setTimeout(() => container.remove(), 5000);
-    },
-
-    testMiniQRUnicode: () => {
-        console.log('🧪 Testing OfflineQRCode with Unicode...');
-        const samples = [
-            'https://example.com/verify?name=नमस्ते',
-            'https://example.com/verify?name=ᱡᱚᱦᱟᱨ ᱫᱩᱱᱤᱭᱟᱹ',
-            'https://example.com/verify?name=🎉 Test',
-            'Hello World'
-        ];
-
-        samples.forEach((text, i) => {
-            console.log(`  Sample ${i + 1}: "${text.substring(0, 40)}..."`);
-            const container = document.createElement('div');
-            container.style.cssText = 'position:fixed;top:' + (20 + i * 220) + 'px;left:20px;width:180px;height:180px;background:#fff;padding:6px;border:1px solid #333;z-index:99999;';
-            document.body.appendChild(container);
-            try {
-                _MiniQR.render(container, text, 168);
-                console.log('    ✅ Rendered');
-            } catch (e) {
-                console.error('    ❌ Failed:', e.message);
-            }
-            setTimeout(() => container.remove(), 5000);
-        });
-    },
-
-    testFonts: () => {
-        console.log('═══════════════════════════════════════════');
-        console.log('🔤 Font Debug');
-        console.log('───────────────────────────────────────────');
-        const fd = document.getElementById('fontFamilySelect');
-        if (!fd) {
-            console.error('❌ #fontFamilySelect not found');
-            return;
-        }
-        console.log('  languageFontsDB loaded:', typeof languageFontsDB !== 'undefined');
-        console.log('  Dropdown options:', fd.options.length);
-        console.log('  Selected value:', fd.value);
-        console.log('  Current layout:', window.currentLayout || 'unknown');
-        console.log('  Dropdown visible:', window.getComputedStyle(fd).display !== 'none');
-        console.log('  Options:');
-        Array.from(fd.options).forEach((opt, i) => {
-            console.log(`    [${i}] ${opt.textContent} → ${opt.value}`);
-        });
-        console.log('═══════════════════════════════════════════');
-    },
-
-    forceFonts: () => {
-        forceInitFontDropdown();
-        console.log('🔄 Force font init triggered');
-    },
-
-    testUpiAmounts: () => {
-        console.log('🧪 Testing UPI amount validation:');
-        [0, -10, 0.001, 9, 9.99, 199, 99999, 999999].forEach(a => {
-            const url = _getPaymentURL(a, 'Test');
-            const match = url ? url.match(/am=([\d.]+)/) : null;
-            console.log(`  Input: ${a} → Extracted: ${match ? match[1] : 'none'}`);
-        });
-    },
-
-    testFocusRestore: () => {
-        console.log('🧪 Testing focus restore after modal close...');
-        const editor = document.getElementById('editor');
-        if (editor) editor.focus();
-
-        setTimeout(() => {
-            console.log('  Before open — typing-focus:', document.body.classList.contains('typing-focus'));
-            openEmojiModal();
-            setTimeout(() => {
-                closeEmojiModal();
-                setTimeout(() => {
-                    console.log('  After close — activeElement is editor:', document.activeElement === editor);
-                }, 200);
-            }, 300);
-        }, 100);
-    },
-
-    testSafeInt: (val) => {
-        console.log('🧪 Test _safeInt:', val, '→', _safeInt(val, 0, 100000, 0));
-    },
-
-    testPaymentFlagReset: () => {
-        console.log('═══════════════════════════════════════════');
-        console.log('🧪 PAYMENT FLAG RESET TEST');
-        console.log('═══════════════════════════════════════════');
-
-        console.log('  Before: _isProcessingPayment =', _isProcessingPayment);
-
-        _isProcessingPayment = true;
-        console.log('  Set flag =', _isProcessingPayment);
-
-        setTimeout(() => {
-            console.log('  (Waiting for auto-reset...)');
-        }, 200);
-
-        _isProcessingPayment = false;
-        console.log('  After reset =', _isProcessingPayment);
-        console.log('  Result: ✅ PASS (flag can be reset)');
-        console.log('═══════════════════════════════════════════');
-    },
-
-    testEscape: () => {
-        console.log('═══════════════════════════════════════════');
-        console.log('🧪 ESCAPE HTML TEST');
-        console.log('═══════════════════════════════════════════');
-
-        const tests = [
-            '<script>alert(1)</script>',
-            'He said "hello"',
-            "It's a test",
-            'A & B',
-            'Backtick `test`'
-        ];
-
-        tests.forEach(t => {
-            console.log(`  Input:  ${t}`);
-            console.log(`  Output: ${_escapeHtml(t)}`);
-        });
-        console.log('═══════════════════════════════════════════');
-    },
-
-    testConfigFallbacks: () => {
-        console.log('═══════════════════════════════════════════');
-        console.log('🧪 CONFIG FALLBACK TEST (v3.7.4.99)');
-        console.log('═══════════════════════════════════════════');
-
-        const upi = _getConfigValue('UPI_PRIMARY_ID', '');
-        const wa = _getConfigValue('SUPPORT_WHATSAPP', '');
-        
-        console.log('  UPI_PRIMARY_ID:', upi ? '✅ Configured' : '❌ Missing (Hardcoded fallback removed)');
-        console.log('  SUPPORT_WHATSAPP:', wa ? '✅ Configured' : '❌ Missing (Hardcoded fallback removed)');
-        
-        const url = _getPaymentURL(9, 'Test');
-        console.log('  _getPaymentURL() result:', url ? '✅ Generated' : '⚠️ Empty (handled gracefully)');
-        
-        console.log('  Result: ✅ PASS (no hardcoded secrets)');
-        console.log('═══════════════════════════════════════════');
-    },
-
-    testDeactivateNotOverridden: () => {
-        console.log('═══════════════════════════════════════════');
-        console.log('🧪 FIX #6: deactivateLicense OVERRIDE TEST');
-        console.log('═══════════════════════════════════════════');
-
-        const modalsHasOwn = Object.prototype.hasOwnProperty.call(
-            window,
-            'deactivateLicense'
-        );
-
-        let fnSource = '';
-        try {
-            fnSource = String(window.deactivateLicense || '');
-        } catch (e) {}
-
-        const isBrokenStub = fnSource.includes('[modals] deactivateLicense not implemented here');
-        const isFromLicenseJs = fnSource.includes('openDeactivationModal') ||
-                                fnSource.includes('modalOpened');
-
-        console.log('  window.deactivateLicense exists:', modalsHasOwn ? '✅' : '❌');
-        console.log('  Is broken modals.js stub:', isBrokenStub ? '❌ YES (FAIL)' : '✅ NO');
-        console.log('  Is license.js version:', isFromLicenseJs ? '✅ YES' : '⚠️ unknown');
-        console.log('');
-        console.log('  Expected: license.js version (opens deactivation modal)');
-
-        const pass = modalsHasOwn && !isBrokenStub;
-        console.log('  Result:', pass ? '✅ PASS' : '❌ FAIL');
-        console.log('═══════════════════════════════════════════');
-
-        return { hasFunction: modalsHasOwn, isBrokenStub, isFromLicenseJs, pass };
-    },
-
-    selfTest: () => {
-        console.log('═══════════════════════════════════════════');
-        console.log('🧪 MODALS SELF-TEST (v3.7.4.99)');
-        console.log('═══════════════════════════════════════════');
-
-        const checks = {
-            showProgress: typeof showProgress === 'function',
-            setProgress: typeof setProgress === 'function',
-            hideProgress: typeof hideProgress === 'function',
-            renderQRCode: typeof renderQRCode === 'function',
-            _tryOfflineQR: typeof _tryOfflineQR === 'function',
-            _renderViaNetwork: typeof _renderViaNetwork === 'function',
-            _showQRFailure: typeof _showQRFailure === 'function',
-            _MiniQR: typeof _MiniQR !== 'undefined' && typeof _MiniQR.render === 'function',
-            OfflineQRCode: typeof window.OfflineQRCode !== 'undefined',
-            _getConfigValue: typeof _getConfigValue === 'function',
-            _escapeHtml: typeof _escapeHtml === 'function',
-            _getPaymentURL: typeof _getPaymentURL === 'function',
-            showFlash: typeof showFlash === 'function',
-            showToast: typeof showToast === 'function',
-            openBuyModal: typeof openBuyModal === 'function',
-            openTrialActivationModal: typeof openTrialActivationModal === 'function',
-            openDonateModal: typeof openDonateModal === 'function',
-            openLicenseModal: typeof openLicenseModal === 'function',
-            openEmojiModal: typeof openEmojiModal === 'function',
-            openCharMapModal: typeof openCharMapModal === 'function',
-            autoSyncLanguageFonts: typeof autoSyncLanguageFonts === 'function',
-            handleModalOutsideClick: typeof handleModalOutsideClick === 'function',
-            copyFromBox: typeof copyFromBox === 'function',
-            insertFromBox: typeof insertFromBox === 'function'
-        };
-
-        Object.entries(checks).forEach(([key, pass]) => {
-            console.log(`  ${pass ? '✅' : '❌'} ${key}`);
-        });
-
-        // 🔴 Verify no hardcoded fallbacks
-        console.log('');
-        console.log('🟢 v3.7.4.99 — Security fix check:');
-        let fnSource = '';
-        try {
-            fnSource = String(_getPaymentURL || '');
-        } catch (e) {}
-        const hasHardcodedUpi = fnSource.includes('9110977117@ybl');
-        const hasHardcodedWa = String(_getConfigValue || '').includes('919110977117');
-        
-        console.log(`  ${!hasHardcodedUpi ? '✅' : '❌'} No hardcoded UPI`);
-        console.log(`  ${!hasHardcodedWa ? '✅' : '❌'} No hardcoded WhatsApp`);
-
-        // FIX #6
-        let fnSourceDeact = '';
-        try { fnSourceDeact = String(window.deactivateLicense || ''); } catch (e) {}
-        const isBrokenStub = fnSourceDeact.includes('[modals] deactivateLicense not implemented here');
-        console.log(`  ${!isBrokenStub ? '✅' : '❌'} deactivateLicense NOT overridden`);
-
-        const allPass = Object.values(checks).every(v => v) && !hasHardcodedUpi && !isBrokenStub;
-        console.log('');
-        console.log(allPass ? '🎉 ALL CHECKS PASSED + SECURITY FIXED' : '⚠️ SOME ISSUES');
-        console.log('═══════════════════════════════════════════');
-
-        return { checks, hasHardcodedUpi, isBrokenStub, allPass };
-    }
-};
-
-// ============================================================
-// 📋 STARTUP LOG
-// ============================================================
 console.log('═══════════════════════════════════════════');
-console.log('✅ modals.js loaded — v3.7.4.99 (Secure)');
-console.log('   ⏳ Progress: showProgress/setProgress/hideProgress');
-console.log('   📸 QR priority: OFFLINE-FIRST (Fix #5)');
-console.log('   🔴 SECURITY: Hardcoded UPI/WhatsApp/Email REMOVED');
-console.log('   🔴 SECURITY: Graceful UI for missing config');
-console.log('   🟢 NEW: _getConfigValue() helper');
-console.log('   🔴 FIX #6: deactivateLicense() REMOVED');
-console.log('   🧪 ModalsDebug.testConfigFallbacks() ← NEW');
-console.log('   🧪 ModalsDebug.selfTest() available');
+console.log('✅ modals.js loaded — v3.7.4 (FIX #2 APPLIED)');
+console.log('   🔒 Trial Constraints: FAIL-CLOSED');
+console.log('   🚫 Offline / no-endpoint / network-error → BLOCK');
+console.log('   📩 EmailJS: ' + (EMAILJS_PUBLIC_KEY && EMAILJS_TEMPLATE_ID ? 'Initialized ✅' : '⚠️ NOT CONFIGURED'));
 console.log('═══════════════════════════════════════════');

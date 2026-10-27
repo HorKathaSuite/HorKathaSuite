@@ -1,5 +1,7 @@
-name = "horkathasuite"
-compatibility_date = "2026-10-22"
+name = "hor-katha-api"
+main = "index.js"
+compatibility_date = "2026-10-26"
+compatibility_flags = ["nodejs_compat"]
 
-[assets]
-directory = "./"
+# 👇 Yahan apna Account ID daalo (jo tumne abhi copy kiya hai) 👇
+account_id = "16fb9e1746ae5449fb821e321aec7563"

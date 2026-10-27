@@ -1,10 +1,10 @@
 // ============================================================
 // 🔐 LICENSE VERIFICATION (ECDSA P-256) + SMART TRIAL
-// BOSC Tech & Edu · Hoṛ Katha Suite v3.7.7.1 (Stable HWID Fix)
+// BOSC Tech & Edu · Hoṛ Katha Suite v3.7.4 (Fixed)
 // ============================================================
-// ✅ v3.7.7.1 — CRITICAL FIX:
-//    🔴 FIXED: Now calls getStableHwid() from electronAPI (MachineGuid).
-//    🔴 FIXED: Accepts Fallback Seeds in Priority 2.
+// ✅ FIX #1 APPLIED — Trial Key Server Verification Fail-Closed
+//    • Offline / no-endpoint / network-error → hard BLOCK
+//    • Self-signed trial keys अब काम नहीं करेंगी
 // ============================================================
 
 'use strict';
@@ -15,12 +15,11 @@
 let isProLicensed = false;
 
 let _licenseSessionCache = {
-    user: null, key: null, verified: false,
+    user: null, email: null, mobile: null, key: null, verified: false,
     plan: null, expiry: null, timestamp: 0
 };
 
 let _cachedPublicKey = null;
-let _cachedPublicKeyHwid = null;
 let _cachedPublicKeyTime = 0;
 
 let _lastClockCheckTime = 0;
@@ -67,7 +66,6 @@ function invalidateHwidCache(newHwid = null) {
     _hwidCache.value = (newHwid && typeof newHwid === 'string') ? newHwid : null;
     _hwidCache.timestamp = _hwidCache.value ? Date.now() : 0;
     _cachedPublicKey = null;
-    _cachedPublicKeyHwid = null;
     _cachedPublicKeyTime = 0;
     _invalidateFingerprintCache();
     _invalidateAllCaches();
@@ -76,9 +74,9 @@ function invalidateHwidCache(newHwid = null) {
 window.invalidateHwidCache = invalidateHwidCache;
 
 // ============================================================
-// ⚙️ CONSTANTS & TRIAL CONFIG (UNCHANGED)
+// ⚙️ CONSTANTS & TRIAL CONFIG
 // ============================================================
-const LICENSE_PAYLOAD_VERSION = 'BOSC-HKP-v3.7.4';
+const LICENSE_PAYLOAD_VERSION = 'BOSC-HKP-v3.7.8';   // ⚠️ यह signing version है — बदलें नहीं!
 const LIFETIME_EXPIRY_TOKEN = '9999';
 const VALID_PLAN_CODES = ['P1', 'P2', 'P3'];
 const LICENSE_KEY_PARTS_COUNT = 4;
@@ -131,7 +129,7 @@ const SMART_TRIAL_CONFIG = Object.freeze({
     UI: { SHOW_DISCOUNT_BANNER: true, BANNER_SYSTEM: { ENABLED: true, DISMISS_INTERVALS_MS: [600000, 1800000, 3600000, 10800000, 21600000, 43200000], URGENT_REPEAT_MS: 600000, PEEK_A_BOO_ENABLED: true, PEEK_A_BOO_DELAY_MS: 120000, TRACK_IMPRESSIONS: true, TRACK_DISMISSALS: true, TRACK_CLICKS: true } }
 });
 
-const _FALLBACK_TRIAL_CONFIG = { TRIAL_ENABLED: true, TRIAL_PRICE: 9, TRIAL_DURATION_DAYS: 7, TRIAL_KEY_PREFIX: 'HKT', VERSION: '3.7.7' };
+const _FALLBACK_TRIAL_CONFIG = { TRIAL_ENABLED: true, TRIAL_PRICE: 9, TRIAL_DURATION_DAYS: 7, TRIAL_KEY_PREFIX: 'HKT', VERSION: '3.7.4' };
 function _getTrialConfig(key) { try { if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG && APP_CONFIG[key] !== undefined) return APP_CONFIG[key]; } catch (e) {} return _FALLBACK_TRIAL_CONFIG[key]; }
 function _isTrialEnabled() { try { return _getTrialConfig('TRIAL_ENABLED') === true; } catch (e) { return false; } }
 function _isTrialSystemReady() { try { return typeof TrialSystem !== 'undefined' && TrialSystem && typeof TrialSystem.isActive === 'function'; } catch (e) { return false; } }
@@ -252,7 +250,7 @@ const ClockGuard = {
 };
 
 // ═══════════════════════════════════════════════════════════
-// 🔴 STABLE HWID LOGIC (FIXED)
+// 🔴 STABLE HWID LOGIC (Only used for Smart Trial now)
 // ═══════════════════════════════════════════════════════════
 async function getDeviceHardwareFingerprint() {
     const now = Date.now();
@@ -263,59 +261,34 @@ async function getDeviceHardwareFingerprint() {
 }
 
 async function _doGenerateHwid() {
-    // ─── Priority 1: OS Storage (Electron) ───
     if (window.electronAPI && window.electronAPI.isElectron) {
         try {
             let result = null;
-            // 🆕 STABLE HWID FIX: getStableHwid ko priority dein
-            if (typeof window.electronAPI.getStableHwid === 'function') {
-                result = await window.electronAPI.getStableHwid();
-            } else if (typeof window.electronAPI.loadHwid === 'function') {
-                result = await window.electronAPI.loadHwid();
-            }
-            
+            if (typeof window.electronAPI.getStableHwid === 'function') result = await window.electronAPI.getStableHwid();
+            else if (typeof window.electronAPI.loadHwid === 'function') result = await window.electronAPI.loadHwid();
             if (result && result.success && result.hwid) {
-                const isValid = /^DVC-[A-F0-9]{4}-[A-F0-9]{4}$/i.test(result.hwid) || 
-                                (result.hwid.length >= 16 && result.hwid.length <= 1000); // ✅ Fallback seed ko bhi allow karein
+                const isValid = /^DVC-[A-F0-9]{4}-[A-F0-9]{4}$/i.test(result.hwid) || (result.hwid.length >= 16 && result.hwid.length <= 1000);
                 const isPlaceholder = result.hwid.includes('DCDC') || result.hwid === 'DVC-0000-0000' || result.hwid === 'DVC-FFFF-FFFF';
-
                 if (isValid && !isPlaceholder) {
-                    try {
-                        localStorage.setItem('hor_device_hwid', result.hwid);
-                        localStorage.setItem('hor_hwid_source', result.source || 'registry');
-                    } catch (e) {}
-                    console.log('[HWID] ✅ Loaded Stable HWID from OS:', result.hwid);
-                    _hwidCache.value = result.hwid;
-                    _hwidCache.timestamp = Date.now();
-                    return result.hwid;
+                    try { localStorage.setItem('hor_device_hwid', result.hwid); localStorage.setItem('hor_hwid_source', result.source || 'registry'); } catch (e) {}
+                    _hwidCache.value = result.hwid; _hwidCache.timestamp = Date.now(); return result.hwid;
                 }
-                console.warn('[HWID] ⚠️ OS HWID invalid — will regenerate');
             }
-        } catch (e) { console.warn('[HWID] OS load failed:', e.message); }
+        } catch (e) {}
     }
-
-    // ─── Priority 2: localStorage ───
     try {
         const stored = localStorage.getItem('hor_device_hwid');
         if (stored) {
-            const isValid = /^DVC-[A-F0-9]{4}-[A-F0-9]{4}$/i.test(stored) || 
-                            (stored.length >= 16 && stored.length <= 1000); // ✅ Fallback seed allow karein
+            const isValid = /^DVC-[A-F0-9]{4}-[A-F0-9]{4}$/i.test(stored) || (stored.length >= 16 && stored.length <= 1000);
             const isPlaceholder = stored.includes('DCDC') || stored === 'DVC-0000-0000' || stored === 'DVC-FFFF-FFFF';
-
             if (isValid && !isPlaceholder) {
-                if (window.electronAPI && window.electronAPI.isElectron) {
-                    window.electronAPI.saveHwid(stored).catch(() => {});
-                }
-                console.log('[HWID] ✅ Loaded from localStorage:', stored);
-                _hwidCache.value = stored;
-                _hwidCache.timestamp = Date.now();
-                return stored;
+                if (window.electronAPI && window.electronAPI.isElectron) window.electronAPI.saveHwid(stored).catch(() => {});
+                _hwidCache.value = stored; _hwidCache.timestamp = Date.now(); return stored;
             }
             try { localStorage.removeItem('hor_device_hwid'); localStorage.removeItem('hor_hwid_source'); } catch (e) {}
         }
-    } catch (e) { console.warn('[HWID] localStorage read failed:', e.message); }
+    } catch (e) {}
 
-    // ─── Priority 3: Generate new (Fallback) ───
     _invalidateFingerprintCache();
     const signals = [ navigator.hardwareConcurrency || 4, navigator.deviceMemory || 'unknown', navigator.maxTouchPoints || 0, navigator.platform || 'unknown', navigator.vendor || 'unknown', (screen && screen.width) || 1920, (screen && screen.height) || 1080, (screen && screen.colorDepth) || 24, (screen && screen.pixelDepth) || 24, window.devicePixelRatio || 1, new Date().getTimezoneOffset(), (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'unknown', navigator.language || 'en', navigator.languages ? navigator.languages.join(',') : '', navigator.userAgent || '' ].join('|');
 
@@ -328,44 +301,26 @@ async function _doGenerateHwid() {
         const hashBuf = await crypto.subtle.digest('SHA-256', enc.encode('HW-V3|' + signals));
         const hashHex = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
         newHwid = `DVC-${hashHex.substring(0, 4)}-${hashHex.substring(4, 8)}`;
-    } catch (e) {
-        newHwid = _generateFallbackHwid(signals);
-        generationSource = 'fallback';
-    }
+    } catch (e) { newHwid = _generateFallbackHwid(signals); generationSource = 'fallback'; }
 
     if (!newHwid || !/^DVC-[A-F0-9]{4}-[A-F0-9]{4}$/i.test(newHwid)) {
         const rand = () => Math.floor(Math.random() * 65536).toString(16).padStart(4, '0').toUpperCase();
-        newHwid = `DVC-${rand()}-${rand()}`;
-        generationSource = 'math-random';
+        newHwid = `DVC-${rand()}-${rand()}`; generationSource = 'math-random';
     }
 
     const [p1, p2] = newHwid.replace('DVC-', '').split('-');
     if (p1 === p2 || /^(.)\1{3}$/.test(p1) || /^(.)\1{3}$/.test(p2) || p1 === 'DCDC' || p2 === 'DCDC') {
         try {
-            const enc = new TextEncoder();
-            const saltedSignals = signals + '|SALT-V1';
+            const enc = new TextEncoder(); const saltedSignals = signals + '|SALT-V1';
             const hashBuf2 = await crypto.subtle.digest('SHA-256', enc.encode('HW-V3|' + saltedSignals));
             const hashHex2 = Array.from(new Uint8Array(hashBuf2)).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
-            newHwid = `DVC-${hashHex2.substring(0, 4)}-${hashHex2.substring(4, 8)}`;
-            generationSource = 'crypto-subtle-salted';
-        } catch(e) {
-            newHwid = _generateFallbackHwid(signals + '|SALT-V1');
-            generationSource = 'fallback-salted';
-        }
+            newHwid = `DVC-${hashHex2.substring(0, 4)}-${hashHex2.substring(4, 8)}`; generationSource = 'crypto-subtle-salted';
+        } catch(e) { newHwid = _generateFallbackHwid(signals + '|SALT-V1'); generationSource = 'fallback-salted'; }
     }
 
-    try {
-        localStorage.setItem('hor_device_hwid', newHwid);
-        localStorage.setItem('hor_hwid_source', generationSource);
-    } catch (e) {}
-
-    if (window.electronAPI && window.electronAPI.isElectron) {
-        try { await window.electronAPI.saveHwid(newHwid); } catch (e) {}
-    }
-
-    _hwidCache.value = newHwid;
-    _hwidCache.timestamp = Date.now();
-    return newHwid;
+    try { localStorage.setItem('hor_device_hwid', newHwid); localStorage.setItem('hor_hwid_source', generationSource); } catch (e) {}
+    if (window.electronAPI && window.electronAPI.isElectron) { try { await window.electronAPI.saveHwid(newHwid); } catch (e) {} }
+    _hwidCache.value = newHwid; _hwidCache.timestamp = Date.now(); return newHwid;
 }
 
 function _generateFallbackHwid(seed) {
@@ -461,7 +416,43 @@ const TrialSystem = {
     async _fbGet(path) { let timeoutId = null; try { const base = this._getFirebaseBaseUrl(); if (!base) return { ok: false, data: null, error: 'no-endpoint' }; const controller = new AbortController(); timeoutId = setTimeout(() => controller.abort(), this.CONFIG.NETWORK.FETCH_TIMEOUT_MS); const res = await fetch(`${base}/${path}.json`, { method: 'GET', mode: 'cors', cache: 'no-store', signal: controller.signal }); if (!res.ok) return { ok: false, data: null, error: `HTTP ${res.status}` }; const data = await res.json(); return { ok: true, data, error: null }; } catch (e) { return { ok: false, data: null, error: e.message || 'network-error' }; } finally { if (timeoutId !== null) clearTimeout(timeoutId); } },
     async _fbSet(path, data) { let timeoutId = null; try { const base = this._getFirebaseBaseUrl(); if (!base) return { ok: false, error: 'no-endpoint' }; const controller = new AbortController(); timeoutId = setTimeout(() => controller.abort(), this.CONFIG.NETWORK.FETCH_TIMEOUT_MS); const res = await fetch(`${base}/${path}.json`, { method: 'PUT', mode: 'cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), signal: controller.signal }); if (!res.ok) return { ok: false, error: `HTTP ${res.status}` }; return { ok: true, error: null }; } catch (e) { return { ok: false, error: e.message }; } finally { if (timeoutId !== null) clearTimeout(timeoutId); } },
     _queueFbWrite(path, data) { _fbWriteQueue.push({ path, data, timestamp: Date.now() }); this._processFbWriteQueue().catch(() => {}); },
-    async _processFbWriteQueue() { if (_fbWriteProcessing) return; _fbWriteProcessing = true; try { while (_fbWriteQueue.length > 0) { const item = _fbWriteQueue.shift(); try { const result = await this._fbSet(item.path, item.data); if (!result.ok) console.warn('[FB] Write failed:', result.error, item.path); } catch (e) {} await new Promise(r => setTimeout(r, 100)); } } finally { _fbWriteProcessing = false; } },
+
+    async _processFbWriteQueue() {
+        if (_fbWriteProcessing) return;
+        _fbWriteProcessing = true;
+        try {
+            while (_fbWriteQueue.length > 0) {
+                const item = _fbWriteQueue[0];
+                try {
+                    const result = await this._fbSet(item.path, item.data);
+                    if (result.ok) {
+                        _fbWriteQueue.shift();
+                    } else {
+                        item._retries = (item._retries || 0) + 1;
+                        console.warn('[FB] Write failed (attempt ' + item._retries + '):', result.error, item.path);
+                        if (item._retries >= 5) {
+                            console.warn('[FB] Dropping after 5 retries:', item.path);
+                            _fbWriteQueue.shift();
+                        } else {
+                            const backoff = Math.min(30000, 1000 * Math.pow(2, item._retries));
+                            await new Promise(r => setTimeout(r, backoff));
+                        }
+                    }
+                } catch (e) {
+                    item._retries = (item._retries || 0) + 1;
+                    console.warn('[FB] Write exception (attempt ' + item._retries + '):', e.message);
+                    if (item._retries >= 5) {
+                        _fbWriteQueue.shift();
+                    } else {
+                        await new Promise(r => setTimeout(r, 2000));
+                    }
+                }
+                await new Promise(r => setTimeout(r, 100));
+            }
+        } finally {
+            _fbWriteProcessing = false;
+        }
+    },
 
     async getFingerprint() { try { return await generateDeviceFingerprint(); } catch (e) { return null; } },
     async getDeviceHash() { try { return await getShortDeviceHash(); } catch (e) { return null; } },
@@ -512,43 +503,133 @@ const TrialSystem = {
         return { status: 'active', key: cleanKey, activatedAt, expiresAt, remainingMs, remainingDays: Math.ceil(TimeHelper.msToDays(remainingMs)), device: record.device, fingerprint: record.fingerprint };
     },
 
+    // ═══════════════════════════════════════════════════════════
+    // 🔒 FIX #1: TRIAL KEY VALIDATION (FAIL-CLOSED)
+    // Server verification अब MANDATORY है।
+    // ═══════════════════════════════════════════════════════════
     async validateTrialKey(key) {
-        if (!key || typeof key !== 'string') return { valid: false, reason: 'Key खाली है' };
+        // ── Basic format checks ──
+        if (!key || typeof key !== 'string') {
+            return { valid: false, reason: 'Key खाली है' };
+        }
         const cleanKey = key.trim().toUpperCase();
         const parts = cleanKey.split('-');
-        if (parts.length !== 3) return { valid: false, reason: 'Key format गलत है (HKT-XXXXXXX-XXXX)' };
-        if (parts[0] !== this.CONFIG.TRIAL_KEY_PREFIX) return { valid: false, reason: 'Key prefix गलत है' };
-        if (!/^\d{7}$/.test(parts[1])) return { valid: false, reason: 'Key का middle part गलत है' };
-        if (!/^[A-F0-9]{4}$/.test(parts[2])) return { valid: false, reason: 'Key का last part गलत है' };
+
+        if (parts.length !== 3) {
+            return { valid: false, reason: 'Key format गलत है (HKT-XXXXXXX-XXXX)' };
+        }
+        if (parts[0] !== this.CONFIG.TRIAL_KEY_PREFIX) {
+            return { valid: false, reason: 'Key prefix गलत है' };
+        }
+        if (!/^\d{7}$/.test(parts[1])) {
+            return { valid: false, reason: 'Key का middle part गलत है (7 digits चाहिए)' };
+        }
+        if (!/^[A-F0-9]{4}$/.test(parts[2])) {
+            return { valid: false, reason: 'Key का last part गलत है (4 hex chars चाहिए)' };
+        }
+
+        // ── Device hash check ──
         const currentHash = await this.getDeviceHash();
-        if (!currentHash) return { valid: false, reason: 'Device ID नहीं मिली' };
-        if (parts[2] !== currentHash) return { valid: false, reason: 'यह Key इस device के लिए नहीं है', expected: currentHash, got: parts[2] };
-        
+        if (!currentHash) {
+            return { valid: false, reason: 'Device ID नहीं मिली — page refresh करें' };
+        }
+        if (parts[2] !== currentHash) {
+            return {
+                valid: false,
+                reason: 'यह Key इस device के लिए नहीं है',
+                expected: currentHash,
+                got: parts[2]
+            };
+        }
+
+        // ── 🔴 SERVER VERIFICATION (MANDATORY — fail-closed) ──
         const serverCheck = await this._verifyTrialKeyOnServer(cleanKey);
+
         if (!serverCheck.ok) {
-            console.warn('[TrialSystem] Server rejected key:', serverCheck.reason, serverCheck.message);
-            return { valid: false, reason: serverCheck.message || 'Trial Key server verification failed', serverRejected: true, serverReason: serverCheck.reason };
+            console.warn(
+                '[TrialSystem] ❌ Server rejected key:',
+                serverCheck.reason,
+                '|',
+                serverCheck.message
+            );
+            return {
+                valid: false,
+                reason: serverCheck.message || 'Trial Key server verification failed',
+                serverRejected: true,
+                serverReason: serverCheck.reason
+            };
         }
-        
-        if (serverCheck.reason === 'network-error' || serverCheck.reason === 'no-endpoint' || serverCheck.reason === 'offline') {
-            console.log('[TrialSystem] ⚠️ Server verification skipped:', serverCheck.reason);
-        } else if (serverCheck.reason === 'verified') {
-            console.log('[TrialSystem] ✅ Key verified on server');
-        }
-        return { valid: true, key: cleanKey, serverVerified: serverCheck.reason === 'verified' };
+
+        console.log('[TrialSystem] ✅ Key verified on server');
+        return {
+            valid: true,
+            key: cleanKey,
+            serverVerified: true
+        };
     },
 
+    // ═══════════════════════════════════════════════════════════
+    // 🌐 FIX #1: SERVER VERIFICATION (FAIL-CLOSED)
+    // पुराना code bypass दे रहा था। अब हर failure case fail-closed है।
+    // ═══════════════════════════════════════════════════════════
     async _verifyTrialKeyOnServer(cleanKey) {
-        if (!navigator.onLine) return { ok: true, reason: 'offline' };
+        // ── Guard 1: Endpoint configured है या नहीं ──
         const baseUrl = this._getFirebaseBaseUrl();
-        if (!baseUrl) return { ok: true, reason: 'no-endpoint' };
+        if (!baseUrl) {
+            console.error(
+                '❌ CRITICAL: Firebase endpoint not configured — Trial activation blocked (bypass prevented)'
+            );
+            return {
+                ok: false,
+                reason: 'no-endpoint',
+                message: 'Trial activation unavailable — server not configured. Admin से contact करें।'
+            };
+        }
+
+        // ── Guard 2: Internet available है या नहीं ──
+        if (!navigator.onLine) {
+            return {
+                ok: false,
+                reason: 'offline',
+                message: 'Trial activation के लिए internet ज़रूरी है। Internet check करके retry करें।'
+            };
+        }
+
+        // ── Network call ──
         try {
             const result = await this._fbGet(`${this.FB.KEYS_PATH}/${cleanKey}`);
-            if (!result.ok) { console.warn('[TrialSystem] Server check failed (network):', result.error); return { ok: true, reason: 'network-error' }; }
-            if (result.data === null || result.data === undefined) return { ok: false, reason: 'not-found', message: 'यह Trial Key हमारे record में नहीं है। Admin से contact करें।' };
+
+            // ── Guard 3: Network failure → fail-closed ──
+            if (!result.ok) {
+                console.warn('[TrialSystem] Server check failed:', result.error);
+                return {
+                    ok: false,
+                    reason: 'network-error',
+                    message: 'Server से connect नहीं हो पा रहा। Internet check करके retry करें।'
+                };
+            }
+
+            // ── Guard 4: Key record नहीं मिला ──
+            if (result.data === null || result.data === undefined) {
+                return {
+                    ok: false,
+                    reason: 'not-found',
+                    message: 'यह Trial Key हमारे record में नहीं है। Admin से contact करें।'
+                };
+            }
+
             const data = result.data;
-            if (data.status === 'revoked') return { ok: false, reason: 'revoked', message: 'यह Trial Key revoke कर दी गई है।' };
-            
+
+            // ── Guard 5: Key revoked है ──
+            if (data.status === 'revoked') {
+                return {
+                    ok: false,
+                    reason: 'revoked',
+                    message: 'यह Trial Key revoke कर दी गई है। Admin से contact करें।'
+                };
+            }
+
+            // ── Admin-reactivation sync (existing logic preserved) ──
             if (data.status !== 'revoked' && data.status !== 'deactivated') {
                 try {
                     const registry = await this.getKeyRegistry();
@@ -560,17 +641,48 @@ const TrialSystem = {
                         if (data.expiresAt) registry[cleanKey].expiresAt = data.expiresAt;
                         if (data.device) registry[cleanKey].device = data.device;
                         if (data.fingerprint) registry[cleanKey].fingerprint = data.fingerprint;
+
                         await this.saveKeyRegistry(registry);
-                        try { await this._idbSet(this.IDB.STORES.KEYS, { key: cleanKey, ...registry[cleanKey] }); } catch (e) {}
+                        try {
+                            await this._idbSet(this.IDB.STORES.KEYS, {
+                                key: cleanKey,
+                                ...registry[cleanKey]
+                            });
+                        } catch (e) {}
+
                         console.log('[TrialSystem] ✅ Local registry synced — admin reactivated key');
                     }
-                } catch (e) {}
+                } catch (e) {
+                    console.warn('[TrialSystem] Registry sync failed (non-fatal):', e.message);
+                }
             }
-            
+
+            // ── Guard 6: Key किसी और device पर active है ──
             const myHwid = await getDeviceHardwareFingerprint();
-            if (data.device && myHwid && data.device !== myHwid) return { ok: false, reason: 'device-locked', message: 'यह Key किसी और device पर already use हो चुकी है।' };
-            return { ok: true, reason: 'verified', data: data };
-        } catch (e) { console.warn('[TrialSystem] _verifyTrialKeyOnServer failed:', e.message); return { ok: true, reason: 'network-error' }; }
+            if (data.device && myHwid && data.device !== myHwid) {
+                return {
+                    ok: false,
+                    reason: 'device-locked',
+                    message: 'यह Key किसी और device पर already use हो चुकी है।'
+                };
+            }
+
+            // ── सब ठीक ──
+            return {
+                ok: true,
+                reason: 'verified',
+                data: data
+            };
+
+        } catch (e) {
+            // ── Guard 7: Exception → fail-closed ──
+            console.warn('[TrialSystem] _verifyTrialKeyOnServer exception:', e.message);
+            return {
+                ok: false,
+                reason: 'network-error',
+                message: 'Server verification failed: ' + e.message
+            };
+        }
     },
 
     async activateWithKey(key) {
@@ -788,23 +900,16 @@ const TrialSystem = {
         keys.forEach(key => { const r = registry[key]; const remaining = r.expiresAt - Date.now(); const status = r.status === 'revoked' ? '🚫 REVOKED' : (remaining > 0 ? '✅ ACTIVE' : '❌ EXPIRED'); console.log(`  ${status} ${key}`); console.log(`     Activated: ${TimeHelper.formatDate(r.activatedAt)}`); console.log(`     Expires:   ${TimeHelper.formatDate(r.expiresAt)}`); });
     },
     async testTimeTravel(key, daysToAdvance) {
-        try {
-            const registry = await this.getKeyRegistry(); const cleanKey = key.trim().toUpperCase(); if (!registry[cleanKey]) return { success: false, error: 'Key not in registry' };
-            const daysMs = TimeHelper.daysToMs(daysToAdvance); registry[cleanKey].activatedAt -= daysMs; registry[cleanKey].expiresAt -= daysMs; await this.saveKeyRegistry(registry);
-            const currentKey = this._lsGet(this.KEYS.LOCAL_KEY); if (currentKey === cleanKey) { const currentStart = parseInt(this._lsGet(this.KEYS.LOCAL_START), 10); if (!isNaN(currentStart)) this._lsSet(this.KEYS.LOCAL_START, String(currentStart - daysMs)); }
-            const deviceData = await this.getDeviceData(); if (deviceData) { if (deviceData.lastTrialAt) deviceData.lastTrialAt -= daysMs; if (deviceData.lastTrialExpiresAt) deviceData.lastTrialExpiresAt -= daysMs; await this.saveDeviceData(deviceData); }
-            _invalidateInfoCache(); return { success: true };
-        } catch (e) { return { success: false, error: e.message }; }
+        try { const registry = await this.getKeyRegistry(); const cleanKey = key.trim().toUpperCase(); if (!registry[cleanKey]) return { success: false, error: 'Key not in registry' }; const daysMs = TimeHelper.daysToMs(daysToAdvance); registry[cleanKey].activatedAt -= daysMs; registry[cleanKey].expiresAt -= daysMs; await this.saveKeyRegistry(registry); const currentKey = this._lsGet(this.KEYS.LOCAL_KEY); if (currentKey === cleanKey) { const currentStart = parseInt(this._lsGet(this.KEYS.LOCAL_START), 10); if (!isNaN(currentStart)) this._lsSet(this.KEYS.LOCAL_START, String(currentStart - daysMs)); } const deviceData = await this.getDeviceData(); if (deviceData) { if (deviceData.lastTrialAt) deviceData.lastTrialAt -= daysMs; if (deviceData.lastTrialExpiresAt) deviceData.lastTrialExpiresAt -= daysMs; await this.saveDeviceData(deviceData); } _invalidateInfoCache(); return { success: true }; } catch (e) { return { success: false, error: e.message }; }
     }
 };
 window.TrialSystem = TrialSystem;
 
 // ============================================================
-// 🔑 LICENSE VERIFICATION
+// 🔑 LICENSE VERIFICATION (No HWID, uses Name+Email+Mobile)
 // ============================================================
 async function getCachedPublicKey() {
-    const currentHwid = _hwidCache.value || null; const now = Date.now();
-    if (currentHwid && _cachedPublicKey && _cachedPublicKeyHwid !== currentHwid) { _cachedPublicKey = null; _cachedPublicKeyHwid = null; _cachedPublicKeyTime = 0; }
+    const now = Date.now();
     if (_cachedPublicKey && (now - _cachedPublicKeyTime) > PUBLIC_KEY_CACHE_TTL_MS) { _cachedPublicKey = null; _cachedPublicKeyTime = 0; }
     if (_cachedPublicKey) return _cachedPublicKey;
     try {
@@ -812,7 +917,7 @@ async function getCachedPublicKey() {
         if (!jwk || !jwk.x || !jwk.y || jwk.x === 'REPLACE_WITH_YOUR_X_COORDINATE' || jwk.x === 'YOUR_X_COORDINATE_HERE') return null;
         if (!window.crypto || !window.crypto.subtle) return null;
         _cachedPublicKey = await crypto.subtle.importKey('jwk', { kty: jwk.kty, crv: jwk.crv, x: jwk.x, y: jwk.y }, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
-        _cachedPublicKeyHwid = currentHwid; _cachedPublicKeyTime = now; return _cachedPublicKey;
+        _cachedPublicKeyTime = now; return _cachedPublicKey;
     } catch (e) { return null; }
 }
 
@@ -827,14 +932,14 @@ function _parseExpiryToken(token) {
     return { lifetime: false, date };
 }
 
-async function verifyLicensePayload(name, licenseKey) {
-    if (!name || !licenseKey) return { valid: false, reason: 'Missing Details' };
+async function verifyLicensePayload(name, email, mobile, licenseKey) {
+    if (!name || !email || !mobile || !licenseKey) return { valid: false, reason: 'Missing Details' };
     const cleanKey = licenseKey.trim().toUpperCase(); const parts = cleanKey.split('-');
     if (parts.length !== LICENSE_KEY_PARTS_COUNT || parts[0] !== LICENSE_KEY_PREFIX) return { valid: false, reason: 'Invalid Key Format' };
     const plan = parts[1]; const expiryToken = parts[2]; const sigHex = parts[3];
     if (!VALID_PLAN_CODES.includes(plan)) return { valid: false, reason: 'Invalid Plan Code' };
     if (sigHex.length !== SIGNATURE_HEX_LENGTH || !/^[0-9A-F]+$/.test(sigHex)) return { valid: false, reason: 'Invalid Signature Format' };
-    
+
     const expiryResult = _parseExpiryToken(expiryToken);
     if (expiryResult.error) return { valid: false, reason: expiryResult.error };
     if (!expiryResult.lifetime && expiryResult.date) {
@@ -843,12 +948,17 @@ async function verifyLicensePayload(name, licenseKey) {
         if (Date.now() > expiryResult.date.getTime()) return { valid: false, reason: 'License Expired' };
     }
 
-    const deviceId = await getDeviceHardwareFingerprint();
-    if (!deviceId) return { valid: false, reason: 'Device ID not available' };
+    const cleanName = name.trim().toLowerCase();
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanMobile = mobile.trim();
 
-    const cleanName = name.trim().toLowerCase(); const payloadStr = `${cleanName}|${deviceId}|${plan}|${expiryToken}|${LICENSE_PAYLOAD_VERSION}`; const payloadBytes = new TextEncoder().encode(payloadStr);
-    const publicKey = await getCachedPublicKey(); if (!publicKey) return { valid: false, reason: 'Public key not configured' };
-    const sigBytes = hexToBytes(sigHex); if (!sigBytes) return { valid: false, reason: 'Signature Decode Error' };
+    const payloadStr = `${cleanName}|${cleanEmail}|${cleanMobile}|${plan}|${expiryToken}|${LICENSE_PAYLOAD_VERSION}`;
+    const payloadBytes = new TextEncoder().encode(payloadStr);
+
+    const publicKey = await getCachedPublicKey();
+    if (!publicKey) return { valid: false, reason: 'Public key not configured' };
+    const sigBytes = hexToBytes(sigHex);
+    if (!sigBytes) return { valid: false, reason: 'Signature Decode Error' };
 
     try {
         const isValid = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, publicKey, sigBytes, payloadBytes);
@@ -875,26 +985,33 @@ async function checkLicenseIntegrity() {
 async function _doCheckLicenseIntegrity() {
     try {
         ClockGuard.setLastSeen(); await getDeviceHardwareFingerprint();
-        let savedName = null, savedKey = null;
-        try { savedName = localStorage.getItem('hor_lic_user'); savedKey = localStorage.getItem('hor_lic_key'); } catch (e) {}
+        let savedName = null, savedEmail = null, savedMobile = null, savedKey = null;
+        try {
+            savedName = localStorage.getItem('hor_lic_user');
+            savedEmail = localStorage.getItem('hor_lic_email');
+            savedMobile = localStorage.getItem('hor_lic_mobile');
+            savedKey = localStorage.getItem('hor_lic_key');
+        } catch (e) {}
         const now = Date.now();
+
         if (_licenseSessionCache.verified && _licenseSessionCache.user === savedName && _licenseSessionCache.key === savedKey && (now - _licenseSessionCache.timestamp) < LICENSE_SESSION_CACHE_TTL_MS) { isProLicensed = true; applyProState(savedName, _licenseSessionCache.plan, false); return; }
-        if (savedName && savedKey) {
-            const verification = await verifyLicensePayload(savedName, savedKey);
+
+        if (savedName && savedEmail && savedMobile && savedKey) {
+            const verification = await verifyLicensePayload(savedName, savedEmail, savedMobile, savedKey);
             if (verification.valid) {
                 isProLicensed = true;
-                _licenseSessionCache = { user: String(savedName), key: String(savedKey), verified: true, plan: String(verification.plan), expiry: String(verification.expiry || ''), timestamp: now };
+                _licenseSessionCache = { user: String(savedName), email: String(savedEmail), mobile: String(savedMobile), key: String(savedKey), verified: true, plan: String(verification.plan), expiry: String(verification.expiry || ''), timestamp: now };
                 if (navigator.onLine && typeof TrialSystem !== 'undefined' && typeof TrialSystem._queueFbWrite === 'function') {
-                    getDeviceHardwareFingerprint().then(hwid => { TrialSystem._queueFbWrite(`activations/${savedKey}`, { name: savedName, plan: verification.plan || 'P1', timestamp: now, hwid: hwid || 'Unknown', expiryToken: verification.expiry || '9999' }); });
+                    TrialSystem._queueFbWrite(`activations/${savedKey}`, { name: savedName, email: savedEmail, mobile: savedMobile, plan: verification.plan || 'P1', timestamp: now, expiryToken: verification.expiry || '9999' });
                 }
                 applyProState(savedName, verification.plan, false); return;
             } else {
-                _licenseSessionCache = { user: null, key: null, verified: false, plan: null, expiry: null, timestamp: 0 };
+                _licenseSessionCache = { user: null, email: null, mobile: null, key: null, verified: false, plan: null, expiry: null, timestamp: 0 };
                 if (verification.reason !== 'Clock Tampering Detected' && verification.reason !== 'License Expired' && verification.reason !== 'License Revoked' && verification.reason !== 'Missing Details') { try { const deviceId = localStorage.getItem('hor_device_hwid') || 'Unknown'; _sendSecurityAlert('trackFailedKey', savedKey, deviceId); } catch (e) {} }
-                if (verification.reason === 'Clock Tampering Detected') { if (typeof showToast === 'function') showToast('⚠️ System time change detected.', 'error', 6000); try { localStorage.removeItem('hor_lic_user'); localStorage.removeItem('hor_lic_key'); } catch (e) {} }
+                if (verification.reason === 'Clock Tampering Detected') { if (typeof showToast === 'function') showToast('⚠️ System time change detected.', 'error', 6000); try { localStorage.removeItem('hor_lic_user'); localStorage.removeItem('hor_lic_email'); localStorage.removeItem('hor_lic_mobile'); localStorage.removeItem('hor_lic_key'); } catch (e) {} }
             }
         }
-    } catch (e) { _licenseSessionCache = { user: null, key: null, verified: false, plan: null, expiry: null, timestamp: 0 }; }
+    } catch (e) { _licenseSessionCache = { user: null, email: null, mobile: null, key: null, verified: false, plan: null, expiry: null, timestamp: 0 }; }
     isProLicensed = false;
     if (_isTrialEnabled() && _isTrialSystemReady() && TrialSystem.isActive()) { ClockGuard.setLastSeen(); applyTrialState(); }
     else { applyFreeState(); if (_isTrialEnabled() && _isTrialSystemReady() && TrialSystem.isExpired()) { setTimeout(() => { try { TrialSystem.showExpiredBanner(); } catch (e) {} }, 500); } }
@@ -904,7 +1021,7 @@ function applyProState(name, planCode = 'P1', isFreshActivation = false) {
     if (!VALID_PLAN_CODES.includes(planCode)) planCode = 'P1';
     isProLicensed = true; _invalidateAllCaches();
     try { if (typeof TrialSystem !== 'undefined' && typeof TrialSystem.hideBanner === 'function') TrialSystem.hideBanner(); } catch (e) {}
-    const ver = _getTrialConfig('VERSION') || '3.7.7';
+    const ver = _getTrialConfig('VERSION') || '3.7.4';
     const badge = document.getElementById('licenseBadge'); if (badge) { badge.textContent = 'Hoṛ/हो़ड़ Katha'; badge.classList.add('pro'); }
     const versionBadge = document.getElementById('versionBadge'); if (versionBadge) { versionBadge.textContent = `v${ver} PRO (${planCode})`; versionBadge.classList.remove('free-active', 'trial-active'); versionBadge.classList.add('pro-active'); }
     const trig = document.getElementById('btn-license-trigger'); if (trig) { trig.textContent = '✅'; trig.setAttribute('title', 'Pro Active'); trig.classList.add('activated', 'btn-icon-only'); }
@@ -920,7 +1037,7 @@ function applyProState(name, planCode = 'P1', isFreshActivation = false) {
 }
 
 function applyTrialState() {
-    _invalidateAllCaches(); const ver = _getTrialConfig('VERSION') || '3.7.7'; const trialInfo = TrialSystem.getInfo();
+    _invalidateAllCaches(); const ver = _getTrialConfig('VERSION') || '3.7.4'; const trialInfo = TrialSystem.getInfo();
     const badge = document.getElementById('licenseBadge'); if (badge) badge.classList.remove('pro');
     const versionBadge = document.getElementById('versionBadge'); if (versionBadge) { versionBadge.textContent = `v${ver} Trial (${trialInfo.remainingDays}d)`; versionBadge.classList.remove('pro-active', 'free-active'); versionBadge.classList.add('trial-active'); }
     const trig = document.getElementById('btn-license-trigger'); if (trig) { trig.textContent = '⏱️'; trig.setAttribute('title', 'Trial Active'); trig.classList.remove('activated'); trig.classList.add('btn-icon-only'); }
@@ -932,7 +1049,7 @@ function applyTrialState() {
 }
 
 function applyFreeState() {
-    _invalidateAllCaches(); const ver = _getTrialConfig('VERSION') || '3.7.7';
+    _invalidateAllCaches(); const ver = _getTrialConfig('VERSION') || '3.7.4';
     const badge = document.getElementById('licenseBadge'); if (badge) badge.classList.remove('pro');
     const versionBadge = document.getElementById('versionBadge'); if (versionBadge) { versionBadge.textContent = `v${ver} Free`; versionBadge.classList.remove('pro-active', 'trial-active'); versionBadge.classList.add('free-active'); }
     const trig = document.getElementById('btn-license-trigger'); if (trig) { trig.textContent = '🔑'; trig.setAttribute('title', 'Activate Pro'); trig.classList.remove('activated'); trig.classList.add('btn-icon-only'); }
@@ -961,7 +1078,7 @@ _trialBannerInterval = setInterval(() => { try { if (isProLicensed || !_isTrialE
 _licensePeriodicCheckInterval = setInterval(() => { try { let hasKey = false; try { hasKey = !!localStorage.getItem('hor_lic_key'); } catch (e) {} if (!hasKey) return; const cacheAge = Date.now() - _licenseSessionCache.timestamp; if (cacheAge > LICENSE_SESSION_CACHE_TTL_MS) { _licenseSessionCache.verified = false; _licenseSessionCache.timestamp = 0; checkLicenseIntegrity(); } } catch (e) {} }, LICENSE_PERIODIC_CHECK_MS);
 
 function _cleanupLicenseTimers() {
-    try { if (_clockMonitorInterval) { clearInterval(_clockMonitorInterval); _clockMonitorInterval = null; } if (_trialBannerInterval) { clearInterval(_trialBannerInterval); _trialBannerInterval = null; } if (_licensePeriodicCheckInterval) { clearInterval(_licensePeriodicCheckInterval); _licensePeriodicCheckInterval = null; } if (_idbInstance) { try { _idbInstance.close(); } catch (e) {} _idbInstance = null; } _lastFocusCheck = 0; _lastServerClockCheckTime = 0; ClockSystem && ClockGuard.setLastSeen(); } catch (e) {}
+    try { if (_clockMonitorInterval) { clearInterval(_clockMonitorInterval); _clockMonitorInterval = null; } if (_trialBannerInterval) { clearInterval(_trialBannerInterval); _trialBannerInterval = null; } if (_licensePeriodicCheckInterval) { clearInterval(_licensePeriodicCheckInterval); _licensePeriodicCheckInterval = null; } if (_idbInstance) { try { _idbInstance.close(); } catch (e) {} _idbInstance = null; } _lastFocusCheck = 0; _lastServerClockCheckTime = 0; ClockGuard.setLastSeen(); } catch (e) {}
 }
 window.addEventListener('beforeunload', _cleanupLicenseTimers); window.addEventListener('pagehide', _cleanupLicenseTimers);
 
@@ -970,7 +1087,7 @@ window.addEventListener('beforeunload', _cleanupLicenseTimers); window.addEventL
 window.addEventListener('focus', () => { try { const now = Date.now(); if (now - _lastFocusCheck < 30000) return; _lastFocusCheck = now; let hasKey = false; try { hasKey = !!localStorage.getItem('hor_lic_key'); } catch (e) {} if (!hasKey) return; const cacheAge = now - _licenseSessionCache.timestamp; if (cacheAge > LICENSE_SESSION_CACHE_TTL_MS) { _licenseSessionCache.verified = false; _licenseSessionCache.timestamp = 0; checkLicenseIntegrity(); } } catch (e) {} });
 
 // ============================================================
-// 🎉 HEADER GREETING & DEACTIVATION (PRESERVED)
+// 🎉 HEADER GREETING & DEACTIVATION
 // ============================================================
 const HeaderGreeting = {
     _greetingTimer: null, _trialTimer: null,
@@ -1030,10 +1147,8 @@ async function deactivateLicenseOnly(skipConfirm = false) {
             }
         } catch (e) {}
     }
-    try { localStorage.removeItem('hor_lic_user'); localStorage.removeItem('hor_lic_key'); } catch (e) {}
-    let stillPresent = false; try { stillPresent = !!localStorage.getItem('hor_lic_key') || !!localStorage.getItem('hor_lic_user'); } catch (e) {}
-    if (stillPresent) { try { localStorage.setItem('hor_lic_key', ''); localStorage.setItem('hor_lic_user', ''); localStorage.removeItem('hor_lic_key'); localStorage.removeItem('hor_lic_user'); } catch (e) {} }
-    _licenseSessionCache = { user: null, key: null, verified: false, plan: null, expiry: null, timestamp: 0 }; _cachedPublicKey = null; _cachedPublicKeyHwid = null; _cachedPublicKeyTime = 0; isProLicensed = false; _safeSession.remove('hor_session_start_time'); refreshAfterDeactivation();
+    try { localStorage.removeItem('hor_lic_user'); localStorage.removeItem('hor_lic_email'); localStorage.removeItem('hor_lic_mobile'); localStorage.removeItem('hor_lic_key'); } catch (e) {}
+    _licenseSessionCache = { user: null, email: null, mobile: null, key: null, verified: false, plan: null, expiry: null, timestamp: 0 }; _cachedPublicKey = null; _cachedPublicKeyTime = 0; isProLicensed = false; _safeSession.remove('hor_session_start_time'); refreshAfterDeactivation();
     if (typeof showToast === 'function') showToast('✅ Pro License removed', 'info', 3000); return { success: true };
 }
 async function deactivateTrialOnly(skipConfirm = false) {
@@ -1093,7 +1208,7 @@ window.LicenseDebug = {
     referral: async () => { if (!_isTrialSystemReady()) return null; const code = await TrialSystem.generateReferralCode(); const stats = await TrialSystem.getReferralStats(); console.log('Referral:', { code, stats }); return { code, stats }; },
     clockCheck: async () => { const result = await ClockGuard.fullCheck(); console.log('Clock check:', result); return result; },
     hwid: async () => { const hwid = await getDeviceHardwareFingerprint(); console.log('HWID:', hwid); return hwid; },
-    clearCaches: () => { _licenseSessionCache = { user: null, key: null, verified: false, plan: null, expiry: null, timestamp: 0 }; _cachedPublicKey = null; _cachedPublicKeyHwid = null; _cachedPublicKeyTime = 0; _hwidCache.value = null; _hwidCache.timestamp = 0; _hwidInFlightPromise = null; _invalidateAllCaches(); _invalidateFingerprintCache(); console.log('🧹 Caches cleared'); },
+    clearCaches: () => { _licenseSessionCache = { user: null, email: null, mobile: null, key: null, verified: false, plan: null, expiry: null, timestamp: 0 }; _cachedPublicKey = null; _cachedPublicKeyTime = 0; _hwidCache.value = null; _hwidCache.timestamp = 0; _hwidInFlightPromise = null; _invalidateAllCaches(); _invalidateFingerprintCache(); console.log('🧹 Caches cleared'); },
     resetAll: async () => { if (!confirm('Reset everything?')) return; const result = await TrialSystem.reset(true); console.log('Reset:', result); location.reload(); },
     testHwidRace: async () => {
         console.log('═══════════════════════════════════════════'); console.log('🧪 HWID RACE CONDITION TEST (FIX #2)'); console.log('═══════════════════════════════════════════'); console.log('  Firing 10 concurrent calls...');
@@ -1101,7 +1216,8 @@ window.LicenseDebug = {
         const t0 = performance.now(); const promises = []; for (let i = 0; i < 10; i++) promises.push(getDeviceHardwareFingerprint());
         const results = await Promise.all(promises); const t1 = performance.now();
         const uniqueValues = new Set(results); const allSame = uniqueValues.size === 1;
-        console.log('  Calls fired: 10'); console.log('  Results received:', results.length); console.log('  Unique HWIDs:', uniqueValues.size); console.log('  HWID:', results[0]); console.log('  Total time:', (t1 - t0).toFixed(2) + 'ms'); console.log(''); console.log('  Expected: 1 unique HWID (all callers share same result)'); console.log('  Got:', uniqueValues.size, 'unique'); console.log(''); console.log('  Result:', allSame ? '✅ PASS (race-safe — all callers got same HWID)' : '❌ FAIL (race condition present!)'); console.log('═══════════════════════════════════════════');
+        console.log('  Calls fired: 10'); console.log('  Results received:', results.length); console.log('  Unique HWIDs:', uniqueValues.size); console.log('  HWID:', results[0]); console.log('  Total time:', (t1 - t0).toFixed(2) + 'ms'); console.log('');
+        console.log('  Result:', allSame ? '✅ PASS (race-safe)' : '❌ FAIL (race condition!)'); console.log('═══════════════════════════════════════════');
         return { results, uniqueValues: uniqueValues.size, allSame, time: t1 - t0 };
     },
     testHwidRaceStress: async () => {
@@ -1120,9 +1236,9 @@ window.LicenseDebug = {
         const savedStart = localStorage.getItem('hor_trial_start'); const savedKey = localStorage.getItem('hor_trial_key'); const deviceHash = await getShortDeviceHash() || 'ABCD';
         try {
             localStorage.setItem('hor_trial_key', `HKT-1234567-${deviceHash}`); const tenDaysAgo = Date.now() - (10 * 24 * 60 * 60 * 1000); localStorage.setItem('hor_trial_start', String(tenDaysAgo)); _invalidateInfoCache();
-            const access = hasProLevelAccess(); console.log('  Trial expired (10 days ago)'); console.log('  hasProLevelAccess():', access); console.log('  Expected: false'); console.log('  Result:', access === false ? '✅ PASS' : '❌ FAIL');
+            const access = hasProLevelAccess(); console.log('  Trial expired (10 days ago) → hasProLevelAccess():', access); console.log('  Result:', access === false ? '✅ PASS' : '❌ FAIL');
             const twoDaysAgo = Date.now() - (2 * 24 * 60 * 60 * 1000); localStorage.setItem('hor_trial_start', String(twoDaysAgo)); _invalidateInfoCache();
-            const access2 = hasProLevelAccess(); console.log(''); console.log('  Trial active (2 days ago)'); console.log('  hasProLevelAccess():', access2); console.log('  Expected: true'); console.log('  Result:', access2 === true ? '✅ PASS' : '❌ FAIL');
+            const access2 = hasProLevelAccess(); console.log('  Trial active (2 days ago) → hasProLevelAccess():', access2); console.log('  Result:', access2 === true ? '✅ PASS' : '❌ FAIL');
         } finally { if (savedStart) localStorage.setItem('hor_trial_start', savedStart); else localStorage.removeItem('hor_trial_start'); if (savedKey) localStorage.setItem('hor_trial_key', savedKey); else localStorage.removeItem('hor_trial_key'); _invalidateInfoCache(); }
         console.log('═══════════════════════════════════════════');
     },
@@ -1133,27 +1249,22 @@ window.LicenseDebug = {
         const savedStart = localStorage.getItem('hor_trial_start'); const savedKey = localStorage.getItem('hor_trial_key'); const savedLastSeen = localStorage.getItem('hor_last_seen_time'); const deviceHash = await getShortDeviceHash() || 'ABCD';
         try {
             localStorage.setItem('hor_trial_key', `HKT-1234567-${deviceHash}`); localStorage.setItem('hor_trial_start', String(Date.now() - 2 * 24 * 60 * 60 * 1000)); localStorage.setItem('hor_last_seen_time', String(Date.now() + 60 * 60 * 1000)); _lastClockCheckTime = 0; _invalidateInfoCache();
-            const access = hasProLevelAccess(); console.log('  Trial active BUT clock rolled back'); console.log('  hasProLevelAccess():', access); console.log('  Expected: false'); console.log('  Result:', access === false ? '✅ PASS' : '❌ FAIL (BYPASS!)');
+            const access = hasProLevelAccess(); console.log('  Trial active BUT clock rolled back → hasProLevelAccess():', access); console.log('  Result:', access === false ? '✅ PASS' : '❌ FAIL (BYPASS!)');
         } finally { if (savedStart) localStorage.setItem('hor_trial_start', savedStart); else localStorage.removeItem('hor_trial_start'); if (savedKey) localStorage.setItem('hor_trial_key', savedKey); else localStorage.removeItem('hor_trial_key'); if (savedLastSeen) localStorage.setItem('hor_last_seen_time', savedLastSeen); else localStorage.removeItem('hor_last_seen_time'); _lastClockCheckTime = 0; _invalidateInfoCache(); }
         console.log('═══════════════════════════════════════════');
     },
     testTrialKeyServerVerification: async () => {
-        console.log('═══════════════════════════════════════════'); console.log('🧪 TRIAL KEY SERVER VERIFICATION TEST'); console.log('═══════════════════════════════════════════');
+        console.log('═══════════════════════════════════════════'); console.log('🧪 TRIAL KEY SERVER VERIFICATION TEST (FIX #1)'); console.log('═══════════════════════════════════════════');
         if (!_isTrialSystemReady()) { console.log('  ❌ TrialSystem not ready'); return; }
         const testKey = 'HKT-1234567-ABCD'; console.log('  Testing fake key:', testKey); console.log('  Online:', navigator.onLine);
         const baseUrl = TrialSystem._getFirebaseBaseUrl(); console.log('  Firebase base URL:', baseUrl || '(not configured)');
-        if (!baseUrl) { console.log('  ℹ️ Firebase not configured — offline mode'); console.log('  Expected: validation continues offline'); console.log('  Verdict: ✅ SKIPPED (expected)'); console.log('═══════════════════════════════════════════'); return; }
-        console.log(''); console.log('  Calling _verifyTrialKeyOnServer()...');
+        if (!baseUrl) { console.log('  ✅ FIX VERIFIED: no-endpoint → fail-closed'); console.log('═══════════════════════════════════════════'); return; }
+        console.log('');
+        console.log('  Calling _verifyTrialKeyOnServer()...');
         try {
-            const result = await TrialSystem._verifyTrialKeyOnServer(testKey); console.log('  Result:'); console.log('    ok:', result.ok); console.log('    reason:', result.reason); if (result.message) console.log('    message:', result.message);
-            let verdict = '';
-            if (result.reason === 'not-found' && !result.ok) verdict = '✅ PASS (fake key rejected by server)';
-            else if (result.reason === 'offline' && result.ok) verdict = '⚠️ SKIPPED (offline — fallback allowed)';
-            else if (result.reason === 'no-endpoint' && result.ok) verdict = '⚠️ SKIPPED (no Firebase — dev mode)';
-            else if (result.reason === 'network-error' && result.ok) verdict = '⚠️ SKIPPED (network failed — fallback allowed)';
-            else if (result.ok && result.reason === 'verified') verdict = '❓ UNEXPECTED (fake key "verified"?!)';
-            else verdict = '✅ PASS (server check works)';
-            console.log(''); console.log('  Verdict:', verdict);
+            const result = await TrialSystem._verifyTrialKeyOnServer(testKey); console.log('  Result:', result);
+            const verdict = result.ok === false ? '✅ PASS (fail-closed, blocked)' : '❌ FAIL (unexpected ok:true)';
+            console.log('  Verdict:', verdict);
         } catch (e) { console.error('  ❌ Test failed:', e.message); }
         console.log('═══════════════════════════════════════════');
     },
@@ -1181,15 +1292,10 @@ window.TrialDebug = Object.assign(window.TrialDebug || {}, { status: async () =>
 setTimeout(async () => { try { if (window.__appReady) return; await getDeviceHardwareFingerprint(); await checkLicenseIntegrity(); } catch (e) { console.warn('[License] Auto-init failed:', e.message); } }, 1000);
 
 console.log('═══════════════════════════════════════════');
-console.log('✅ license.js loaded — v3.7.7.1 (Stable HWID Fix)');
-console.log('   🔐 License verification: ready (+ Server Revocation Check)');
-console.log('   🔒 Activation lock: boolean (race-safe)');
-console.log('   🗄️ IndexedDB: singleton connection active');
-console.log('   🧹 Cache invalidation: integrated');
-console.log('   🆕 Unified key deactivation: synced across LS + IDB + FB');
-console.log('');
-console.log('   🔴 FIX: Stable HWID (MachineGuid) is now PRIORITIZED');
-console.log('');
-console.log('   🧪 Run self-test: await LicenseDebug.selfTest()');
-console.log('   🧪 Test race fix: await LicenseDebug.testHwidRace()');
+console.log('✅ license.js loaded — v3.7.4 (FIX #1 APPLIED)');
+console.log('   🔴 Trial Key Server Verification: FAIL-CLOSED');
+console.log('   🚫 Offline / no-endpoint / network-error → BLOCK');
+console.log('   🔐 License Payload: Name + Email + Mobile (No Device ID)');
+console.log('   🧪 Run: await LicenseDebug.testTrialKeyServerVerification()');
+console.log('   🧪 Run: await LicenseDebug.selfTest()');
 console.log('═══════════════════════════════════════════');

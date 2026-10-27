@@ -1,31 +1,11 @@
 // ============================================================
 // 🚀 APP.JS — Main Boot + Multi-Language TTS + Voice Selection
-// BOSC Tech & Edu · Hoṛ Katha Suite v3.8.1 Pro Ultra
+// BOSC Tech & Edu · Hoṛ Katha Suite v3.7.4 Pro Ultra
 // ============================================================
-// ✅ v3.8.1 — FIX #4 (CRITICAL: PWA DEBUG TOOLS EXPOSED):
-//    🔴 FIXED: Debug tools were only hidden in Electron packaged
-//              builds. PWA (Vercel/Netlify) exposed everything:
-//              TrialDebug.reset() → unlimited free trials.
-//
-//    ✅ SOLUTION:
-//       • Production detection now covers PWA (not just Electron)
-//       • All ~20 debug tools hidden in prod
-//       • TrialSystem.reset / testTimeTravel protected
-//       • Password-protected unlock (hash split into 4 parts)
-//       • Session lockout (5 attempts → 5 min)
-//       • Safe default: no hash = unlock disabled
-//       • Dev mode override: localStorage.hor_test_prod_mode='true'
-//
-//    🧪 TEST: localStorage.setItem('hor_test_prod_mode','true')
-//            location.reload()
-//            typeof window.TrialDebug → "undefined" ✅
-//
-// ✅ v3.8.0 (retained):
-//    • Pause/Resume/Stop (3-state)
-//    • Word highlighting + resume-from-position
-//    • Voice favorites + recent + fuzzy search
-//    • Recognition exponential backoff
-//    • Global error boundaries
+// ✅ FIX #3 APPLIED — Hindi Phonetic TTS + Recognition + Focus
+//    • _getTTSConfig: hindi-phonetic → hindi-dev config
+//    • _getRecognitionLang: hindi-phonetic → hi-IN
+//    • _FOCUS_HEADINGS: hindi-phonetic heading added
 // ============================================================
 
 window.__appReady = false;
@@ -249,12 +229,6 @@ function isTTSSpeaking() {
             if (window.speechSynthesis.speaking === true) return true;
             if (window.speechSynthesis.paused === true) return true;
         }
-        // ✅ FIX #7: Pure check — NO side effects
-        // Side effect was causing rare mid-speech stops:
-        //   Between chunks, browser briefly reports speaking=false.
-        //   Old code flipped _ttsState.speaking = false during that gap,
-        //   then speakNext() saw !_ttsState.speaking and returned early
-        //   → speech stopped mid-way.
         return _ttsState.speaking && !_ttsState.paused;
     } catch (e) {
         return _ttsState.speaking;
@@ -263,13 +237,15 @@ function isTTSSpeaking() {
 
 // ============================================================
 // 🎯 FOCUS MODE BAR
+// ✅ FIX #3: hindi-phonetic entry added
 // ============================================================
 const _FOCUS_HEADINGS = {
-    'english':     { icon: '🇬🇧', text: 'English',              badge: 'ENG' },
-    'roman':       { icon: '🅰️', text: 'Santali (Roman)',       badge: 'SAT-R' },
-    'hindi-dev':   { icon: '🇮🇳', text: 'हिन्दी',                badge: 'HIN' },
-    'santali-dev': { icon: '🇮🇳', text: 'Santali (Devanagari)',  badge: 'SAT-D' },
-    'olchiki':     { icon: 'ᱚ',  text: 'ओ़लचिकी / Ol Chiki',    badge: 'OLC' }
+    'english':        { icon: '🇬🇧', text: 'English',              badge: 'ENG' },
+    'roman':          { icon: '🅰️', text: 'Santali (Roman)',       badge: 'SAT-R' },
+    'hindi-dev':      { icon: '🇮🇳', text: 'हिन्दी',                badge: 'HIN' },
+    'hindi-phonetic': { icon: '✨',  text: 'हिन्दी ✨',              badge: 'HIN-P' },
+    'santali-dev':    { icon: '🇮🇳', text: 'Santali (Devanagari)',  badge: 'SAT-D' },
+    'olchiki':        { icon: 'ᱚ',  text: 'ओ़लचिकी / Ol Chiki',    badge: 'OLC' }
 };
 
 function updateFocusBarHeading(layout) {
@@ -423,11 +399,13 @@ function toggleSpeechRecognition() {
     }
 }
 
+// ✅ FIX #3: hindi-phonetic → hi-IN
 function _getRecognitionLang() {
     try {
         const layout = window.currentLayout || 'english';
         const map = {
             'hindi-dev': 'hi-IN',
+            'hindi-phonetic': 'hi-IN',
             'santali-dev': 'hi-IN',
             'olchiki': 'sat-IN',
             'roman': 'en-IN'
@@ -463,8 +441,10 @@ function _invalidateVoiceCache() {
     _voiceCacheTimestamp = 0;
 }
 
+// ✅ FIX #3: hindi-phonetic → hindi-dev config (Devanagari voice)
 function _getTTSConfig() {
     const layout = window.currentLayout || 'english';
+    if (layout === 'hindi-phonetic') return TTS_LANGUAGE_CONFIG['hindi-dev'];
     return TTS_LANGUAGE_CONFIG[layout] || TTS_LANGUAGE_CONFIG['english'];
 }
 
@@ -732,10 +712,6 @@ function _buildVoiceItem(v, config, isRecommended, listContainer) {
         star.textContent = added ? '★' : '☆';
         star.title = added ? 'Remove from favorites' : 'Add to favorites';
 
-        // ✅ FIX #6: Fresh check (was using stale `isSelected`)
-        // Scenario: select voice → then toggle favorite → un-favorite
-        //   old: border went to #cbd5e1 (grey) — wrong
-        //   new: border goes to #0284c7 (blue) — correct
         const currentlySelected = _ttsState.selectedVoiceName === v.name;
         item.style.border = `1.5px solid ${
             added ? '#f59e0b' :
@@ -981,9 +957,6 @@ function _highlightClear() {
 // 🔊 SPEAK TEXT
 // ============================================================
 function speakText() {
-    // ✅ FIX #7: Self-healing state reset (moved from isTTSSpeaking)
-    // If browser says not speaking/paused, but our flag is stale-true,
-    // it means speech ended silently (tab switch, browser bug, etc.)
     try {
         if (typeof window.speechSynthesis !== 'undefined' &&
             window.speechSynthesis.speaking !== true &&
@@ -2194,7 +2167,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ============================================================
-// 🎁 TRIAL DEBUG (kept for backward compat; will be hidden in prod by Fix #4)
+// 🎁 TRIAL DEBUG (hidden in prod by Fix #4)
 // ============================================================
 window.TrialDebug = {
     reset: async () => {
@@ -2522,10 +2495,9 @@ window.AppDebug.securityStatus = () => {
 };
 
 // ============================================================
-// 🔒 DEBUG SECURITY IIFE — ✅ FIX #4 (PWA + Electron coverage)
+// 🔒 DEBUG SECURITY IIFE — FIX #4 (PWA + Electron coverage)
 // ============================================================
 (function setupDebugSecurity() {
-    // Dev host detection
     function _isDevHost(hostname) {
         if (!hostname) return false;
         const hn = hostname.toLowerCase();
@@ -2563,7 +2535,6 @@ window.AppDebug.securityStatus = () => {
     console.log('  Electron packaged:', !!(window.electronAPI && window.electronAPI.isPackaged));
     console.log('═══════════════════════════════════════════');
 
-    // Password hash (split into 4 parts to avoid grep)
     const _H1 = '0000000000000000';
     const _H2 = '0000000000000000';
     const _H3 = '0000000000000000';
@@ -2585,7 +2556,6 @@ window.AppDebug.securityStatus = () => {
     const _debugBackups = {};
     window.__debugUnlocked = false;
 
-    // Wrap TrialSystem critical methods in production
     if (isProduction && typeof window.TrialSystem !== 'undefined') {
         const _origReset = window.TrialSystem.reset;
         const _origTimeTravel = window.TrialSystem.testTimeTravel;
@@ -2613,7 +2583,6 @@ window.AppDebug.securityStatus = () => {
         console.log('🔒 TrialSystem critical methods protected');
     }
 
-    // Hash generator
     const DebugHashTool = {
         async generate(pwd) {
             if (!crypto || !crypto.subtle) {
@@ -2982,7 +2951,7 @@ window.AppDebug.securityStatus = () => {
         setTimeout(() => _call('showConsentBanner'), 400);
 
         console.log('🛡️ Security Shield Active');
-        console.log('✅ App initialized — Hoṛ Katha Suite v3.8.1');
+        console.log('✅ App initialized — Hoṛ Katha Suite v3.7.4');
 
     } catch (err) {
         console.error('💥 initApp failed:', err);
@@ -3017,11 +2986,13 @@ window.addEventListener('beforeunload', () => {
 // 📋 STARTUP LOG
 // ============================================================
 console.log('═══════════════════════════════════════════');
-console.log('✅ app.js loaded — v3.8.1 Pro Ultra (Fix #4)');
-console.log('   🔒 PWA debug tools now hidden in production');
+console.log('✅ app.js loaded — v3.7.4 Pro Ultra (Fix #3 + #4)');
+console.log('   ✨ Hindi Phonetic TTS → uses Hindi Devanagari voice');
+console.log('   ✨ Hindi Phonetic Recognition → hi-IN');
+console.log('   ✨ Hindi Phonetic Focus Heading → "हिन्दी ✨"');
+console.log('   🔒 PWA debug tools hidden in production');
 console.log('   🔒 TrialSystem.reset/testTimeTravel protected');
 console.log('   🔑 Unlock: Ctrl+Shift+Alt+D (password required)');
-console.log('   🧪 Test prod mode: localStorage.hor_test_prod_mode=true');
 console.log('   ⏸️ Pause / ▶️ Resume / ⏹️ Stop (Esc)');
 console.log('   ✨ Word highlighting (auto-injected CSS)');
 console.log('   ⏮️ Resume-from-position memory');
@@ -3033,3 +3004,71 @@ console.log('   ⚡ Throttled saves + visibility-aware timer');
 console.log('   🛡️ Global error boundaries');
 console.log('   🎯 30-voice cap (favorites/recent prioritized)');
 console.log('═══════════════════════════════════════════');
+
+// ============================================================
+// 🧠 HINDI PHONETIC — switchLanguage Wrapper (LipiCraft merge)
+// ============================================================
+(function patchHindiPhonetic() {
+    if (typeof window.switchLanguage !== 'function') {
+        console.warn('⚠️ switchLanguage not ready — retry in 100ms');
+        setTimeout(patchHindiPhonetic, 100);
+        return;
+    }
+    if (window.__hpPatched) return;
+
+    const original = window.switchLanguage;
+
+    window.switchLanguage = function(lang, ...args) {
+        if (lang === 'hindi-phonetic') {
+            window.currentLayout = 'hindi-phonetic';
+            document.body.setAttribute('data-hindi-phonetic', 'true');
+
+            const kb = document.getElementById('keyboard');
+            if (kb) kb.style.display = 'none';
+            const np = document.getElementById('keyboardNumpad');
+            if (np) np.style.display = 'none';
+
+            const addBtn = document.getElementById('btn-hp-addword');
+            if (addBtn) addBtn.style.display = 'inline-block';
+
+            const dt = document.getElementById('deck-mode-title');
+            if (dt) dt.textContent = 'Hindi Phonetic — Type English, get Devanagari';
+
+            const lc = document.querySelector('#statusLanguage span:last-child');
+            if (lc) lc.textContent = 'Hindi ✨';
+
+            document.querySelectorAll('.tab-pill').forEach(t => t.classList.remove('active'));
+            const tab = document.getElementById('tab-hindi-phonetic');
+            if (tab) tab.classList.add('active');
+
+            const ft = document.getElementById('focusHeadingText');
+            if (ft) ft.textContent = 'Hindi ✨';
+            const fb = document.getElementById('focusHeadingBadge');
+            if (fb) fb.textContent = 'HI';
+            const fi = document.getElementById('focusHeadingIcon');
+            if (fi) fi.textContent = '✨';
+
+            const ed = document.getElementById('editor');
+            if (ed) {
+                ed.setAttribute('data-placeholder', 'Type in English… (aap kaise hain → आप कैसे हैं)');
+                ed.focus();
+            }
+
+            console.log('✨ Hindi Phonetic mode ON');
+            return;
+        }
+
+        document.body.removeAttribute('data-hindi-phonetic');
+        const kbR = document.getElementById('keyboard');
+        if (kbR) kbR.style.display = '';
+        const npR = document.getElementById('keyboardNumpad');
+        if (npR) npR.style.display = '';
+        const addR = document.getElementById('btn-hp-addword');
+        if (addR) addR.style.display = 'none';
+
+        return original.apply(this, [lang, ...args]);
+    };
+
+    window.__hpPatched = true;
+    console.log('✅ switchLanguage patched for Hindi Phonetic');
+})();

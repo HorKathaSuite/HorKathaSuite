@@ -8,6 +8,7 @@
 //    • FIXED: Tab — native browser
 //    • FIXED: Double character insertion
 //    • ✅ NEW FIX: Mobile IME typing (Hindi/Chinese) allowed
+//    • ✅ NEW: Hindi Phonetic auto-convert (LipiCraft merge)
 // ============================================================
 
 // ============================================================
@@ -248,6 +249,14 @@ function handleEditorInput(immediateState = false) {
             enterTypingMode();
         }, 250);
     }
+
+    // ── Hindi Phonetic auto-convert hook (LipiCraft merge) ──
+    if (!window.__hpSkipConvert && window.currentLayout === 'hindi-phonetic') {
+        Promise.resolve().then(() => {
+            if (typeof hpHandleAutoConvert === 'function') hpHandleAutoConvert();
+        });
+    }
+    // ── End Hindi Phonetic hook ──
 
     clearTimeout(_counterDebounce);
     _counterDebounce = setTimeout(updateCounter, 80);
@@ -1041,7 +1050,7 @@ function escapeHtml(str) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;")
-        .replace(/`/g, "&#96;")
+        .replace(/`/g, "&#096;")
         .replace(/\//g, "&#47;");
 }
 
@@ -1372,6 +1381,70 @@ window.addEventListener('beforeunload', () => {
 });
 
 // ============================================================
+// 🧠 HINDI PHONETIC — Contenteditable-safe auto-convert
+// Added for LipiCraft merge · Hoṛ Katha v3.7.4
+// ============================================================
+function hpHandleAutoConvert() {
+    try {
+        if (window.currentLayout !== 'hindi-phonetic') return;
+        if (typeof HindiPhonetic === 'undefined') return;
+
+        const editor = document.getElementById('editor');
+        if (!editor) return;
+
+        // Skip if formatting is active
+        if (editor.querySelector('b, strong, i, em, u, span[style], font, a')) return;
+
+        const sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0) return;
+
+        const range = sel.getRangeAt(0);
+        if (!range.collapsed) return;
+
+        const node = range.startContainer;
+        if (node.nodeType !== Node.TEXT_NODE) return;
+
+        const offset = range.startOffset;
+        const textBefore = node.textContent.slice(0, offset);
+
+        const match = textBefore.match(/([A-Za-z][A-Za-z']*)([\s.,!?;:)\]}'"\-]+)$/);
+        if (!match) return;
+
+        const word = match[1];
+        const tail = match[2];
+        const start = offset - match[0].length;
+        const wordEnd = start + word.length;
+
+        const lower = word.toLowerCase();
+        const isKnown = HindiPhonetic.translate(lower).text !== word;
+        if (!isKnown && !/[aeiouAEIOU]/.test(word) && word.length <= 2) return;
+
+        const result = HindiPhonetic.translate(word);
+        if (!result || !result.text || result.text === word) return;
+
+        const beforeText = node.textContent.slice(0, start);
+        const afterText  = node.textContent.slice(wordEnd);
+        node.textContent = beforeText + result.text + afterText;
+
+        const newPos = start + result.text.length + tail.length;
+        const newRange = document.createRange();
+        newRange.setStart(node, newPos);
+        newRange.setEnd(node, newPos);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+
+        if (typeof handleEditorInput === 'function') {
+            window.__hpSkipConvert = true;
+            try { handleEditorInput(true); } finally { window.__hpSkipConvert = false; }
+        }
+    } catch (e) {
+        console.warn('[hpHandleAutoConvert]', e.message);
+    }
+}
+
+window.hpHandleAutoConvert = hpHandleAutoConvert;
+
+// ============================================================
 // 📊 DEBUG HELPERS
 // ============================================================
 window.EditorDebug = {
@@ -1390,6 +1463,7 @@ window.EditorDebug = {
         console.log('  Current layout:', window.currentLayout || 'unknown');
         console.log('  Roman shortcut active:', _romanShortcutActive);
         console.log('  Roman reset timer pending:', !!_romanShortcutResetTimer);
+        console.log('  Hindi Phonetic hook:', typeof hpHandleAutoConvert === 'function' ? '✅' : '❌');
         console.log('═══════════════════════════════════════════');
     },
 
@@ -1450,6 +1524,20 @@ window.EditorDebug = {
         console.log('═══════════════════════════════════════════');
     },
 
+    testHindiPhonetic: () => {
+        console.log('═══════════════════════════════════════════');
+        console.log('🧪 HINDI PHONETIC TEST');
+        console.log('═══════════════════════════════════════════');
+        console.log('  Current layout:', window.currentLayout);
+        console.log('  HindiPhonetic loaded:', typeof HindiPhonetic !== 'undefined' ? '✅' : '❌');
+        if (typeof HindiPhonetic !== 'undefined') {
+            console.log('  Test translate:', HindiPhonetic.translate('namaste'));
+            console.log('  Test translate:', HindiPhonetic.translate('ghar'));
+            console.log('  Test translate:', HindiPhonetic.translate('aaj_kal'));
+        }
+        console.log('═══════════════════════════════════════════');
+    },
+
     selfTest: () => {
         console.log('═══════════════════════════════════════════');
         console.log('🧪 EDITOR SELF-TEST (v3.7.4.68)');
@@ -1474,7 +1562,8 @@ window.EditorDebug = {
             caseConvert: typeof convertTextCasing === 'function',
             findReplace: typeof executeReplaceAll === 'function',
             romanShortcut: typeof handleRomanShortcut === 'function',
-            shortcode: typeof handleTextShortcode === 'function'
+            shortcode: typeof handleTextShortcode === 'function',
+            hindiPhonetic: typeof hpHandleAutoConvert === 'function'
         };
 
         Object.entries(results).forEach(([key, pass]) => {
@@ -1512,6 +1601,8 @@ console.log('   ⌫  Backspace: Native execCommand (HTML safe)');
 console.log('   ✅ FIXED: Enter double newline');
 console.log('   ✅ FIXED: Backspace DOM breaking on rich text');
 console.log('   ✅ FIXED: Mobile IME typing (Hindi/Chinese) allowed');
+console.log('   ✅ NEW: Hindi Phonetic auto-convert integrated');
 console.log('   🧪 EditorDebug.testBackspace() available');
+console.log('   🧪 EditorDebug.testHindiPhonetic() available');
 console.log('   🧪 EditorDebug.selfTest() available');
 console.log('═══════════════════════════════════════════');
